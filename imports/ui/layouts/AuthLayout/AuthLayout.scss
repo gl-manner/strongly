@@ -1,0 +1,123 @@
+// /imports/ui/layouts/AuthLayout/AuthLayout.scss
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 1rem;
+
+  .auth-container {
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .auth-card {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  .auth-side-wrapper {
+    position: relative;
+    height: 100%;
+    min-height: 500px;
+    background-color: #6571ff;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    // Fractal background with animated circles
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      animation: fractalAnimation 10s infinite alternate;
+
+      &.circle1 {
+        width: 140px;
+        height: 140px;
+        background-color: rgba(255, 255, 255, 0.15);
+        top: 20%;
+        left: -30px;
+        animation-delay: -2s;
+      }
+
+      &.circle2 {
+        width: 80px;
+        height: 80px;
+        background-color: rgba(255, 255, 255, 0.1);
+        top: 60%;
+        left: 20%;
+        animation-delay: -4s;
+      }
+
+      &.circle3 {
+        width: 160px;
+        height: 160px;
+        background-color: rgba(255, 255, 255, 0.08);
+        top: 40%;
+        right: -40px;
+        animation-delay: -6s;
+      }
+
+      &.circle4 {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(255, 255, 255, 0.12);
+        top: 10%;
+        right: 30%;
+        animation-delay: -8s;
+      }
+
+      &.circle5 {
+        width: 100px;
+        height: 100px;
+        background-color: rgba(255, 255, 255, 0.07);
+        bottom: 10%;
+        right: 20%;
+        animation-delay: -10s;
+      }
+    }
+
+    @keyframes fractalAnimation {
+      0% {
+        transform: scale(0.8) rotate(0deg);
+      }
+      100% {
+        transform: scale(1.2) rotate(360deg);
+      }
+    }
+
+    // Center AI logo
+    .brand {
+      position: relative;
+      z-index: 2;
+
+      .brand-logo {
+        font-size: 4rem;
+        font-weight: 700;
+        color: white;
+      }
+    }
+  }
+
+  .auth-form-wrapper {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767.98px) {
+  .auth-page {
+    .auth-side-wrapper {
+      min-height: 200px;
+    }
+  }
+}

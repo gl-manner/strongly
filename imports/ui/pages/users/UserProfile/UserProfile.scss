@@ -1,0 +1,132 @@
+// /imports/ui/pages/users/UserProfile/UserProfile.scss
+// UserProfile custom styles
+.profile-wrapper {
+  // Profile image styling
+  .profile-image-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+
+    .profile-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--bs-primary, #4f46e5);
+    }
+
+    .profile-initials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: var(--bs-primary, #4f46e5);
+      color: white;
+      font-size: 2rem;
+      font-weight: 600;
+      border: 3px solid var(--bs-primary, #4f46e5);
+    }
+
+    .profile-image-edit {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 30px;
+      height: 30px;
+      background-color: var(--bs-white, #ffffff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--box-shadow, 0 1px 3px 0 rgba(0, 0, 0, 0.1));
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--bs-primary, #4f46e5);
+
+        i {
+          color: var(--bs-white, #ffffff);
+        }
+      }
+
+      i {
+        width: 16px;
+        height: 16px;
+        color: var(--bs-primary, #4f46e5);
+      }
+    }
+  }
+
+  // Enhanced form styling
+  .form-control {
+    &:focus {
+      border-color: var(--bs-primary, #4f46e5);
+      box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+    }
+  }
+
+  // Form field animations
+  .form-control,
+  .input-group {
+    transition: all 0.3s ease;
+
+    &:hover:not(:focus-within) {
+      border-color: var(--bs-gray-400, #d1d5db);
+    }
+  }
+
+  // Card enhancements
+  .card {
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: var(--box-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+    }
+
+    .card-title {
+      position: relative;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 2px;
+        background-color: var(--bs-primary, #4f46e5);
+      }
+    }
+  }
+
+  // Alert animations
+  .alert {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767.98px) {
+  .profile-wrapper {
+    .row > [class*="col-"] {
+      margin-bottom: 1rem;
+    }
+  }
+}

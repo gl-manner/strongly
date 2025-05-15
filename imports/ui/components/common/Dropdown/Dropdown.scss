@@ -1,0 +1,199 @@
+// /imports/ui/components/common/Dropdown/Dropdown.scss
+.dropdown {
+  position: relative;
+  display: inline-block;
+
+  .dropdown-trigger {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    z-index: 1000;
+    min-width: 10rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: #1F1F1F;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 0;
+
+    &.dropdown-menu-end {
+      right: 0;
+      left: auto;
+    }
+
+    // Simple list style for profile dropdown
+    .list-unstyled {
+      margin: 0;
+      padding: 0;
+
+      li {
+        list-style: none;
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem 1rem;
+          color: #212529;
+          text-decoration: none;
+          background-color: transparent;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #f8f9fa;
+          }
+
+          i, svg {
+            margin-right: 0.75rem;
+            color: #6c757d;
+          }
+        }
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        margin: 0.5rem 0;
+        overflow: hidden;
+        background-color: #e9ecef;
+      }
+    }
+
+    // Complex dropdown with sections
+    .dropdown-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0;
+      font-size: 0.875rem;
+      color: #6c757d;
+      white-space: nowrap;
+      border-bottom: 1px solid #e9ecef;
+
+      p {
+        margin-bottom: 0;
+        font-weight: 500;
+      }
+    }
+
+    .dropdown-body {
+      max-height: 250px;
+      overflow-y: auto;
+
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        clear: both;
+        font-weight: 400;
+        color: #212529;
+        text-align: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+        background-color: transparent;
+        border: 0;
+
+        &:hover, &:focus {
+          color: #16181b;
+          text-decoration: none;
+          background-color: #f8f9fa;
+        }
+
+        &.active, &:active {
+          color: #16181b;
+          text-decoration: none;
+          background-color: #e9ecef;
+        }
+
+        // For notification style dropdown items
+        .icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background-color: rgba(108, 117, 125, 0.1);
+          margin-right: 10px;
+
+          i {
+            font-size: 1rem;
+            color: #6c757d;
+          }
+        }
+
+        .content {
+          flex: 1;
+
+          p {
+            margin-bottom: 0;
+            font-size: 0.875rem;
+
+            &.sub-text {
+              font-size: 0.75rem;
+              color: #6c757d;
+            }
+          }
+        }
+      }
+    }
+
+    .dropdown-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      margin-top: 0;
+      font-size: 0.875rem;
+      background-color: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+
+      a {
+        color: #0d6efd;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .dropdown-divider {
+      height: 0;
+      margin: 0;
+      overflow: hidden;
+      border-top: 1px solid #e9ecef;
+    }
+  }
+}
+
+// Profile dropdown specific styles
+.nav-item.dropdown {
+  .dropdown {
+    .dropdown-menu {
+      width: 200px;  // Adjusted to match your screenshot
+      border-radius: 0.375rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+
+      .dropdown-item {
+        color: #333;
+
+        i, svg {
+          color: #6c757d;
+        }
+      }
+    }
+  }
+}

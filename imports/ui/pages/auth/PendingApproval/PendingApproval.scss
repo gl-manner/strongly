@@ -1,0 +1,176 @@
+// /imports/ui/pages/auth/PendingApproval/PendingApproval.scss
+
+.pending-approval-wrapper {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+
+  .brand-name {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+
+    &::after {
+      content: 'AI';
+      color: #6571ff;
+    }
+  }
+
+  .status-section {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .status-icon {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 70px;
+      height: 70px;
+      background-color: rgba(101, 113, 255, 0.1);
+      border-radius: 50%;
+      margin-bottom: 1.5rem;
+
+      i {
+        width: 32px;
+        height: 32px;
+        color: #6571ff;
+      }
+    }
+
+    .status-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #333;
+    }
+
+    .status-message {
+      color: #6c757d;
+      font-size: 1rem;
+      max-width: 80%;
+      margin: 0 auto;
+    }
+  }
+
+  .info-card {
+    background-color: rgba(13, 110, 253, 0.08);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+
+    .info-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+
+      i {
+        width: 20px;
+        height: 20px;
+        color: #0d6efd;
+        margin-right: 0.75rem;
+      }
+
+      h4 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        color: #0d6efd;
+      }
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #495057;
+      line-height: 1.6;
+    }
+  }
+
+  .help-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+    .help-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    p {
+      color: #6c757d;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #6571ff;
+        background-color: transparent;
+        border: 1px solid #6571ff;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s ease-in-out;
+
+        i {
+          width: 16px;
+          height: 16px;
+          margin-right: 0.5rem;
+        }
+
+        &:hover {
+          background-color: rgba(101, 113, 255, 0.05);
+        }
+
+        &.btn-secondary {
+          color: #6c757d;
+          border-color: #6c757d;
+
+          &:hover {
+            background-color: rgba(108, 117, 125, 0.05);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 767.98px) {
+  .pending-approval-wrapper {
+    padding: 0 1rem;
+
+    .brand-name {
+      text-align: center;
+    }
+
+    .status-section {
+      .status-message {
+        max-width: 100%;
+      }
+    }
+
+    .action-buttons {
+      flex-direction: column;
+
+      .btn-outline {
+        width: 100%;
+      }
+    }
+  }
+}

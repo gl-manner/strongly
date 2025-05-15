@@ -1,0 +1,32 @@
+// /private/settings/settings.development.json
+{
+  "public": {
+    "appName": "Strongly.AI",
+    "appVersion": "1.0.0",
+    "environment": "development",
+    "analyticsEnabled": false,
+    "debug": true
+  },
+  "admin": {
+    "email": "admin@strongly.ai",
+    "password": "password123"
+  },
+  "email": {
+    "enabled": false,
+    "smtp": {
+      "url": null
+    },
+    "from": "Strongly.AI <noreply@strongly.ai>"
+  },
+  "accounts": {
+    "sendVerificationEmail": true,
+    "forbidClientAccountCreation": false,
+    "loginExpirationInDays": 30
+  },
+  "passwordPolicy": {
+    "minLength": 8,
+    "requireNumbers": true,
+    "requireUppercase": true,
+    "requireSpecialChars": true
+  }
+}

@@ -1,0 +1,63 @@
+// /imports/ui/components/common/Breadcrumb/Breadcrumb.scss
+.page-breadcrumb {
+  margin-bottom: 1.5rem;
+
+  .breadcrumb {
+    padding: 0;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-radius: 0;
+
+    .breadcrumb-item {
+      font-size: 0.875rem;
+
+      a {
+        color: var(--bs-primary, #727cf5);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      &.active {
+        color: #495057;
+      }
+
+      + .breadcrumb-item {
+        padding-left: 0.5rem;
+
+        &::before {
+          content: "/";
+          padding-right: 0.5rem;
+          color: #6c757d;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme support
+body.dark-mode {
+  .page-breadcrumb {
+    .breadcrumb {
+      .breadcrumb-item {
+        color: #adb5bd;
+
+        a {
+          color: var(--bs-primary, #727cf5);
+        }
+
+        &.active {
+          color: #e9ecef;
+        }
+
+        + .breadcrumb-item {
+          &::before {
+            color: #6c757d;
+          }
+        }
+      }
+    }
+  }
+}

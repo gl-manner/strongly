@@ -1,0 +1,99 @@
+// /imports/ui/components/users/UserAvatar/UserAvatar.scss
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #6c757d;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .user-initials {
+    font-weight: 600;
+  }
+
+  // Size variants
+  &.user-avatar-xs {
+    width: 24px;
+    height: 24px;
+    .user-initials {
+      font-size: 10px;
+    }
+  }
+
+  &.user-avatar-sm {
+    width: 32px;
+    height: 32px;
+    .user-initials {
+      font-size: 12px;
+    }
+  }
+
+  &.user-avatar-md {
+    width: 40px;
+    height: 40px;
+    .user-initials {
+      font-size: 14px;
+    }
+  }
+
+  &.user-avatar-lg {
+    width: 56px;
+    height: 56px;
+    .user-initials {
+      font-size: 18px;
+    }
+  }
+
+  &.user-avatar-xl {
+    width: 80px;
+    height: 80px;
+    .user-initials {
+      font-size: 24px;
+    }
+  }
+
+  // Status indicator
+  .status-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+
+    &.online {
+      background-color: #10b981;
+    }
+
+    &.away {
+      background-color: #f59e0b;
+    }
+
+    &.busy {
+      background-color: #ef4444;
+    }
+
+    &.offline {
+      background-color: #6b7280;
+    }
+  }
+
+  // For larger avatars, increase the size of status indicator
+  &.user-avatar-lg, &.user-avatar-xl {
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-width: 2px;
+    }
+  }
+}

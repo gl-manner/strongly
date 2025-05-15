@@ -1,0 +1,32 @@
+// /private/settings/settings.production.json
+{
+  "public": {
+    "appName": "Strongly.AI",
+    "appVersion": "1.0.0",
+    "environment": "production",
+    "analyticsEnabled": true,
+    "debug": false
+  },
+  "admin": {
+    "email": "admin@strongly.ai",
+    "password": "CHANGE_THIS_PASSWORD_IN_PRODUCTION"
+  },
+  "email": {
+    "enabled": true,
+    "smtp": {
+      "url": "smtps://username:password@smtp.example.com:465"
+    },
+    "from": "Strongly.AI <noreply@strongly.ai>"
+  },
+  "accounts": {
+    "sendVerificationEmail": true,
+    "forbidClientAccountCreation": false,
+    "loginExpirationInDays": 30
+  },
+  "passwordPolicy": {
+    "minLength": 8,
+    "requireNumbers": true,
+    "requireUppercase": true,
+    "requireSpecialChars": true
+  }
+}

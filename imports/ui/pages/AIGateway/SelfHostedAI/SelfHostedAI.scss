@@ -1,0 +1,40 @@
+// /imports/ui/pages/AIGateway/SelfHostedAI/SelfHostedAI.scss
+
+.self-hosted-ai {
+  .model-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .table {
+    th, td {
+      vertical-align: middle;
+    }
+  }
+
+  .badge {
+    font-weight: 500;
+    padding: 0.4em 0.6em;
+  }
+
+  .nav-tabs {
+    .nav-link {
+      cursor: pointer;
+
+      &.active {
+        font-weight: 500;
+      }
+    }
+  }
+
+  .tag-filter {
+    .btn {
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+}

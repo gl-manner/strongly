@@ -1,0 +1,25 @@
+// /imports/ui/pages/AIGateway/AIGateway.scss
+
+.ai-gateway {
+  .gateway-option {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 200px;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    i {
+      width: 36px;
+      height: 36px;
+      stroke-width: 1;
+    }
+  }
+
+  .table {
+    th, td {
+      vertical-align: middle;
+    }
+  }
+}
