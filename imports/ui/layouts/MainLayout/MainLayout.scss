@@ -1,0 +1,213 @@
+// /imports/ui/layouts/MainLayout/MainLayout.scss
+// Main layout styling
+.main-wrapper {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  // Sidebar folded state
+  &.sidebar-folded {
+    .sidebar {
+      width: 70px;
+
+      .sidebar-header {
+        width: 70px;
+
+        .sidebar-brand {
+          display: none;
+        }
+      }
+
+      .sidebar-body {
+        .nav {
+          .nav-item {
+            &.nav-category {
+              visibility: hidden;
+              height: 0;
+              padding: 0;
+            }
+
+            .nav-link {
+              .link-title,
+              .link-arrow {
+                display: none;
+              }
+
+              .link-icon {
+                margin-right: 0;
+              }
+            }
+
+            &.nav-item-open {
+              .collapse.show {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .page-wrapper {
+      width: calc(100% - 70px);
+      margin-left: 70px;
+    }
+  }
+
+  // Folded sidebar on hover
+  &.open-sidebar-folded {
+    .sidebar {
+      width: 260px;
+
+      .sidebar-header {
+        width: 260px;
+
+        .sidebar-brand {
+          display: flex;
+        }
+      }
+
+      .sidebar-body {
+        .nav {
+          .nav-item {
+            &.nav-category {
+              visibility: visible;
+              height: auto;
+              padding: 1rem 1.5rem 0.375rem;
+            }
+
+            .nav-link {
+              .link-title,
+              .link-arrow {
+                display: block;
+              }
+
+              .link-icon {
+                margin-right: 10px;
+              }
+            }
+
+            &.nav-item-open {
+              .collapse.show {
+                display: block;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Mobile sidebar open state
+  &.sidebar-open {
+    .sidebar {
+      left: 0;
+      z-index: 999;
+    }
+
+    .sidebar-overlay {
+      display: block;
+    }
+  }
+
+  // Kubernetes sidebar active state
+  &.kubernetes-active {
+    .page-wrapper {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+    }
+  }
+}
+
+// Page wrapper (content area)
+.page-wrapper {
+  min-height: 100vh;
+  width: calc(100% - 260px);
+  margin-left: 260px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+// Page content
+.page-content {
+  flex-grow: 1;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+}
+
+// Overlay for mobile sidebar
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  display: none;
+  transition: display 0.3s ease;
+}
+
+// Responsive styles
+@media (max-width: 991.98px) {
+  .main-wrapper {
+    .sidebar {
+      position: fixed;
+      left: -260px;
+      z-index: 999;
+    }
+
+    .page-wrapper {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    &.sidebar-open {
+      .page-wrapper {
+        margin-left: 0;
+      }
+    }
+
+    // Kubernetes active state on mobile
+    &.kubernetes-active {
+      .page-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+  }
+}
+
+// Dark mode
+body.dark-mode {
+  .page-content {
+    background-color: #1e1e2d;
+  }
+}
+
+// Transitions for sidebar switching
+.sidebar-transition-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.sidebar-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.sidebar-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 300ms, transform 300ms;
+}

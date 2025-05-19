@@ -1,5 +1,6 @@
 // /imports/hooks/useApp.js
 import { useState, useEffect, createContext, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // Create App context
 const AppContext = createContext(null);
@@ -8,11 +9,19 @@ const AppContext = createContext(null);
 export const AppProvider = ({ children }) => {
   // Sidebar collapsed state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [kubernetesSidebarActive, setKubernetesSidebarActive] = useState(false);
+  const location = useLocation();
 
   // Toggle sidebar function
   const toggleSidebar = () => {
     setSidebarCollapsed(prev => !prev);
   };
+
+  // Check if we're in the Kubernetes section
+  useEffect(() => {
+    const isKubernetesPath = location.pathname.startsWith('/kubernetes');
+    setKubernetesSidebarActive(isKubernetesPath);
+  }, [location.pathname]);
 
   // Check if device is mobile
   const [isMobile, setIsMobile] = useState(false);
@@ -45,11 +54,18 @@ export const AppProvider = ({ children }) => {
       document.body.classList.toggle('sidebar-folded', sidebarCollapsed);
     }
 
+    // Add class for Kubernetes sidebar when active
+    if (kubernetesSidebarActive) {
+      document.body.classList.add('kubernetes-active');
+    } else {
+      document.body.classList.remove('kubernetes-active');
+    }
+
     // Cleanup function for unmounting
     return () => {
-      document.body.classList.remove('sidebar-folded', 'sidebar-open');
+      document.body.classList.remove('sidebar-folded', 'sidebar-open', 'kubernetes-active');
     };
-  }, [sidebarCollapsed, isMobile]);
+  }, [sidebarCollapsed, isMobile, kubernetesSidebarActive]);
 
   // Close sidebar when clicking outside on mobile
   useEffect(() => {
@@ -58,7 +74,8 @@ export const AppProvider = ({ children }) => {
         isMobile &&
         sidebarCollapsed &&
         !e.target.closest('.sidebar') &&
-        !e.target.closest('.sidebar-toggler')
+        !e.target.closest('.sidebar-toggler') &&
+        !e.target.closest('.kubernetes-sidebar')
       ) {
         setSidebarCollapsed(false);
       }
@@ -73,12 +90,49 @@ export const AppProvider = ({ children }) => {
     };
   }, [sidebarCollapsed, isMobile]);
 
+  // Functions to activate/deactivate the Kubernetes sidebar
+  const activateKubernetesSidebar = () => {
+    setKubernetesSidebarActive(true);
+  };
+
+  const deactivateKubernetesSidebar = () => {
+    setKubernetesSidebarActive(false);
+  };
+
+  // Theme state
+  const [theme, setTheme] = useState('light');
+
+  // Toggle theme between light and dark
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.body.classList.toggle('dark-mode', newTheme === 'dark');
+    localStorage.setItem('theme', newTheme);
+  };
+
+  // Initialize theme from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.body.classList.toggle('dark-mode', savedTheme === 'dark');
+  }, []);
+
+  // Loading state
+  const [loading, setLoading] = useState(false);
+
   // Provide all app state and functions
   const value = {
     sidebarCollapsed,
     setSidebarCollapsed,
     toggleSidebar,
-    isMobile
+    isMobile,
+    kubernetesSidebarActive,
+    activateKubernetesSidebar,
+    deactivateKubernetesSidebar,
+    theme,
+    toggleTheme,
+    loading,
+    setLoading
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -87,8 +141,33 @@ export const AppProvider = ({ children }) => {
 // Hook to use the App context
 export const useApp = () => {
   const context = useContext(AppContext);
+  
+  // If no context is available, provide a dummy implementation
   if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
+    console.warn(
+      'useApp hook was called outside of AppProvider context. Using dummy implementation.'
+    );
+    
+    // Return a dummy implementation that won't cause rendering errors
+    return {
+      sidebarCollapsed: false,
+      setSidebarCollapsed: () => {},
+      toggleSidebar: () => {
+        console.warn('toggleSidebar called outside AppProvider context');
+        // Still provide basic functionality
+        if (window.matchMedia('(min-width: 992px)').matches) {
+          document.body.classList.toggle('sidebar-folded');
+        } else {
+          document.body.classList.toggle('sidebar-open');
+        }
+      },
+      isMobile: window.matchMedia('(max-width: 991px)').matches,
+      theme: 'light',
+      toggleTheme: () => console.warn('toggleTheme called outside AppProvider context'),
+      loading: false,
+      setLoading: () => console.warn('setLoading called outside AppProvider context')
+    };
   }
+  
   return context;
 };

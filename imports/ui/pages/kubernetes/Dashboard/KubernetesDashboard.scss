@@ -1,0 +1,508 @@
+// /imports/ui/pages/kubernetes/Dashboard/KubernetesDashboard.scss
+.kubernetes-dashboard {
+
+    // General dashboard spacing
+    .grid-margin {
+        margin-bottom: 1.5rem;
+    }
+
+    // Card enhancements
+    .card {
+        transition: all 0.2s ease;
+        overflow: hidden;
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--bs-gray-700, #4b5563);
+        }
+    }
+
+    // Status indicators
+    .text-success,
+    .text-danger,
+    .text-warning,
+    .text-info {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+
+        i {
+            margin-left: 0.25rem;
+        }
+    }
+
+    // Dashboard metrics
+    h5 {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--bs-gray-900, #1f2937);
+    }
+
+    // Progress bars
+    .progress {
+        height: 6px;
+        background-color: #e9ecef;
+
+        .progress-bar {
+            border-radius: 3px;
+        }
+    }
+
+    // Icon styling
+    .icon-lg {
+        width: 36px;
+        height: 36px;
+        stroke-width: 1.5;
+    }
+
+    // Quick access items
+    .quick-access-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: var(--bs-gray-700, #4b5563);
+        transition: all 0.2s ease;
+        padding: 1rem 0.5rem;
+        border-radius: 8px;
+
+        &:hover {
+            background-color: var(--bs-gray-100, #f3f4f6);
+            color: var(--bs-primary, #6571ff);
+            transform: translateY(-3px);
+        }
+
+        .quick-access-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--bs-light, #f8f9fa);
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+
+            i {
+                width: 24px;
+                height: 24px;
+                stroke-width: 1.5;
+                color: var(--bs-primary, #6571ff);
+            }
+        }
+
+        span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        &:hover .quick-access-icon {
+            background-color: var(--bs-primary, #6571ff);
+
+            i {
+                color: var(--bs-white, #ffffff);
+            }
+        }
+    }
+
+    // Admin action links
+    .admin-action-link {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 8px;
+        background-color: var(--bs-light, #f8f9fa);
+        color: var(--bs-gray-700, #4b5563);
+        text-decoration: none;
+        transition: all 0.2s ease;
+
+        i {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            color: var(--bs-primary, #6571ff);
+        }
+
+        span {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        &:hover {
+            background-color: var(--bs-primary, #6571ff);
+            color: var(--bs-white, #ffffff);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(101, 113, 255, 0.2);
+
+            i {
+                color: var(--bs-white, #ffffff);
+            }
+        }
+    }
+
+    // Event list styling
+    .events-list {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+
+        .event-item {
+            display: flex;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .event-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                margin-right: 1rem;
+                flex-shrink: 0;
+
+                i {
+                    width: 18px;
+                    height: 18px;
+                    color: #fff;
+                }
+
+                &.info {
+                    background-color: var(--bs-info, #3b82f6);
+                }
+
+                &.warning {
+                    background-color: var(--bs-warning, #f59e0b);
+                }
+
+                &.error {
+                    background-color: var(--bs-danger, #ef4444);
+                }
+
+                &.success {
+                    background-color: var(--bs-success, #10b981);
+                }
+            }
+
+            .event-details {
+                flex: 1;
+
+                .event-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 0.25rem;
+
+                    .event-type {
+                        font-weight: 600;
+                        color: var(--bs-gray-800, #343a40);
+                    }
+
+                    .event-time {
+                        font-size: 0.75rem;
+                        color: var(--bs-gray-500, #adb5bd);
+                    }
+                }
+
+                .event-message {
+                    font-size: 0.875rem;
+                    margin-bottom: 0.25rem;
+                    color: var(--bs-gray-700, #495057);
+                }
+
+                .event-meta {
+                    font-size: 0.75rem;
+                    color: var(--bs-gray-500, #adb5bd);
+                }
+            }
+        }
+    }
+
+    // Resource charts styling
+    .resource-stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 1.5rem;
+
+        .resource-stat {
+            text-align: center;
+
+            .resource-chart {
+                width: 100px;
+                margin: 0 auto;
+            }
+
+            .resource-name {
+                margin-top: 0.5rem;
+                font-weight: 500;
+                font-size: 0.875rem;
+                color: var(--bs-gray-700, #495057);
+            }
+        }
+    }
+
+    // Add to your .kubernetes-dashboard class in KubernetesDashboard.scss
+    .dropdown {
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+
+            &::after {
+                display: none; // Hide the default Bootstrap caret since we're using Feather icon
+            }
+
+            i {
+                transition: transform 0.2s ease;
+            }
+
+            &[aria-expanded="true"] i {
+                transform: rotate(180deg);
+            }
+        }
+
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+
+            .dropdown-item {
+                font-size: 0.875rem;
+                padding: 0.5rem 1rem;
+
+                &:hover,
+                &:focus {
+                    background-color: var(--bs-gray-100, #f8f9fa);
+                    color: var(--bs-primary, #6571ff);
+                }
+
+                &.active {
+                    background-color: var(--bs-primary, #6571ff);
+                    color: white;
+                }
+            }
+        }
+    }
+
+    // Circular charts
+    .circular-chart {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        max-height: 100%;
+
+        .circle-bg {
+            fill: none;
+            stroke: #eee;
+            stroke-width: 2.8;
+        }
+
+        .circle {
+            fill: none;
+            stroke-width: 2.8;
+            stroke-linecap: round;
+            animation: progress 1s ease-out forwards;
+
+            &.cpu {
+                stroke: var(--bs-primary, #6571ff);
+            }
+
+            &.memory {
+                stroke: var(--bs-warning, #f59e0b);
+            }
+
+            &.storage {
+                stroke: var(--bs-info, #3b82f6);
+            }
+        }
+
+        .percentage {
+            fill: var(--bs-gray-700, #495057);
+            font-family: sans-serif;
+            font-size: 0.45em;
+            text-anchor: middle;
+            font-weight: bold;
+        }
+    }
+
+    @keyframes progress {
+        0% {
+            stroke-dasharray: 0 100;
+        }
+    }
+
+    // Alert styling
+    .alert {
+        border-left: 4px solid;
+
+        &.alert-info {
+            border-left-color: var(--bs-info, #3b82f6);
+        }
+
+        &.alert-warning {
+            border-left-color: var(--bs-warning, #f59e0b);
+        }
+
+        &.alert-danger {
+            border-left-color: var(--bs-danger, #ef4444);
+        }
+
+        .alert-icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+    }
+
+    // Tables
+    .table {
+        th {
+            font-weight: 600;
+            color: var(--bs-gray-700, #4b5563);
+            border-bottom-width: 2px;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+    }
+
+    // Buttons
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+    }
+}
+
+// Dark theme support
+body.dark-mode {
+    .kubernetes-dashboard {
+        .card {
+            background-color: var(--bs-gray-800, #343a40);
+            border-color: var(--bs-gray-700, #495057);
+
+            .card-title {
+                color: var(--bs-gray-200, #e9ecef);
+            }
+        }
+
+        h5 {
+            color: var(--bs-gray-200, #e9ecef);
+        }
+
+        .progress {
+            background-color: var(--bs-gray-700, #495057);
+        }
+
+        .quick-access-item {
+            color: var(--bs-gray-300, #dee2e6);
+
+            .quick-access-icon {
+                background-color: var(--bs-gray-700, #495057);
+            }
+
+            &:hover {
+                background-color: var(--bs-gray-700, #495057);
+            }
+        }
+
+        .admin-action-link {
+            background-color: var(--bs-gray-700, #495057);
+            color: var(--bs-gray-300, #dee2e6);
+
+            &:hover {
+                background-color: var(--bs-primary, #6571ff);
+            }
+        }
+
+        .events-list {
+            .event-item {
+                border-bottom-color: var(--bs-gray-700, #495057);
+
+                .event-details {
+                    .event-header {
+                        .event-type {
+                            color: var(--bs-gray-200, #e9ecef);
+                        }
+
+                        .event-time {
+                            color: var(--bs-gray-400, #ced4da);
+                        }
+                    }
+
+                    .event-message {
+                        color: var(--bs-gray-300, #dee2e6);
+                    }
+
+                    .event-meta {
+                        color: var(--bs-gray-400, #ced4da);
+                    }
+                }
+            }
+        }
+
+        .resource-stats {
+            .resource-stat {
+                .resource-name {
+                    color: var(--bs-gray-300, #dee2e6);
+                }
+            }
+        }
+
+        .circular-chart {
+            .circle-bg {
+                stroke: var(--bs-gray-700, #495057);
+            }
+
+            .percentage {
+                fill: var(--bs-gray-300, #dee2e6);
+            }
+        }
+
+        .table {
+            color: var(--bs-gray-200, #e9ecef);
+
+            th {
+                color: var(--bs-gray-300, #dee2e6);
+                border-bottom-color: var(--bs-gray-600, #6c757d);
+            }
+
+            td {
+                border-bottom-color: var(--bs-gray-700, #495057);
+            }
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 767.98px) {
+    .kubernetes-dashboard {
+        .row>[class*="col-"] {
+            margin-bottom: 1rem;
+        }
+
+        .resource-stats {
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+    }
+}

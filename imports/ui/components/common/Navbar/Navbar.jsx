@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Dropdown } from '../Dropdown/Dropdown';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import './Navbar.scss';
 
 /**
@@ -159,6 +160,11 @@ const Navbar = () => {
                 items={notificationItems}
               />
             </div>
+          </li>
+
+          {/* Theme Toggle - Add this new item */}
+          <li className="nav-item">
+            <ThemeToggle />
           </li>
 
           {/* User Profile Dropdown */}

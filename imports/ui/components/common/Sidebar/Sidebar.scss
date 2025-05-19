@@ -1,0 +1,45 @@
+// /imports/ui/components/common/Sidebar/Sidebar.scss
+
+.sidebar {
+  // For light mode (default)
+  background-color: var(--sidebar-bg);
+  
+  .sidebar-header {
+    border-bottom: 1px solid var(--card-border);
+    
+    .sidebar-brand {
+      color: var(--body-color);
+      
+      span {
+        color: var(--primary);
+      }
+    }
+  }
+  
+  .nav-item {
+    .nav-link {
+      color: var(--sidebar-link-color);
+      
+      &:hover {
+        background-color: var(--sidebar-link-active-bg);
+      }
+      
+      &.active {
+        background-color: var(--sidebar-link-active-bg);
+        color: var(--sidebar-link-active-color);
+      }
+      
+      .link-icon {
+        color: var(--sidebar-link-color);
+      }
+    }
+    
+    &.active {
+      .nav-link {
+        .link-icon {
+          color: var(--sidebar-link-active-color);
+        }
+      }
+    }
+  }
+}

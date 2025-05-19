@@ -4,3 +4,13 @@
 @import '../../public/assets/css/style.css';
 @import '../../public/assets/css/light-style.css';
 //@import '../../public/assets/css/dark-style.css';
+@import '../imports/ui/styles/theme.scss';
+
+// Add a few additional styles for the theme toggle and smooth transitions
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  .card, .dropdown-menu, .navbar, .sidebar, .form-control, .btn {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+}

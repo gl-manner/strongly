@@ -1,0 +1,21 @@
+// /imports/ui/styles/theme.scss
+// Add this file and import it in your component or main.scss
+
+// Theme transition styles
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar,
+.sidebar,
+.card,
+.btn,
+.form-control,
+.dropdown-menu,
+.modal-content,
+.table {
+  transition: background-color 0.3s ease, 
+              border-color 0.3s ease, 
+              color 0.3s ease, 
+              box-shadow 0.3s ease;
+}

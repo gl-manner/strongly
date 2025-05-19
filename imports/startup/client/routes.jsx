@@ -1,8 +1,13 @@
-// /imports/startup/client/routes.jsx
 import React from 'react';
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
+
+// Import the AppWithProviders wrapper
+import AppWithProviders from './AppWithProviders';
+
+// Import ThemeProvider
+import { ThemeProvider } from '/imports/ui/contexts/ThemeContext';
 
 // Import layouts
 import MainLayout from '/imports/ui/layouts/MainLayout/MainLayout';
@@ -29,6 +34,23 @@ import { AIGateway } from '/imports/ui/pages/AIGateway/AIGateway';
 import { SelfHostedAI } from '/imports/ui/pages/AIGateway/SelfHostedAI/SelfHostedAI';
 import { ThirdPartyAI } from '/imports/ui/pages/AIGateway/ThirdPartyAI/ThirdPartyAI';
 import { TraditionalAI } from '/imports/ui/pages/AIGateway/TraditionalAI/TraditionalAI';
+
+// Import Kubernetes components
+import { KubernetesClusters } from '/imports/ui/pages/kubernetes/Clusters/KubernetesClusters';
+import { KubernetesDeployments } from '/imports/ui/pages/kubernetes/Deployments/KubernetesDeployments';
+import { KubernetesPods } from '/imports/ui/pages/kubernetes/Pods/KubernetesPods';
+import { KubernetesServices } from '/imports/ui/pages/kubernetes/Services/KubernetesServices';
+import { KubernetesStorage } from '/imports/ui/pages/kubernetes/Storage/KubernetesStorage';
+import { KubernetesMonitoring } from '/imports/ui/pages/kubernetes/Monitoring/KubernetesMonitoring';
+
+// Import admin Kubernetes components
+import { KubernetesConfig } from '/imports/ui/pages/admin/kubernetes/KubernetesConfig';
+import { KubernetesResources } from '/imports/ui/pages/admin/kubernetes/KubernetesResources';
+import { KubernetesTemplates } from '/imports/ui/pages/admin/kubernetes/KubernetesTemplates';
+import { KubernetesSecurity } from '/imports/ui/pages/admin/kubernetes/KubernetesSecurity';
+
+// Import Kubernetes dashboard
+import { KubernetesDashboard } from '/imports/ui/pages/kubernetes/Dashboard/KubernetesDashboard';
 
 // Protected route wrapper element
 const ProtectedRouteElement = ({ requiredRoles = [] }) => {
@@ -94,7 +116,11 @@ const PublicLayout = () => {
 const router = createBrowserRouter([
   // Public routes (auth pages)
   {
-    element: <PublicLayout />,
+    element: (
+        <ThemeProvider>
+          <AppWithProviders />
+        </ThemeProvider>
+      ),
     children: [
       {
         element: <AuthLayout />,
@@ -131,7 +157,11 @@ const router = createBrowserRouter([
 
   // Protected routes
   {
-    element: <ProtectedRouteElement />,
+    element: (
+      <ThemeProvider>
+        <ProtectedRouteElement />
+      </ThemeProvider>
+    ),
     children: [
       {
         element: <MainLayout />,
@@ -214,7 +244,11 @@ const router = createBrowserRouter([
 
   // Admin routes
   {
-    element: <ProtectedRouteElement requiredRoles={['admin']} />,
+    element: (
+      <ThemeProvider>
+        <ProtectedRouteElement requiredRoles={['admin']} />
+      </ThemeProvider>
+    ),
     children: [
       {
         element: <MainLayout />,
@@ -234,6 +268,89 @@ const router = createBrowserRouter([
           {
             path: "admin/faq",
             element: <div className="page-content">FAQ Management</div>
+          }
+        ]
+      }
+    ]
+  },
+
+  // Kubernetes Management routes - uses same MainLayout with the second sidebar
+  {
+    element: (
+      <ThemeProvider>
+        <ProtectedRouteElement />
+      </ThemeProvider>
+    ),
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          // Root Kubernetes route redirects to dashboard
+          {
+            path: "kubernetes",
+            element: <Navigate to="/kubernetes/dashboard" replace />
+          },
+          // Kubernetes Dashboard
+          {
+            path: "kubernetes/dashboard",
+            element: <KubernetesDashboard />
+          },
+          // User Kubernetes routes
+          {
+            path: "kubernetes/clusters",
+            element: <KubernetesClusters />
+          },
+          {
+            path: "kubernetes/deployments",
+            element: <KubernetesDeployments />
+          },
+          {
+            path: "kubernetes/pods",
+            element: <KubernetesPods />
+          },
+          {
+            path: "kubernetes/services",
+            element: <KubernetesServices />
+          },
+          {
+            path: "kubernetes/storage",
+            element: <KubernetesStorage />
+          },
+          {
+            path: "kubernetes/monitoring",
+            element: <KubernetesMonitoring />
+          }
+        ]
+      }
+    ]
+  },
+
+  // Admin Kubernetes Management routes - uses same MainLayout with the second sidebar
+  {
+    element: (
+      <ThemeProvider>
+        <ProtectedRouteElement requiredRoles={['admin']} />
+      </ThemeProvider>
+    ),
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          {
+            path: "admin/kubernetes/config",
+            element: <KubernetesConfig />
+          },
+          {
+            path: "admin/kubernetes/resources",
+            element: <KubernetesResources />
+          },
+          {
+            path: "admin/kubernetes/templates",
+            element: <KubernetesTemplates />
+          },
+          {
+            path: "admin/kubernetes/security",
+            element: <KubernetesSecurity />
           }
         ]
       }

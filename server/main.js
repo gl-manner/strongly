@@ -22,7 +22,6 @@ Meteor.startup(async function() {
     console.log('Roles created');
   }
 
-  console.log('Roles:', Roles);
   // Create admin user if it doesn't exist
   const adminEmail = 'admin@example.com';
   const adminUser = await Meteor.users.findOneAsync({ 'emails.address': adminEmail });

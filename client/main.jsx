@@ -1,19 +1,31 @@
-// /client/main.jsx
+// client/main.jsx
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import router from '/imports/startup/client/routes';
 import feather from 'feather-icons';
+import { ThemeService } from '/imports/utils/client/themeService';
+
+// Import the AppProvider
+import { AppProvider } from '/imports/hooks/useApp';
+// Import NotificationProvider if using notifications
+import { NotificationProvider } from '/imports/ui/contexts/NotificationContext';
+// Import AuthProvider if using auth context
+import { AuthProvider } from '/imports/ui/contexts/AuthContext';
 
 // Import main styles
 import './main.scss';
 
 Meteor.startup(() => {
+  // Initialize the theme based on user preference
+  ThemeService.initialize();
+
   const container = document.getElementById('react-target');
   const root = createRoot(container);
 
   // Render the app with RouterProvider
+  // The providers are now integrated in the router itself
   root.render(
     <RouterProvider router={router} />
   );

@@ -1,17 +1,18 @@
-// /imports/ui/components/common/Sidebar/Sidebar.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
+import { useApp } from '/imports/hooks/useApp';
+import feather from 'feather-icons';
 import './Sidebar.scss';
 
 /**
  * Sidebar component based on NobleUI template
  * This component creates a responsive sidebar with collapsible menu items
  */
-const Sidebar = () => {
+const Sidebar = ({ onKubernetesNavigate }) => {
   const location = useLocation();
-  const [sidebarFolded, setSidebarFolded] = useState(false);
+  const { sidebarCollapsed, toggleSidebar } = useApp();
 
   // Get current user
   const { currentUser, isAdmin } = useTracker(() => {
@@ -22,41 +23,27 @@ const Sidebar = () => {
     };
   }, []);
 
-  // Toggle sidebar folded state
-  const toggleSidebar = () => {
-    if (window.matchMedia('(min-width: 992px)').matches) {
-      document.body.classList.toggle('sidebar-folded');
-      setSidebarFolded(!sidebarFolded);
-    } else if (window.matchMedia('(max-width: 991px)').matches) {
-      document.body.classList.toggle('sidebar-open');
-    }
-  };
+  // Handle sidebar mouse enter and leave
+  const [sidebarHovered, setSidebarHovered] = useState(false);
 
-  // Handle window resize to reset sidebar state
-  useEffect(() => {
-    const handleResize = () => {
-      document.body.classList.remove('sidebar-folded', 'sidebar-open');
-      setSidebarFolded(false);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // Handle sidebar hover effect for folded sidebar
   const handleMouseEnter = () => {
-    if (sidebarFolded) {
+    if (sidebarCollapsed) {
       document.body.classList.add('open-sidebar-folded');
+      setSidebarHovered(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (sidebarFolded) {
+    if (sidebarCollapsed) {
       document.body.classList.remove('open-sidebar-folded');
+      setSidebarHovered(false);
     }
   };
+
+  // Initialize feather icons when component mounts
+  useEffect(() => {
+    feather.replace();
+  }, []);
 
   // Determine active menu item
   const isActive = (path) => {
@@ -68,7 +55,7 @@ const Sidebar = () => {
     return location.pathname.startsWith(basePath);
   };
 
-  // Check specific user permissions
+  // Check if specific user permissions
   const hasAccess = (requiredRoles) => {
     if (!currentUser) return false;
 
@@ -85,7 +72,7 @@ const Sidebar = () => {
     return false;
   };
 
-  // Handle submenu toggling - NobleUI style
+  // Handle submenu toggling
   const toggleSubmenu = (e) => {
     e.preventDefault();
     const parent = e.currentTarget.parentNode;
@@ -118,13 +105,22 @@ const Sidebar = () => {
     }
   };
 
+  // Handle clicking on Kubernetes main menu item
+  const handleKubernetesClick = (e) => {
+    e.preventDefault();
+    // Trigger Kubernetes navigation by calling the provided callback
+    if (onKubernetesNavigate) {
+      onKubernetesNavigate();
+    }
+  };
+
   return (
     <nav className="sidebar">
       <div className="sidebar-header">
         <Link to="/" className="sidebar-brand">
           Strongly<span>AI</span>
         </Link>
-        <div className={`sidebar-toggler ${sidebarFolded ? 'active' : ''}`} onClick={toggleSidebar}>
+        <div className={`sidebar-toggler ${sidebarCollapsed ? 'active' : ''}`} onClick={toggleSidebar}>
           <span></span>
           <span></span>
           <span></span>
@@ -141,7 +137,7 @@ const Sidebar = () => {
           <li className="nav-item nav-category">MAIN</li>
 
           {/* Dashboard */}
-          <li className={`nav-item ${isActive('/') ? 'active' : ''}`}>
+          <li className={`nav-item ${isActive('/') || isActive('/dashboard') ? 'active' : ''}`}>
             <Link to="/" className="nav-link">
               <i className="link-icon" data-feather="grid"></i>
               <span className="link-title">Dashboard</span>
@@ -154,6 +150,14 @@ const Sidebar = () => {
               <i className="link-icon" data-feather="box"></i>
               <span className="link-title">Apps</span>
             </Link>
+          </li>
+
+          {/* Kubernetes - Single menu item that activates the Kubernetes sidebar */}
+          <li className={`nav-item ${isActiveSection('/kubernetes') ? 'active' : ''}`}>
+            <a className="nav-link" href="#" onClick={handleKubernetesClick}>
+              <i className="link-icon" data-feather="server"></i>
+              <span className="link-title">Kubernetes</span>
+            </a>
           </li>
 
           {/* Workflows dropdown */}

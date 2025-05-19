@@ -1,0 +1,30 @@
+// /imports/ui/components/common/ThemeToggle/ThemeToggle.scss
+.theme-toggle {
+  margin: 0 8px;
+  
+  .theme-toggle-btn {
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      color: #6571ff;
+    }
+    
+    i {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5px;
+    }
+  }
+}
+
+// Dark mode specific styles
+.dark-mode .theme-toggle .theme-toggle-btn {
+  color: #e9ecef;
+  
+  &:hover {
+    color: #8a94ff;
+  }
+}

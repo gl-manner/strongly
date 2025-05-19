@@ -1,0 +1,121 @@
+// /imports/ui/pages/kubernetes/Deployments/KubernetesDeployments.scss
+.kubernetes-deployments {
+  // Card animations
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  // Table styles
+  .table {
+    th, td {
+      vertical-align: middle;
+    }
+    
+    .clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+      }
+    }
+  }
+  
+  // Resource badges
+  .resource-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+    
+    i {
+      width: 12px;
+      height: 12px;
+    }
+  }
+  
+  // Detail section styles
+  .detail-item {
+    margin-bottom: 0.5rem;
+    
+    .detail-label {
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+  }
+  
+  // Action buttons container
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  // Badge enhancements
+  .badge {
+    font-weight: 500;
+    padding: 0.4em 0.65em;
+  }
+  
+  // Status indicators
+  .text-success, .text-warning, .text-danger, .text-secondary, .text-info {
+    display: flex;
+    align-items: center;
+    
+    i {
+      margin-right: 0.25rem;
+      width: 14px;
+      height: 14px;
+    }
+  }
+  
+  // Logs container
+  .logs-container {
+    background-color: #f8f9fa;
+    font-family: monospace;
+    padding: 1rem;
+    max-height: 50vh;
+    overflow-y: auto;
+    border-radius: 0.25rem;
+    border: 1px solid #e9ecef;
+  }
+  
+  .log-entry {
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    word-break: break-word;
+    
+    .log-timestamp {
+      margin-right: 0.5rem;
+      color: #6c757d;
+    }
+    
+    .log-level {
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 767.98px) {
+    .action-buttons {
+      flex-direction: column;
+      
+      .btn {
+        width: 100%;
+        margin-right: 0 !important;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}

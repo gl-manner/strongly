@@ -20,3 +20,25 @@ const App = ({ children }) => {
 
 export default App;
 */
+
+import React from 'react';
+import { ThemeProvider } from '/imports/ui/contexts/ThemeContext';
+import { AppProvider } from '/imports/ui/contexts/AppContext';
+import { AuthProvider } from '/imports/ui/contexts/AuthContext';
+import { NotificationProvider } from '/imports/ui/contexts/NotificationContext';
+
+const App = ({ children }) => {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <AppProvider>
+            {children}
+          </AppProvider>
+        </NotificationProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  );
+};
+
+export default App;
