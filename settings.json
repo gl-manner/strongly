@@ -27,5 +27,8 @@
     "requireNumbers": true,
     "requireUppercase": true,
     "requireSpecialChars": true
+  },
+  "strongly-ai-backend": {
+    "ai-gateway": "http://127.0.0.1:8000/"
   }
 }

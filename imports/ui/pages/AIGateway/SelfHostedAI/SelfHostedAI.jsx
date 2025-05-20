@@ -5,8 +5,8 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { Link } from 'react-router-dom';
 import feather from 'feather-icons';
 import './SelfHostedAI.scss';
-import { OpenSourceLLMsCollection } from '/imports/api/llms/OpenSourceLLMsCollection';
-import { LLMsCollection } from '/imports/api/llms/LLMsCollection';
+import { OpenSourceLLMsCollection } from '/imports/api/ai-gateway/OpenSourceLLMsCollection';
+import { LLMsCollection } from '/imports/api/ai-gateway/LLMsCollection';
 
 export const SelfHostedAI = () => {
   // State for model search and filtering

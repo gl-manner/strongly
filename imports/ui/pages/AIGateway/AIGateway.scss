@@ -1,9 +1,8 @@
-// /imports/ui/pages/AIGateway/AIGateway.scss
-
+/* General AI Gateway Styling */
 .ai-gateway {
   .gateway-option {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    min-height: 200px;
+    min-height: 220px;
 
     &:hover {
       transform: translateY(-5px);
@@ -11,8 +10,8 @@
     }
 
     i {
-      width: 36px;
-      height: 36px;
+      width: 48px;
+      height: 48px;
       stroke-width: 1;
     }
   }
@@ -20,6 +19,93 @@
   .table {
     th, td {
       vertical-align: middle;
+    }
+  }
+
+  .badge {
+    font-weight: 500;
+    padding: 0.4em 0.6em;
+  }
+
+  /* Stats Components */
+  .stats-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    i {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2;
+      color: #fff;
+    }
+  }
+
+  /* Status indicators */
+  .dot-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.bg-success {
+      background-color: #0acf97;
+    }
+
+    &.bg-warning {
+      background-color: #ffbc00;
+    }
+
+    &.bg-danger {
+      background-color: #fa5c7c;
+    }
+
+    &.bg-secondary {
+      background-color: #6c757d;
+    }
+  }
+}
+
+/* Search and filter elements */
+.search-bar {
+  max-width: 500px;
+
+  .input-group-text {
+    background-color: transparent;
+    border-right: none;
+  }
+
+  .form-control {
+    border-left: none;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+}
+
+/* Tag styles */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .tag-badge {
+    padding: 0.35em 0.65em;
+    border-radius: 4px;
+    font-size: 0.75em;
+    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+
+    i {
+      margin-left: 4px;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
     }
   }
 }

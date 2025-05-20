@@ -1,0 +1,106 @@
+/* API Keys Page Styling */
+.api-keys {
+  /* API key display */
+  .api-key-display {
+    font-family: monospace;
+    background-color: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    code {
+      color: #212529;
+    }
+  }
+
+  /* API key table cell */
+  .api-key-cell {
+    max-width: 300px;
+
+    code {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      max-width: 200px;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Status indicator */
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+
+    &.active {
+      background-color: #0acf97;
+    }
+
+    &.expired, &.inactive {
+      background-color: #fa5c7c;
+    }
+
+    &.warning {
+      background-color: #ffbc00;
+    }
+  }
+
+  /* Copy button */
+  .copy-btn {
+    transition: all 0.2s ease;
+
+    &.copied {
+      background-color: #0acf97;
+      border-color: #0acf97;
+      color: #fff;
+    }
+  }
+
+  /* Expiration badge */
+  .expiration-badge {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border-radius: 0.2rem;
+    display: inline-block;
+    margin-top: 0.25rem;
+  }
+
+  /* IP restriction list */
+  .ip-list {
+    max-height: 150px;
+    overflow-y: auto;
+
+    .ip-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.25rem 0.5rem;
+      background-color: #f8f9fa;
+      border-radius: 0.2rem;
+      margin-bottom: 0.25rem;
+
+      .remove-btn {
+        cursor: pointer;
+
+        &:hover {
+          color: #fa5c7c;
+        }
+      }
+    }
+  }
+
+  /* Usage limits visualization */
+  .usage-limits {
+    .progress {
+      height: 6px;
+    }
+  }
+}

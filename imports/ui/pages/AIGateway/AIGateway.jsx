@@ -1,38 +1,33 @@
-// /imports/ui/pages/AIGateway/AIGateway.jsx
 import React, { useEffect, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import feather from 'feather-icons';
+import { toast } from 'react-toastify';
 import './AIGateway.scss';
-import { LLMsCollection } from '/imports/api/llms/LLMsCollection';
+import { LLMsCollection } from '/imports/api/ai-gateway/LLMsCollection';
+
+// some components are missing, will add this later
+// import AIGatewayStats from './components/AIGatewayStats';
+// import ModelList from './components/ModelList';
+// import LoadingSpinner from '/imports/ui/components/LoadingSpinner';
+// import ErrorAlert from '/imports/ui/components/ErrorAlert';
 
 export const AIGateway = () => {
   const [activeTab, setActiveTab] = useState('all');
+  const [statsData, setStatsData] = useState(null);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const history = useHistory();
 
+  // Load models with useTracker
   const { user, loading, llms, error } = useTracker(() => {
-    console.log("AIGateway tracker running");
     try {
-      // First, check if user is logged in without additional subscriptions
-      const currentUser = Meteor.user();
-      if (!currentUser) {
-        console.log("User not logged in yet");
-        return {
-          user: null,
-          llms: [],
-          loading: true,
-          error: null
-        };
-      }
-
-      // Try to subscribe to llms collection
-      const llmsHandle = Meteor.subscribe('llms');
-
-      console.log("LLMs subscription status:", llmsHandle.ready());
+      // Subscribe to models
+      const llmsHandle = Meteor.subscribe('allLLMs');
 
       return {
-        user: currentUser,
-        llms: LLMsCollection.find({}).fetch(),
+        user: Meteor.user(),
+        llms: LLMsCollection.find({}, { sort: { createdAt: -1 } }).fetch(),
         loading: !llmsHandle.ready(),
         error: null
       };
@@ -47,31 +42,47 @@ export const AIGateway = () => {
     }
   }, []);
 
-  // Initialize feather icons when component mounts
+  // Load usage statistics
+  useEffect(() => {
+    const loadStats = async () => {
+      setLoadingStats(true);
+      try {
+        // Simulate loading stats data - in a real app, this would be a Meteor method call
+        // Meteor.call('aiGateway.getStats', (error, result) => {...})
+
+        // Mock data for demonstration
+        setTimeout(() => {
+          setStatsData({
+            models: {
+              total: llms.length,
+              selfHosted: llms.filter(m => m.type === 'self-hosted').length,
+              thirdParty: llms.filter(m => m.type === 'third-party').length,
+              active: llms.filter(m => m.status === 'active').length
+            },
+            usage: {
+              requestsToday: 1250,
+              requestsThisWeek: 8750,
+              tokensToday: 125000,
+              averageLatency: 350 // ms
+            }
+          });
+          setLoadingStats(false);
+        }, 800);
+      } catch (error) {
+        console.error("Error loading stats:", error);
+        setLoadingStats(false);
+      }
+    };
+
+    if (!loading && llms) {
+      loadStats();
+    }
+  }, [loading, llms]);
+
+  // Initialize feather icons when component mounts or updates
   useEffect(() => {
     feather.replace();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="loading-container d-flex justify-content-center align-items-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // Show error if there was a subscription error
-  if (error) {
-    return (
-      <div className="alert alert-danger">
-        <h4>Error Loading Data</h4>
-        <p>{error}</p>
-        <p>Please check your server console for details.</p>
-      </div>
-    );
-  }
+  }, [loading, llms, activeTab]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -81,16 +92,92 @@ export const AIGateway = () => {
     ? llms
     : llms.filter(llm => llm.type === activeTab);
 
+  const handleModelAction = (action, model) => {
+    switch (action) {
+      case 'edit':
+        if (model.type === 'self-hosted') {
+          history.push(`/operations/ai-gateway/self-hosted/edit/${model._id}`);
+        } else {
+          history.push(`/operations/ai-gateway/third-party/edit/${model._id}`);
+        }
+        break;
+      case 'delete':
+        if (confirm(`Are you sure you want to delete the model "${model.name}"?`)) {
+          Meteor.call('aiGateway.deleteModel', model._id, (error) => {
+            if (error) {
+              toast.error(`Error deleting model: ${error.message}`);
+            } else {
+              toast.success('Model deleted successfully');
+            }
+          });
+        }
+        break;
+      case 'restart':
+        Meteor.call('aiGateway.restartModel', model._id, (error) => {
+          if (error) {
+            toast.error(`Error restarting model: ${error.message}`);
+          } else {
+            toast.success('Model restart initiated');
+          }
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  if (loading) {
+    // return <LoadingSpinner message="Loading AI Gateway..." />;
+  }
+
+  if (error) {
+    // return <ErrorAlert title="Error Loading Data" message={error} />;
+  }
+
   return (
     <div className="ai-gateway">
       <div className="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
           <h4 className="mb-3 mb-md-0">AI Gateway</h4>
         </div>
+        <div className="d-flex">
+          <button
+            className="btn btn-outline-primary me-2"
+            onClick={() => history.push('/operations')}
+          >
+            <i data-feather="home" className="icon-sm me-2"></i> Operations
+          </button>
+          <div className="dropdown">
+            <button
+              className="btn btn-primary dropdown-toggle"
+              type="button"
+              id="addModelDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i data-feather="plus" className="icon-sm me-2"></i> Add Model
+            </button>
+            <ul className="dropdown-menu" aria-labelledby="addModelDropdown">
+              <li>
+                <Link className="dropdown-item" to="/operations/ai-gateway/self-hosted">
+                  <i data-feather="server" className="icon-sm me-2"></i> Self-Hosted Model
+                </Link>
+              </li>
+              <li>
+                <Link className="dropdown-item" to="/operations/ai-gateway/third-party">
+                  <i data-feather="globe" className="icon-sm me-2"></i> Third-Party Model
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
+      {/* Usage Statistics */}
+      {/* <AIGatewayStats data={statsData} loading={loadingStats} /> */}
+
       {/* AI Gateway Options */}
-      <div className="row">
+      <div className="row mb-4">
         <div className="col-md-4 mb-4">
           <Link to="/operations/ai-gateway/self-hosted" className="text-decoration-none">
             <div className="card gateway-option">
@@ -98,6 +185,11 @@ export const AIGateway = () => {
                 <i data-feather="server" className="mb-3"></i>
                 <h5 className="card-title">Self Hosted AI</h5>
                 <p className="card-text">Deploy and manage your own AI models in Kubernetes</p>
+                <div className="mt-3">
+                  <span className="badge bg-primary">
+                    {llms.filter(m => m.type === 'self-hosted').length} Models
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
@@ -109,17 +201,27 @@ export const AIGateway = () => {
                 <i data-feather="globe" className="mb-3"></i>
                 <h5 className="card-title">Third Party AI</h5>
                 <p className="card-text">Connect to external AI services with standardized interfaces</p>
+                <div className="mt-3">
+                  <span className="badge bg-info">
+                    {llms.filter(m => m.type === 'third-party').length} Models
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
         </div>
         <div className="col-md-4 mb-4">
-          <Link to="/operations/ai-gateway/traditional" className="text-decoration-none">
+          <Link to="/operations/ai-gateway/api-keys" className="text-decoration-none">
             <div className="card gateway-option">
               <div className="card-body text-center">
-                <i data-feather="cpu" className="mb-3"></i>
-                <h5 className="card-title">Traditional AI</h5>
-                <p className="card-text">Legacy AI and machine learning systems</p>
+                <i data-feather="key" className="mb-3"></i>
+                <h5 className="card-title">API Keys</h5>
+                <p className="card-text">Manage API keys for secure access to your models</p>
+                <div className="mt-3">
+                  <span className="badge bg-secondary">
+                    Secure Access
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
@@ -127,7 +229,7 @@ export const AIGateway = () => {
       </div>
 
       {/* LLMs Table */}
-      <div className="row mt-4">
+      <div className="row">
         <div className="col-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body">
@@ -158,60 +260,11 @@ export const AIGateway = () => {
                 </div>
               </div>
 
-              {filteredLLMs.length === 0 ? (
-                <div className="text-center py-5">
-                  <i data-feather="database" style={{ width: '48px', height: '48px', strokeWidth: 1 }}></i>
-                  <p className="mt-3">No AI models found</p>
-                  <div className="mt-3">
-                    <Link to="/operations/ai-gateway/self-hosted" className="btn btn-primary me-2">Add Self-hosted Model</Link>
-                    <Link to="/operations/ai-gateway/third-party" className="btn btn-outline-primary">Add Third-party Model</Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Parameters</th>
-                        <th>Last Used</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredLLMs.map((llm) => (
-                        <tr key={llm._id}>
-                          <td>{llm.name}</td>
-                          <td>
-                            <span className={`badge ${llm.type === 'self-hosted' ? 'bg-info' : 'bg-warning'}`}>
-                              {llm.type === 'self-hosted' ? 'Self Hosted' : 'Third Party'}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`badge ${llm.status === 'active' ? 'bg-success' : llm.status === 'deploying' ? 'bg-warning' : 'bg-danger'}`}>
-                              {llm.status === 'active' ? 'Active' : llm.status === 'deploying' ? 'Deploying' : 'Inactive'}
-                            </span>
-                          </td>
-                          <td>{llm.parameters}</td>
-                          <td>{llm.lastUsed ? new Date(llm.lastUsed).toLocaleString() : 'Never'}</td>
-                          <td>
-                            <div className="d-flex">
-                              <button className="btn btn-sm btn-outline-primary me-1" title="Edit">
-                                <i data-feather="edit-2" style={{ width: '16px', height: '16px' }}></i>
-                              </button>
-                              <button className="btn btn-sm btn-outline-danger" title="Delete">
-                                <i data-feather="trash-2" style={{ width: '16px', height: '16px' }}></i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+              {/* <ModelList
+                models={filteredLLMs}
+                onModelAction={handleModelAction}
+                emptyStateType={activeTab}
+              /> */}
             </div>
           </div>
         </div>

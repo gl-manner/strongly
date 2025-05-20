@@ -1,23 +1,98 @@
-// /imports/ui/pages/AIGateway/ThirdPartyAI/ThirdPartyAI.scss
-
+/* Third Party AI Page Styling */
 .third-party-ai {
+  /* Provider template cards */
   .template-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
 
     &:hover {
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     }
+
+    .provider-logo {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
+  /* Table styling */
   .table {
     th, td {
       vertical-align: middle;
     }
   }
 
+  /* Badge styling */
   .badge {
     font-weight: 500;
     padding: 0.4em 0.6em;
+  }
+
+  /* Test connection results */
+  .test-result {
+    max-height: 300px;
+    overflow: auto;
+  }
+
+  /* Modal tabs */
+  .nav-tabs {
+    .nav-link {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+
+      i {
+        margin-right: 5px;
+      }
+
+      .badge {
+        margin-left: 5px;
+      }
+
+      &.active {
+        font-weight: 500;
+      }
+    }
+  }
+
+  /* Available models table */
+  .available-models {
+    .table {
+      tr {
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        &.selected {
+          background-color: rgba(114, 124, 245, 0.1);
+        }
+      }
+    }
+  }
+
+  /* Provider branding colors */
+  .provider-openai {
+    color: #10a37f;
+  }
+
+  .provider-anthropic {
+    color: #7038ff;
+  }
+
+  .provider-google {
+    color: #4285f4;
+  }
+
+  .provider-cohere {
+    color: #ff5e00;
+  }
+
+  .provider-mistral {
+    color: #0284c7;
   }
 }

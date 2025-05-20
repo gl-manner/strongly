@@ -1,26 +1,62 @@
-// /imports/ui/pages/AIGateway/SelfHostedAI/SelfHostedAI.scss
-
+/* Self Hosted AI Page Styling */
 .self-hosted-ai {
+  /* Model cards */
   .model-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 
     &:hover {
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     }
+
+    .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mt-auto {
+      margin-top: auto;
+    }
   }
 
+  /* Table styling */
   .table {
     th, td {
       vertical-align: middle;
     }
   }
 
+  /* Status indicators */
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.bg-success {
+      background-color: #0acf97;
+    }
+
+    &.bg-warning {
+      background-color: #ffbc00;
+    }
+
+    &.bg-danger {
+      background-color: #fa5c7c;
+    }
+  }
+
+  /* Badge styling */
   .badge {
     font-weight: 500;
     padding: 0.4em 0.6em;
   }
 
+  /* Tab navigation */
   .nav-tabs {
     .nav-link {
       cursor: pointer;
@@ -31,10 +67,82 @@
     }
   }
 
+  /* Tag filtering */
   .tag-filter {
     .btn {
       margin-right: 0.5rem;
       margin-bottom: 0.5rem;
+    }
+  }
+
+  /* Custom model form */
+  .tag-input-container {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    min-height: 38px;
+
+    .tag-input {
+      border: none;
+      flex: 1;
+      min-width: 100px;
+
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
+
+  /* Deployment information card */
+  .deployment-info-card {
+    position: sticky;
+    top: 1.5rem;
+  }
+
+  /* Deployment progress */
+  .deployment-progress {
+    .step {
+      position: relative;
+      padding-left: 30px;
+      padding-bottom: 20px;
+
+      &:not(:last-child):before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 24px;
+        bottom: 0;
+        width: 2px;
+        background-color: #e9ecef;
+      }
+
+      &.active:not(:last-child):before {
+        background-color: #727cf5;
+      }
+
+      .step-icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.active {
+          background-color: #727cf5;
+        }
+
+        i {
+          width: 12px;
+          height: 12px;
+          color: #fff;
+        }
+      }
     }
   }
 }

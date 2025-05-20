@@ -4,9 +4,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { Roles } from 'meteor/alanning:roles';
 
 // Import LLM collections to register publications and methods
-import '/imports/api/llms/LLMsCollection';
-import '/imports/api/llms/OpenSourceLLMsCollection';
-import '/imports/methods/server/huggingface-methods';
+import '/imports/api/ai-gateway/LLMsCollection';
+import '/imports/api/ai-gateway/OpenSourceLLMsCollection';
+// import '/imports/methods/server/huggingface-methods';
 
 // Import API files if they exist
 // import '/imports/api/users/methods.js';
@@ -90,7 +90,7 @@ Meteor.startup(async function() {
         throw new Meteor.Error('not-authorized', 'You must be logged in');
       }
 
-      const { LLMsCollection } = require('/imports/api/llms/LLMsCollection');
+      const { LLMsCollection } = require('/imports/api/ai-gateway/LLMsCollection');
       return LLMsCollection.find({}).fetch();
     }
   });
