@@ -4,11 +4,12 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Link } from 'react-router-dom';
 import feather from 'feather-icons';
+import PodsOverviewTable from '/imports/ui/components/kubernetes/PodsOverviewTable/PodsOverviewTable';
 import './KubernetesDashboard.scss';
 
 /**
- * Kubernetes Dashboard component
- * This is the main dashboard for Kubernetes management
+ * Enhanced Kubernetes Dashboard component following requirements sections 1-4
+ * This is the main dashboard for Kubernetes management with comprehensive overview
  */
 export const KubernetesDashboard = () => {
     const { user, loading } = useTracker(() => {
@@ -21,12 +22,13 @@ export const KubernetesDashboard = () => {
 
     const [timeRange, setTimeRange] = useState('Last 7 Days');
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [selectedCluster, setSelectedCluster] = useState('all');
     const dropdownRef = useRef(null);
 
     // Initialize feather icons when component mounts
     useEffect(() => {
         feather.replace();
-    }, [timeRange]);
+    }, [timeRange, selectedCluster]);
 
     // Handle clicks outside to close dropdown
     useEffect(() => {
@@ -44,7 +46,6 @@ export const KubernetesDashboard = () => {
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
-        // Re-initialize feather icons after state change
         setTimeout(() => feather.replace(), 100);
     };
 
@@ -52,26 +53,106 @@ export const KubernetesDashboard = () => {
         e.preventDefault();
         setTimeRange(range);
         setDropdownOpen(false);
-
-        // Re-initialize feather icons
         setTimeout(() => feather.replace(), 100);
     };
 
-    // Mock data for clusters and resources
+    // Mock data for clusters and resources (replace with real API calls)
     const clusterStats = [
-        { name: 'Production', nodes: 12, pods: 48, status: 'Healthy', cpu: 78, memory: 64 },
-        { name: 'Staging', nodes: 6, pods: 24, status: 'Healthy', cpu: 45, memory: 38 },
-        { name: 'Development', nodes: 3, pods: 16, status: 'Warning', cpu: 92, memory: 87 },
-        { name: 'QA', nodes: 4, pods: 18, status: 'Healthy', cpu: 56, memory: 42 }
+        { 
+            name: 'Production', 
+            nodes: 12, 
+            pods: 48, 
+            status: 'Healthy', 
+            cpu: 78, 
+            memory: 64,
+            health: 'healthy',
+            alerts: 1
+        },
+        { 
+            name: 'Staging', 
+            nodes: 6, 
+            pods: 24, 
+            status: 'Healthy', 
+            cpu: 45, 
+            memory: 38,
+            health: 'healthy',
+            alerts: 0
+        },
+        { 
+            name: 'Development', 
+            nodes: 3, 
+            pods: 16, 
+            status: 'Warning', 
+            cpu: 92, 
+            memory: 87,
+            health: 'warning',
+            alerts: 2
+        },
+        { 
+            name: 'QA', 
+            nodes: 4, 
+            pods: 18, 
+            status: 'Healthy', 
+            cpu: 56, 
+            memory: 42,
+            health: 'healthy',
+            alerts: 0
+        }
     ];
 
     const recentEvents = [
-        { time: '10:23 AM', cluster: 'Production', type: 'Pod', message: 'Pod web-server-7d8f9 scheduled on node-04', severity: 'info' },
-        { time: '09:45 AM', cluster: 'Development', type: 'Deployment', message: 'Deployment api-gateway scaled to 4 replicas', severity: 'info' },
-        { time: '09:12 AM', cluster: 'Staging', type: 'Node', message: 'Node node-02 is NotReady', severity: 'warning' },
-        { time: '08:30 AM', cluster: 'Production', type: 'Service', message: 'Service database is unavailable', severity: 'error' },
-        { time: 'Yesterday', cluster: 'QA', type: 'Job', message: 'Job data-migration completed successfully', severity: 'success' }
+        { 
+            time: '10:23 AM', 
+            cluster: 'Production', 
+            type: 'Pod', 
+            object: 'web-server-7d8f9',
+            message: 'Pod web-server-7d8f9 scheduled on node-04', 
+            severity: 'info' 
+        },
+        { 
+            time: '09:45 AM', 
+            cluster: 'Development', 
+            type: 'Deployment', 
+            object: 'api-gateway',
+            message: 'Deployment api-gateway scaled to 4 replicas', 
+            severity: 'info' 
+        },
+        { 
+            time: '09:12 AM', 
+            cluster: 'Staging', 
+            type: 'Node', 
+            object: 'node-02',
+            message: 'Node node-02 is NotReady', 
+            severity: 'warning' 
+        },
+        { 
+            time: '08:30 AM', 
+            cluster: 'Production', 
+            type: 'Service', 
+            object: 'database',
+            message: 'Service database is unavailable', 
+            severity: 'error' 
+        },
+        { 
+            time: 'Yesterday', 
+            cluster: 'QA', 
+            type: 'Job', 
+            object: 'data-migration',
+            message: 'Job data-migration completed successfully', 
+            severity: 'success' 
+        }
     ];
+
+    // Calculate aggregate stats
+    const aggregateStats = {
+        totalClusters: clusterStats.length,
+        totalNodes: clusterStats.reduce((sum, cluster) => sum + cluster.nodes, 0),
+        totalPods: clusterStats.reduce((sum, cluster) => sum + cluster.pods, 0),
+        totalAlerts: clusterStats.reduce((sum, cluster) => sum + cluster.alerts, 0),
+        healthyClusters: clusterStats.filter(c => c.health === 'healthy').length,
+        avgCpuUsage: Math.round(clusterStats.reduce((sum, cluster) => sum + cluster.cpu, 0) / clusterStats.length),
+        avgMemoryUsage: Math.round(clusterStats.reduce((sum, cluster) => sum + cluster.memory, 0) / clusterStats.length)
+    };
 
     if (loading) {
         return (
@@ -85,9 +166,11 @@ export const KubernetesDashboard = () => {
 
     return (
         <div className="kubernetes-dashboard">
+            {/* Header */}
             <div className="d-flex justify-content-between align-items-center flex-wrap grid-margin">
                 <div>
                     <h4 className="mb-3 mb-md-0">Kubernetes Dashboard</h4>
+                    <p className="text-muted mb-0">Monitor and manage your Kubernetes infrastructure</p>
                 </div>
                 <div className="d-flex align-items-center flex-wrap text-nowrap">
                     <Link to="/kubernetes/clusters" className="btn btn-primary btn-icon-text me-2 mb-2 mb-md-0">
@@ -101,13 +184,13 @@ export const KubernetesDashboard = () => {
                 </div>
             </div>
 
-            {/* Overview Cards */}
+            {/* Cluster Health Summary */}
             <div className="row">
-                <div className="col-12 col-xl-12 grid-margin stretch-card">
+                <div className="col-12 grid-margin stretch-card">
                     <div className="card">
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-baseline mb-4">
-                                <h6 className="card-title mb-0">Cluster Overview</h6>
+                                <h6 className="card-title mb-0">Cluster Health Summary</h6>
                                 <div className="dropdown" ref={dropdownRef}>
                                     <button
                                         className="btn btn-sm btn-outline-secondary d-flex align-items-center"
@@ -127,44 +210,258 @@ export const KubernetesDashboard = () => {
                                 </div>
                             </div>
 
+                            {/* Health Status Cards */}
                             <div className="row">
                                 <div className="col-md-3 col-6 mb-4">
-                                    <div className="d-flex align-items-center">
-                                        <i data-feather="server" className="text-primary icon-lg me-2"></i>
-                                        <div>
-                                            <h5 className="mb-0">4</h5>
-                                            <p className="text-muted mb-0">Clusters</p>
+                                    <div className="health-status-card">
+                                        <div className="d-flex align-items-center">
+                                            <div className="health-status-icon healthy me-3">
+                                                <i data-feather="server" className="text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h5 className="mb-0">{aggregateStats.totalClusters}</h5>
+                                                <p className="text-muted mb-0">Total Clusters</p>
+                                                <small className="text-success">{aggregateStats.healthyClusters}/{aggregateStats.totalClusters} Healthy</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-3 col-6 mb-4">
-                                    <div className="d-flex align-items-center">
-                                        <i data-feather="hard-drive" className="text-success icon-lg me-2"></i>
-                                        <div>
-                                            <h5 className="mb-0">25</h5>
-                                            <p className="text-muted mb-0">Nodes</p>
+                                    <div className="health-status-card">
+                                        <div className="d-flex align-items-center">
+                                            <div className="health-status-icon info me-3">
+                                                <i data-feather="hard-drive" className="text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h5 className="mb-0">{aggregateStats.totalNodes}</h5>
+                                                <p className="text-muted mb-0">Total Nodes</p>
+                                                <small className="text-info">Ready: {aggregateStats.totalNodes - 1}</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-3 col-6 mb-4">
-                                    <div className="d-flex align-items-center">
-                                        <i data-feather="box" className="text-warning icon-lg me-2"></i>
-                                        <div>
-                                            <h5 className="mb-0">106</h5>
-                                            <p className="text-muted mb-0">Pods</p>
+                                    <div className="health-status-card">
+                                        <div className="d-flex align-items-center">
+                                            <div className="health-status-icon warning me-3">
+                                                <i data-feather="box" className="text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h5 className="mb-0">{aggregateStats.totalPods}</h5>
+                                                <p className="text-muted mb-0">Total Pods</p>
+                                                <small className="text-warning">Running: {aggregateStats.totalPods - 3}</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-3 col-6 mb-4">
-                                    <div className="d-flex align-items-center">
-                                        <i data-feather="alert-circle" className="text-danger icon-lg me-2"></i>
-                                        <div>
-                                            <h5 className="mb-0">3</h5>
-                                            <p className="text-muted mb-0">Alerts</p>
+                                    <div className="health-status-card">
+                                        <div className="d-flex align-items-center">
+                                            <div className={`health-status-icon ${aggregateStats.totalAlerts > 0 ? 'danger' : 'success'} me-3`}>
+                                                <i data-feather="alert-circle" className="text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h5 className="mb-0">{aggregateStats.totalAlerts}</h5>
+                                                <p className="text-muted mb-0">Critical Alerts</p>
+                                                {aggregateStats.totalAlerts > 0 ? (
+                                                    <small className="text-danger">Needs Attention</small>
+                                                ) : (
+                                                    <small className="text-success">All Clear</small>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Node Status Grid */}
+                            <div className="node-status-grid mt-4">
+                                <h6 className="mb-3">Node Status Grid</h6>
+                                <div className="row">
+                                    {clusterStats.map((cluster, clusterIndex) => (
+                                        <div key={cluster.name} className="col-md-3 mb-3">
+                                            <div className="cluster-nodes">
+                                                <div className="cluster-name mb-2">
+                                                    <strong>{cluster.name}</strong>
+                                                    <span className={`badge ms-2 ${cluster.health === 'healthy' ? 'bg-success' : cluster.health === 'warning' ? 'bg-warning' : 'bg-danger'}`}>
+                                                        {cluster.status}
+                                                    </span>
+                                                </div>
+                                                <div className="nodes-grid">
+                                                    {Array.from({ length: cluster.nodes }, (_, nodeIndex) => (
+                                                        <div 
+                                                            key={nodeIndex}
+                                                            className={`node-cell ${cluster.health === 'healthy' ? 'healthy' : cluster.health === 'warning' ? 'warning' : 'error'}`}
+                                                            title={`${cluster.name}-node-${nodeIndex + 1}: ${cluster.status}`}
+                                                        ></div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Resource Utilization */}
+            <div className="row">
+                <div className="col-md-8 grid-margin stretch-card">
+                    <div className="card">
+                        <div className="card-body">
+                            <h6 className="card-title">Resource Utilization</h6>
+                            
+                            {/* Resource Overview Cards */}
+                            <div className="row mb-4">
+                                <div className="col-md-4 mb-3">
+                                    <div className="resource-overview-card">
+                                        <div className="resource-header">
+                                            <i data-feather="cpu" className="text-primary"></i>
+                                            <span>CPU</span>
+                                        </div>
+                                        <div className="resource-stats">
+                                            <div className="resource-value">{aggregateStats.avgCpuUsage}%</div>
+                                            <div className="resource-trend">
+                                                <i data-feather="trending-up" className="text-success"></i>
+                                                <span>+5% from yesterday</span>
+                                            </div>
+                                        </div>
+                                        <div className="progress">
+                                            <div 
+                                                className={`progress-bar ${aggregateStats.avgCpuUsage > 80 ? 'bg-danger' : aggregateStats.avgCpuUsage > 60 ? 'bg-warning' : 'bg-success'}`}
+                                                style={{ width: `${aggregateStats.avgCpuUsage}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-4 mb-3">
+                                    <div className="resource-overview-card">
+                                        <div className="resource-header">
+                                            <i data-feather="memory" className="text-info"></i>
+                                            <span>Memory</span>
+                                        </div>
+                                        <div className="resource-stats">
+                                            <div className="resource-value">{aggregateStats.avgMemoryUsage}%</div>
+                                            <div className="resource-trend">
+                                                <i data-feather="trending-down" className="text-danger"></i>
+                                                <span>-2% from yesterday</span>
+                                            </div>
+                                        </div>
+                                        <div className="progress">
+                                            <div 
+                                                className={`progress-bar ${aggregateStats.avgMemoryUsage > 80 ? 'bg-danger' : aggregateStats.avgMemoryUsage > 60 ? 'bg-warning' : 'bg-success'}`}
+                                                style={{ width: `${aggregateStats.avgMemoryUsage}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-4 mb-3">
+                                    <div className="resource-overview-card">
+                                        <div className="resource-header">
+                                            <i data-feather="database" className="text-warning"></i>
+                                            <span>Storage</span>
+                                        </div>
+                                        <div className="resource-stats">
+                                            <div className="resource-value">42%</div>
+                                            <div className="resource-trend">
+                                                <i data-feather="minus" className="text-muted"></i>
+                                                <span>No change</span>
+                                            </div>
+                                        </div>
+                                        <div className="progress">
+                                            <div className="progress-bar bg-info" style={{ width: '42%' }}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Utilization Time-Series Chart Placeholder */}
+                            <div className="chart-container">
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 className="mb-0">24h Trend</h6>
+                                    <div className="btn-group btn-group-sm" role="group">
+                                        <input type="radio" className="btn-check" name="chartMetric" id="cpu-metric" autoComplete="off" defaultChecked />
+                                        <label className="btn btn-outline-secondary" htmlFor="cpu-metric">CPU</label>
+                                        
+                                        <input type="radio" className="btn-check" name="chartMetric" id="memory-metric" autoComplete="off" />
+                                        <label className="btn btn-outline-secondary" htmlFor="memory-metric">Memory</label>
+                                        
+                                        <input type="radio" className="btn-check" name="chartMetric" id="network-metric" autoComplete="off" />
+                                        <label className="btn btn-outline-secondary" htmlFor="network-metric">Network</label>
+                                    </div>
+                                </div>
+                                
+                                {/* Placeholder for chart - replace with actual chart library */}
+                                <div className="chart-placeholder">
+                                    <div className="text-center py-5">
+                                        <i data-feather="trending-up" style={{ width: '48px', height: '48px' }} className="text-muted mb-3"></i>
+                                        <p className="text-muted">Resource utilization chart will be displayed here</p>
+                                        <small className="text-muted">Integrate with Chart.js or ApexCharts for time-series data</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recent Events */}
+                <div className="col-md-4 grid-margin stretch-card">
+                    <div className="card">
+                        <div className="card-body">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h6 className="card-title mb-0">Recent Events</h6>
+                                <Link to="/kubernetes/events" className="btn btn-sm btn-outline-primary">
+                                    View All
+                                </Link>
+                            </div>
+                            
+                            <div className="events-timeline">
+                                {recentEvents.map((event, index) => (
+                                    <div key={index} className="event-item">
+                                        <div className={`event-icon ${event.severity}`}>
+                                            <i data-feather={
+                                                event.severity === 'error' ? 'alert-octagon' :
+                                                event.severity === 'warning' ? 'alert-triangle' :
+                                                event.severity === 'success' ? 'check-circle' :
+                                                'info'
+                                            }></i>
+                                        </div>
+                                        <div className="event-details">
+                                            <div className="event-header">
+                                                <span className="event-type">{event.type}</span>
+                                                <span className="event-time">{event.time}</span>
+                                            </div>
+                                            <div className="event-object">
+                                                <Link to={`/kubernetes/${event.type.toLowerCase()}s/${event.object}`} className="text-decoration-none">
+                                                    {event.object}
+                                                </Link>
+                                            </div>
+                                            <p className="event-message">{event.message}</p>
+                                            <div className="event-meta">
+                                                <span className="event-cluster">Cluster: {event.cluster}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Pods Overview Table */}
+            <div className="row">
+                <div className="col-12 grid-margin stretch-card">
+                    <div className="card">
+                        <div className="card-body">
+                            <PodsOverviewTable 
+                                title="Pods Overview"
+                                showFilters={true}
+                                showBulkActions={true}
+                                maxHeight="400px"
+                            />
                         </div>
                     </div>
                 </div>
@@ -175,262 +472,55 @@ export const KubernetesDashboard = () => {
                 <div className="col-12 grid-margin stretch-card">
                     <div className="card">
                         <div className="card-body">
-                            <h6 className="card-title">Quick Access</h6>
+                            <h6 className="card-title">Quick Actions</h6>
                             <div className="row">
                                 <div className="col-md-2 col-6 mb-3">
-                                    <Link to="/kubernetes/clusters" className="quick-access-item">
+                                    <Link to="/kubernetes/pods/create" className="quick-access-item">
                                         <div className="quick-access-icon">
-                                            <i data-feather="server"></i>
+                                            <i data-feather="plus"></i>
                                         </div>
-                                        <span>Clusters</span>
+                                        <span>Create Pod</span>
                                     </Link>
                                 </div>
                                 <div className="col-md-2 col-6 mb-3">
-                                    <Link to="/kubernetes/deployments" className="quick-access-item">
+                                    <Link to="/kubernetes/deployments/create" className="quick-access-item">
                                         <div className="quick-access-icon">
                                             <i data-feather="package"></i>
                                         </div>
-                                        <span>Deployments</span>
+                                        <span>Create Deployment</span>
                                     </Link>
                                 </div>
                                 <div className="col-md-2 col-6 mb-3">
-                                    <Link to="/kubernetes/pods" className="quick-access-item">
-                                        <div className="quick-access-icon">
-                                            <i data-feather="box"></i>
-                                        </div>
-                                        <span>Pods</span>
-                                    </Link>
-                                </div>
-                                <div className="col-md-2 col-6 mb-3">
-                                    <Link to="/kubernetes/services" className="quick-access-item">
+                                    <Link to="/kubernetes/services/create" className="quick-access-item">
                                         <div className="quick-access-icon">
                                             <i data-feather="link"></i>
                                         </div>
-                                        <span>Services</span>
+                                        <span>Create Service</span>
                                     </Link>
                                 </div>
                                 <div className="col-md-2 col-6 mb-3">
-                                    <Link to="/kubernetes/storage" className="quick-access-item">
+                                    <Link to="/kubernetes/configmaps/create" className="quick-access-item">
                                         <div className="quick-access-icon">
-                                            <i data-feather="database"></i>
+                                            <i data-feather="file-text"></i>
                                         </div>
-                                        <span>Storage</span>
+                                        <span>Create ConfigMap</span>
                                     </Link>
                                 </div>
                                 <div className="col-md-2 col-6 mb-3">
-                                    <Link to="/kubernetes/monitoring" className="quick-access-item">
+                                    <Link to="/kubernetes/secrets/create" className="quick-access-item">
                                         <div className="quick-access-icon">
-                                            <i data-feather="activity"></i>
+                                            <i data-feather="key"></i>
                                         </div>
-                                        <span>Monitoring</span>
+                                        <span>Create Secret</span>
                                     </Link>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Cluster Stats */}
-            <div className="row">
-                <div className="col-12 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-body">
-                            <h6 className="card-title">Cluster Status</h6>
-                            <div className="table-responsive">
-                                <table className="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Cluster Name</th>
-                                            <th>Nodes</th>
-                                            <th>Pods</th>
-                                            <th>Status</th>
-                                            <th>CPU Usage</th>
-                                            <th>Memory Usage</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {clusterStats.map((cluster, index) => (
-                                            <tr key={index}>
-                                                <td>{cluster.name}</td>
-                                                <td>{cluster.nodes}</td>
-                                                <td>{cluster.pods}</td>
-                                                <td>
-                                                    <span className={`badge ${cluster.status === 'Healthy' ? 'bg-success' : 'bg-warning'}`}>
-                                                        {cluster.status}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="progress progress-md flex-grow-1 me-2">
-                                                            <div
-                                                                className={`progress-bar ${cluster.cpu > 80 ? 'bg-danger' : cluster.cpu > 60 ? 'bg-warning' : 'bg-success'}`}
-                                                                role="progressbar"
-                                                                style={{ width: `${cluster.cpu}%` }}
-                                                                aria-valuenow={cluster.cpu}
-                                                                aria-valuemin="0"
-                                                                aria-valuemax="100"
-                                                            ></div>
-                                                        </div>
-                                                        <span>{cluster.cpu}%</span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="progress progress-md flex-grow-1 me-2">
-                                                            <div
-                                                                className={`progress-bar ${cluster.memory > 80 ? 'bg-danger' : cluster.memory > 60 ? 'bg-warning' : 'bg-success'}`}
-                                                                role="progressbar"
-                                                                style={{ width: `${cluster.memory}%` }}
-                                                                aria-valuenow={cluster.memory}
-                                                                aria-valuemin="0"
-                                                                aria-valuemax="100"
-                                                            ></div>
-                                                        </div>
-                                                        <span>{cluster.memory}%</span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex">
-                                                        <button className="btn btn-sm btn-outline-primary me-1" title="View Details">
-                                                            <i data-feather="eye" style={{ width: '16px', height: '16px' }}></i>
-                                                        </button>
-                                                        <button className="btn btn-sm btn-outline-secondary me-1" title="Settings">
-                                                            <i data-feather="settings" style={{ width: '16px', height: '16px' }}></i>
-                                                        </button>
-                                                        <button className="btn btn-sm btn-outline-danger" title="Delete">
-                                                            <i data-feather="trash-2" style={{ width: '16px', height: '16px' }}></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Events and Deployments */}
-            <div className="row">
-                <div className="col-md-6 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-body">
-                            <h6 className="card-title">Recent Events</h6>
-                            <div className="events-list">
-                                {recentEvents.map((event, index) => (
-                                    <div key={index} className="event-item">
-                                        <div className={`event-icon ${event.severity}`}>
-                                            <i data-feather={
-                                                event.severity === 'error' ? 'alert-octagon' :
-                                                    event.severity === 'warning' ? 'alert-triangle' :
-                                                        event.severity === 'success' ? 'check-circle' :
-                                                            'info'
-                                            }></i>
+                                <div className="col-md-2 col-6 mb-3">
+                                    <Link to="/kubernetes/yaml-editor" className="quick-access-item">
+                                        <div className="quick-access-icon">
+                                            <i data-feather="code"></i>
                                         </div>
-                                        <div className="event-details">
-                                            <div className="event-header">
-                                                <h6 className="event-type mb-0">{event.type}</h6>
-                                                <span className="event-time">{event.time}</span>
-                                            </div>
-                                            <p className="event-message mb-0">{event.message}</p>
-                                            <div className="event-meta">
-                                                <span className="event-cluster">Cluster: {event.cluster}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="text-center mt-3">
-                                <button className="btn btn-outline-primary btn-sm">View All Events</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-md-6 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-body">
-                            <h6 className="card-title">Resource Utilization</h6>
-                            <div className="chart-container">
-                                <div className="mb-4 text-center">
-                                    <div className="d-flex justify-content-center mb-3">
-                                        <select className="form-select form-select-sm" style={{ width: '200px' }}>
-                                            <option>All Clusters</option>
-                                            <option>Production</option>
-                                            <option>Staging</option>
-                                            <option>Development</option>
-                                            <option>QA</option>
-                                        </select>
-                                    </div>
-                                    <div className="resource-stats">
-                                        <div className="resource-stat">
-                                            <div className="resource-chart">
-                                                <svg viewBox="0 0 36 36" className="circular-chart">
-                                                    <path className="circle-bg"
-                                                        d="M18 2.0845
-                              a 15.9155 15.9155 0 0 1 0 31.831
-                              a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                    />
-                                                    <path className="circle cpu"
-                                                        strokeDasharray="65, 100"
-                                                        d="M18 2.0845
-                              a 15.9155 15.9155 0 0 1 0 31.831
-                              a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                    />
-                                                    <text x="18" y="20.35" className="percentage">65%</text>
-                                                </svg>
-                                            </div>
-                                            <div className="resource-name">CPU</div>
-                                        </div>
-                                        <div className="resource-stat">
-                                            <div className="resource-chart">
-                                                <svg viewBox="0 0 36 36" className="circular-chart">
-                                                    <path className="circle-bg"
-                                                        d="M18 2.0845
-                              a 15.9155 15.9155 0 0 1 0 31.831
-                              a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                    />
-                                                    <path className="circle memory"
-                                                        strokeDasharray="58, 100"
-                                                        d="M18 2.0845
-                              a 15.9155 15.9155 0 0 1 0 31.831
-                              a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                    />
-                                                    <text x="18" y="20.35" className="percentage">58%</text>
-                                                </svg>
-                                            </div>
-                                            <div className="resource-name">Memory</div>
-                                        </div>
-                                        <div className="resource-stat">
-                                            <div className="resource-chart">
-                                                <svg viewBox="0 0 36 36" className="circular-chart">
-                                                    <path className="circle-bg"
-                                                        d="M18 2.0845
-                              a 15.9155 15.9155 0 0 1 0 31.831
-                              a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                    />
-                                                    <path className="circle storage"
-                                                        strokeDasharray="42, 100"
-                                                        d="M18 2.0845
-                              a 15.9155 15.9155 0 0 1 0 31.831
-                              a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                    />
-                                                    <text x="18" y="20.35" className="percentage">42%</text>
-                                                </svg>
-                                            </div>
-                                            <div className="resource-name">Storage</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="alert alert-info d-flex align-items-center" role="alert">
-                                    <i data-feather="info" className="alert-icon me-2"></i>
-                                    <div>
-                                        Development cluster is nearing CPU capacity. Consider scaling up or optimizing workloads.
-                                    </div>
+                                        <span>YAML Editor</span>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

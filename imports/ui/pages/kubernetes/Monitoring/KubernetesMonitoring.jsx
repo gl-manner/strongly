@@ -1,10 +1,7 @@
-// /imports/ui/pages/kubernetes/Monitoring/KubernetesMonitoring.jsx
 import React, { useEffect } from 'react';
 import feather from 'feather-icons';
-import './KubernetesMonitoring.scss';
 
 export const KubernetesMonitoring = () => {
-  // Initialize feather icons when component mounts
   useEffect(() => {
     feather.replace();
   }, []);
@@ -16,14 +13,13 @@ export const KubernetesMonitoring = () => {
           <h4 className="mb-3 mb-md-0">Kubernetes Monitoring</h4>
         </div>
       </div>
-
       <div className="row">
         <div className="col-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body text-center py-5">
               <i data-feather="activity" style={{ width: '48px', height: '48px', strokeWidth: 1 }} className="mb-3"></i>
               <h5 className="mb-3">Monitoring Dashboard Coming Soon</h5>
-              <p className="mb-4">The Kubernetes Monitoring dashboard is currently under development.</p>
+              <p className="mb-4">The Kubernetes Monitoring interface is currently under development.</p>
             </div>
           </div>
         </div>
@@ -31,5 +27,3 @@ export const KubernetesMonitoring = () => {
     </div>
   );
 };
-
-export default KubernetesMonitoring;

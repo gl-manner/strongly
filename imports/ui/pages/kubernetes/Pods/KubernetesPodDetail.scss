@@ -1,0 +1,512 @@
+// /imports/ui/pages/kubernetes/Pods/KubernetesPodDetail.scss
+
+.pod-detail-view {
+  .breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+
+    .breadcrumb-item {
+      font-size: 0.875rem;
+
+      a {
+        color: var(--bs-primary);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      &.active {
+        color: #6b7280;
+      }
+    }
+  }
+
+  // Tab Navigation
+  .nav-tabs {
+    border-bottom: 2px solid #e5e7eb;
+
+    .nav-link {
+      border: none;
+      color: #6b7280;
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: transparent;
+        color: var(--bs-primary);
+      }
+
+      &.active {
+        color: var(--bs-primary);
+        background-color: transparent;
+        border-bottom: 2px solid var(--bs-primary);
+        margin-bottom: -2px;
+      }
+
+      i {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  // Labels Container
+  .labels-container {
+    .badge {
+      font-size: 0.8125rem;
+      padding: 0.375rem 0.75rem;
+      border: 1px solid #d1d5db;
+    }
+  }
+
+  // Resource Metrics
+  .resource-metric {
+    .progress {
+      height: 8px;
+      border-radius: 4px;
+      background-color: #f3f4f6;
+    }
+  }
+
+  // Logs Container
+  .logs-container {
+    background-color: #1f2937;
+    border-radius: 6px;
+    padding: 1rem;
+    max-height: 500px;
+    overflow-y: auto;
+
+    .logs-content {
+      font-family: 'Monaco', 'Consolas', 'Lucida Console', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #f9fafb;
+      background: transparent;
+      border: none;
+      margin: 0;
+      white-space: pre-wrap;
+
+      .log-line {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.25rem;
+        word-break: break-all;
+
+        .log-timestamp {
+          color: #9ca3af;
+          margin-right: 1rem;
+          flex-shrink: 0;
+          width: 160px;
+          font-size: 12px;
+        }
+
+        .log-level {
+          margin-right: 1rem;
+          flex-shrink: 0;
+          width: 60px;
+          font-weight: 600;
+          font-size: 12px;
+
+          &.info {
+            color: #60a5fa;
+          }
+
+          &.warn,
+          &.warning {
+            color: #fbbf24;
+          }
+
+          &.error {
+            color: #f87171;
+          }
+
+          &.debug {
+            color: #a78bfa;
+          }
+        }
+
+        .log-message {
+          flex: 1;
+          color: #e5e7eb;
+        }
+
+        &.log-error {
+          background-color: rgba(239, 68, 68, 0.1);
+          padding: 0.25rem;
+          border-radius: 3px;
+        }
+
+        &.log-warning {
+          background-color: rgba(245, 158, 11, 0.1);
+          padding: 0.25rem;
+          border-radius: 3px;
+        }
+      }
+    }
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #374151;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #6b7280;
+      border-radius: 4px;
+
+      &:hover {
+        background: #9ca3af;
+      }
+    }
+  }
+
+  // Terminal Container
+  .terminal-container {
+    background-color: #1f2937;
+    border-radius: 6px;
+    padding: 1rem;
+    min-height: 400px;
+
+    .terminal-content {
+      font-family: 'Monaco', 'Consolas', 'Lucida Console', monospace;
+      font-size: 14px;
+      color: #f9fafb;
+
+      .terminal-line {
+        display: flex;
+        align-items: center;
+
+        .terminal-prompt {
+          color: #10b981;
+          margin-right: 0.5rem;
+        }
+
+        .terminal-cursor {
+          background-color: #f9fafb;
+          color: #1f2937;
+          animation: blink 1s infinite;
+        }
+      }
+    }
+  }
+
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0;
+    }
+  }
+
+  // YAML Editor
+  .yaml-editor {
+    .form-control {
+      background-color: #1f2937;
+      color: #f9fafb;
+      border: 1px solid #374151;
+      font-family: 'Monaco', 'Consolas', 'Lucida Console', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+
+      &:focus {
+        background-color: #1f2937;
+        color: #f9fafb;
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.2rem rgba(101, 113, 255, 0.25);
+      }
+
+      &::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #374151;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #6b7280;
+        border-radius: 6px;
+
+        &:hover {
+          background: #9ca3af;
+        }
+      }
+    }
+  }
+
+  // Table Improvements
+  .table {
+    th {
+      background-color: #f9fafb;
+      border-bottom: 2px solid #e5e7eb;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #374151;
+    }
+
+    td {
+      vertical-align: middle;
+      font-size: 0.875rem;
+      border-color: #f3f4f6;
+    }
+
+    .fw-medium {
+      font-weight: 500;
+    }
+  }
+
+  // Card Improvements
+  .card {
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+    .card-title {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 1rem;
+    }
+  }
+
+  // Status Badges
+  .badge {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+
+    &.bg-success {
+      background-color: #10b981 !important;
+    }
+
+    &.bg-warning {
+      background-color: #f59e0b !important;
+    }
+
+    &.bg-danger {
+      background-color: #ef4444 !important;
+    }
+
+    &.bg-info {
+      background-color: #3b82f6 !important;
+    }
+  }
+
+  // Button Groups
+  .btn-group {
+    .btn {
+      border-color: #d1d5db;
+
+      &:hover {
+        z-index: 2;
+      }
+    }
+
+    .btn-group-sm .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8125rem;
+    }
+  }
+
+  // Form Controls
+  .form-select,
+  .form-control {
+    border-color: #d1d5db;
+    font-size: 0.875rem;
+
+    &:focus {
+      border-color: var(--bs-primary);
+      box-shadow: 0 0 0 0.2rem rgba(101, 113, 255, 0.25);
+    }
+
+    &.form-select-sm,
+    &.form-control-sm {
+      font-size: 0.8125rem;
+    }
+  }
+
+  // Alert Improvements
+  .alert {
+    border: none;
+    border-radius: 6px;
+
+    &.alert-warning {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+  }
+
+  // Progress Bars
+  .progress {
+    height: 6px;
+    background-color: #f3f4f6;
+    border-radius: 3px;
+
+    .progress-bar {
+      border-radius: 3px;
+    }
+  }
+}
+
+// Dark Mode
+body.dark-mode {
+  .pod-detail-view {
+    .breadcrumb-item {
+      &.active {
+        color: var(--bs-gray-400);
+      }
+    }
+
+    .nav-tabs {
+      border-color: var(--bs-gray-700);
+
+      .nav-link {
+        color: var(--bs-gray-400);
+
+        &:hover {
+          color: var(--bs-primary);
+        }
+
+        &.active {
+          color: var(--bs-primary);
+        }
+      }
+    }
+
+    .table {
+      th {
+        background-color: var(--bs-gray-800);
+        border-color: var(--bs-gray-700);
+        color: var(--bs-gray-200);
+      }
+
+      td {
+        border-color: var(--bs-gray-700);
+        color: var(--bs-gray-300);
+      }
+    }
+
+    .card {
+      background-color: var(--bs-gray-800);
+      border-color: var(--bs-gray-700);
+
+      .card-title {
+        color: var(--bs-gray-100);
+      }
+    }
+
+    .labels-container .badge {
+      background-color: var(--bs-gray-700) !important;
+      color: var(--bs-gray-200) !important;
+      border-color: var(--bs-gray-600);
+    }
+
+    .form-select,
+    .form-control {
+      background-color: var(--bs-gray-800);
+      border-color: var(--bs-gray-700);
+      color: var(--bs-gray-200);
+
+      &:focus {
+        background-color: var(--bs-gray-800);
+        border-color: var(--bs-primary);
+        color: var(--bs-gray-200);
+      }
+    }
+
+    .progress {
+      background-color: var(--bs-gray-700);
+    }
+
+    .alert.alert-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: #fbbf24;
+    }
+
+    .btn-group .btn {
+      border-color: var(--bs-gray-700);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 991.98px) {
+  .pod-detail-view {
+    .d-flex.justify-content-between {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .nav-tabs {
+      .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+      }
+    }
+
+    .logs-container {
+      .logs-content {
+        .log-line {
+          flex-direction: column;
+          align-items: flex-start;
+
+          .log-timestamp,
+          .log-level {
+            width: auto;
+            margin-right: 0;
+            margin-bottom: 0.25rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .pod-detail-view {
+    .nav-tabs {
+      flex-wrap: wrap;
+
+      .nav-item {
+        flex: 1;
+        min-width: 0;
+
+        .nav-link {
+          text-align: center;
+          padding: 0.5rem 0.25rem;
+
+          i {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .btn-group {
+      .btn {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+      }
+    }
+
+    .table-responsive {
+      font-size: 0.8125rem;
+    }
+
+    .logs-container,
+    .terminal-container {
+      padding: 0.75rem;
+      font-size: 12px;
+    }
+
+    .yaml-editor .form-control {
+      font-size: 12px;
+    }
+  }
+}

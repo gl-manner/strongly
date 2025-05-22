@@ -10,6 +10,7 @@ import { adminRoutes } from './adminRoutes';
 import { supportRoutes } from './supportRoutes';
 import { operationsRoutes } from './operationsRoutes';
 import { aiGatewayRoutes } from './aiGatewayRoutes';
+import { kubernetesRoutes } from './kubernetesRoutes';
 
 // Combine all routes
 const routes = [
@@ -19,6 +20,7 @@ const routes = [
   ...supportRoutes,
   ...operationsRoutes,
   ...aiGatewayRoutes,
+  ...kubernetesRoutes,
   // Catch-all route
   {
     path: "*",

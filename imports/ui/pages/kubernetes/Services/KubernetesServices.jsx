@@ -1,10 +1,8 @@
 // /imports/ui/pages/kubernetes/Services/KubernetesServices.jsx
 import React, { useEffect } from 'react';
 import feather from 'feather-icons';
-import './KubernetesServices.scss';
 
 export const KubernetesServices = () => {
-  // Initialize feather icons when component mounts
   useEffect(() => {
     feather.replace();
   }, []);
@@ -16,12 +14,11 @@ export const KubernetesServices = () => {
           <h4 className="mb-3 mb-md-0">Kubernetes Services</h4>
         </div>
       </div>
-
       <div className="row">
         <div className="col-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body text-center py-5">
-              <i data-feather="layers" style={{ width: '48px', height: '48px', strokeWidth: 1 }} className="mb-3"></i>
+              <i data-feather="link" style={{ width: '48px', height: '48px', strokeWidth: 1 }} className="mb-3"></i>
               <h5 className="mb-3">Service Management Coming Soon</h5>
               <p className="mb-4">The Kubernetes Service management interface is currently under development.</p>
             </div>
@@ -31,5 +28,3 @@ export const KubernetesServices = () => {
     </div>
   );
 };
-
-export default KubernetesServices;
