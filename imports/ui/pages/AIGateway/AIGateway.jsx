@@ -1,38 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import feather from 'feather-icons';
 import { toast } from 'react-toastify';
 import './AIGateway.scss';
-import { LLMsCollection } from '/imports/api/ai-gateway/LLMsCollection';
 
-// some components are missing, will add this later
-// import AIGatewayStats from './components/AIGatewayStats';
-// import ModelList from './components/ModelList';
-// import LoadingSpinner from '/imports/ui/components/LoadingSpinner';
-// import ErrorAlert from '/imports/ui/components/ErrorAlert';
+// Try to import LLMsCollection, but provide fallback
+let LLMsCollection;
+try {
+  LLMsCollection = require('/imports/api/ai-gateway/LLMsCollection').LLMsCollection;
+} catch (error) {
+  console.warn('LLMsCollection not found, using fallback');
+  LLMsCollection = null;
+}
+
+// Import components with correct paths
+import AIGatewayStats from './components/AIGatewayStats';
+import ModelList from './components/ModelList';
+import Spinner from '/imports/ui/components/common/Spinner/Spinner';
+import ErrorAlert from '/imports/ui/components/common/ErrorAlert/ErrorAlert';
 
 export const AIGateway = () => {
+  console.log('🚀 AIGateway component rendering');
+
   const [activeTab, setActiveTab] = useState('all');
   const [statsData, setStatsData] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // Load models with useTracker
   const { user, loading, llms, error } = useTracker(() => {
+    console.log('📡 AIGateway useTracker running');
+
     try {
-      // Subscribe to models
+      // Check if LLMsCollection exists
+      if (!LLMsCollection) {
+        console.warn('⚠️ LLMsCollection not available');
+        return {
+          user: Meteor.user(),
+          llms: [],
+          loading: false,
+          error: null // Don't show error for missing collection, just empty state
+        };
+      }
+
+      // Try to subscribe
+      console.log('📋 Attempting to subscribe to allLLMs');
       const llmsHandle = Meteor.subscribe('allLLMs');
+      console.log('📋 Subscription ready?', llmsHandle.ready());
+
+      const llmsData = LLMsCollection.find({}, { sort: { createdAt: -1 } }).fetch();
+      console.log('💾 Found LLMs:', llmsData.length);
 
       return {
         user: Meteor.user(),
-        llms: LLMsCollection.find({}, { sort: { createdAt: -1 } }).fetch(),
+        llms: llmsData,
         loading: !llmsHandle.ready(),
         error: null
       };
     } catch (error) {
-      console.error("Error in tracker:", error);
+      console.error("❌ Error in tracker:", error);
       return {
         user: Meteor.user(),
         llms: [],
@@ -42,14 +70,14 @@ export const AIGateway = () => {
     }
   }, []);
 
+  console.log('🔄 AIGateway state:', { loading, error, llmsCount: llms?.length });
+
   // Load usage statistics
   useEffect(() => {
     const loadStats = async () => {
+      console.log('📊 Loading stats');
       setLoadingStats(true);
       try {
-        // Simulate loading stats data - in a real app, this would be a Meteor method call
-        // Meteor.call('aiGateway.getStats', (error, result) => {...})
-
         // Mock data for demonstration
         setTimeout(() => {
           setStatsData({
@@ -63,13 +91,14 @@ export const AIGateway = () => {
               requestsToday: 1250,
               requestsThisWeek: 8750,
               tokensToday: 125000,
-              averageLatency: 350 // ms
+              averageLatency: 350
             }
           });
           setLoadingStats(false);
+          console.log('📊 Stats loaded');
         }, 800);
       } catch (error) {
-        console.error("Error loading stats:", error);
+        console.error("❌ Error loading stats:", error);
         setLoadingStats(false);
       }
     };
@@ -79,7 +108,7 @@ export const AIGateway = () => {
     }
   }, [loading, llms]);
 
-  // Initialize feather icons when component mounts or updates
+  // Initialize feather icons
   useEffect(() => {
     feather.replace();
   }, [loading, llms, activeTab]);
@@ -93,12 +122,13 @@ export const AIGateway = () => {
     : llms.filter(llm => llm.type === activeTab);
 
   const handleModelAction = (action, model) => {
+    console.log('🎯 Model action:', action, model);
     switch (action) {
       case 'edit':
         if (model.type === 'self-hosted') {
-          history.push(`/operations/ai-gateway/self-hosted/edit/${model._id}`);
+          navigate(`/operations/ai-gateway/self-hosted/edit/${model._id}`);
         } else {
-          history.push(`/operations/ai-gateway/third-party/edit/${model._id}`);
+          navigate(`/operations/ai-gateway/third-party/edit/${model._id}`);
         }
         break;
       case 'delete':
@@ -126,13 +156,19 @@ export const AIGateway = () => {
     }
   };
 
+  console.log('🎨 About to render, loading:', loading, 'error:', error);
+
   if (loading) {
-    // return <LoadingSpinner message="Loading AI Gateway..." />;
+    console.log('🔄 Rendering loading spinner');
+    return <Spinner size="large" centered={true} text="Loading AI Gateway..." />;
   }
 
   if (error) {
-    // return <ErrorAlert title="Error Loading Data" message={error} />;
+    console.log('❌ Rendering error alert');
+    return <ErrorAlert title="Error Loading Data" message={error} />;
   }
+
+  console.log('✅ Rendering main AI Gateway content');
 
   return (
     <div className="ai-gateway">
@@ -141,12 +177,7 @@ export const AIGateway = () => {
           <h4 className="mb-3 mb-md-0">AI Gateway</h4>
         </div>
         <div className="d-flex">
-          <button
-            className="btn btn-outline-primary me-2"
-            onClick={() => history.push('/operations')}
-          >
-            <i data-feather="home" className="icon-sm me-2"></i> Operations
-          </button>
+
           <div className="dropdown">
             <button
               className="btn btn-primary dropdown-toggle"
@@ -174,7 +205,7 @@ export const AIGateway = () => {
       </div>
 
       {/* Usage Statistics */}
-      {/* <AIGatewayStats data={statsData} loading={loadingStats} /> */}
+      <AIGatewayStats data={statsData} loading={loadingStats} />
 
       {/* AI Gateway Options */}
       <div className="row mb-4">
@@ -260,11 +291,11 @@ export const AIGateway = () => {
                 </div>
               </div>
 
-              {/* <ModelList
+              <ModelList
                 models={filteredLLMs}
                 onModelAction={handleModelAction}
                 emptyStateType={activeTab}
-              /> */}
+              />
             </div>
           </div>
         </div>

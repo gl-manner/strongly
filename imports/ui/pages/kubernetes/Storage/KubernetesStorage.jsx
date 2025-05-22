@@ -1,8 +1,10 @@
 // /imports/ui/pages/kubernetes/Storage/KubernetesStorage.jsx
 import React, { useEffect } from 'react';
 import feather from 'feather-icons';
+import './KubernetesStorage.scss';
 
 export const KubernetesStorage = () => {
+  // Initialize feather icons when component mounts
   useEffect(() => {
     feather.replace();
   }, []);
@@ -14,6 +16,7 @@ export const KubernetesStorage = () => {
           <h4 className="mb-3 mb-md-0">Kubernetes Storage</h4>
         </div>
       </div>
+
       <div className="row">
         <div className="col-12 grid-margin stretch-card">
           <div className="card">
@@ -28,3 +31,5 @@ export const KubernetesStorage = () => {
     </div>
   );
 };
+
+export default KubernetesStorage;

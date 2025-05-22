@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import feather from 'feather-icons';
 import { LLMsCollection } from '/imports/api/ai-gateway/LLMsCollection';
-import LoadingSpinner from '/imports/ui/components/LoadingSpinner';
-import ErrorAlert from '/imports/ui/components/ErrorAlert';
-import ModelConfigCard from './components/ModelConfigCard';
+import LoadingSpinner from '/imports/ui/components/common/Spinner/Spinner';
+import ErrorAlert from '/imports/ui/components/common/ErrorAlert/ErrorAlert';
+import ModelConfigCard from '/imports/ui/components/AIGateway/ModelConfigCard';
 
 export const CustomModelForm = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { modelId } = useParams();
   const isEditing = !!modelId;
 
@@ -171,7 +171,7 @@ export const CustomModelForm = () => {
         toast.error(`Failed: ${error.message}`);
       } else {
         toast.success(`Model ${isEditing ? 'updated' : 'deployed'} successfully!`);
-        history.push('/operations/ai-gateway/self-hosted');
+        navigate('/operations/ai-gateway/self-hosted');
       }
     });
   };

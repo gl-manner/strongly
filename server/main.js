@@ -3,14 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Roles } from 'meteor/alanning:roles';
 
-// Import LLM collections to register publications and methods
-import '/imports/api/ai-gateway/LLMsCollection';
-import '/imports/api/ai-gateway/OpenSourceLLMsCollection';
-// import '/imports/methods/server/huggingface-methods';
-
-// Import API files if they exist
-// import '/imports/api/users/methods.js';
-// import '/imports/api/users/publications.js';
+import '/imports/api/apps';
+import '/imports/api/marketplace';
+import '/imports/api/ai-gateway';
+import '/imports/api/users';
 
 Meteor.startup(async function() {
   // Initialize roles
@@ -53,46 +49,6 @@ Meteor.startup(async function() {
     // For testing, make all users active by default
     user.profile.active = true;
     return user;
-  });
-
-  // Setup publications
-  Meteor.publish('userData', function() {
-    if (this.userId) {
-      return Meteor.users.find(
-        { _id: this.userId },
-        { fields: { profile: 1, emails: 1, roles: 1 } }
-      );
-    }
-    return this.ready();
-  });
-
-  // Setup methods
-  Meteor.methods({
-    'users.updateProfile': function(profileData) {
-      if (!this.userId) {
-        throw new Meteor.Error('not-authorized', 'You must be logged in to perform this action');
-      }
-      // Get current user profile
-      const user = Meteor.users.findOneAsync(this.userId);
-      if (!user) {
-        throw new Meteor.Error('not-found', 'User not found');
-      }
-      // Update user profile
-      return Meteor.users.update(
-        { _id: this.userId },
-        { $set: { profile: { ...user.profile, ...profileData } } }
-      );
-    },
-
-    // Add a method to get LLMs for testing
-    'getLLMs': function() {
-      if (!this.userId) {
-        throw new Meteor.Error('not-authorized', 'You must be logged in');
-      }
-
-      const { LLMsCollection } = require('/imports/api/ai-gateway/LLMsCollection');
-      return LLMsCollection.find({}).fetch();
-    }
   });
 
   console.log('Server started successfully with LLM collections loaded');

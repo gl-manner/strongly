@@ -10,11 +10,12 @@ const ConnectedModelsTable = ({ models, onModelAction }) => {
 
   const getProviderLogo = (provider) => {
     const lowerProvider = provider.toLowerCase();
-    if (lowerProvider.includes('openai')) return '/images/openai-logo.svg';
-    if (lowerProvider.includes('anthropic')) return '/images/anthropic-logo.svg';
-    if (lowerProvider.includes('mistral')) return '/images/mistral-logo.svg';
-    if (lowerProvider.includes('google')) return '/images/google-logo.svg';
-    if (lowerProvider.includes('cohere')) return '/images/cohere-logo.svg';
+    if (lowerProvider.includes('openai')) return '/assets/images/openai-logo.svg';
+    if (lowerProvider.includes('anthropic')) return '/assets/images/anthropic-logo.svg';
+    if (lowerProvider.includes('mistral')) return '/assets/images/mistral-logo.svg';
+    if (lowerProvider.includes('google')) return '/assets/images/google-logo.svg';
+    if (lowerProvider.includes('cohere')) return '/assets/images/cohere-logo.svg';
+    if (lowerProvider.includes('custom')) return '/assets/images/api-logo.svg';
     return null;
   };
 

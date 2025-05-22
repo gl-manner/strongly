@@ -1,8 +1,8 @@
 // /imports/ui/pages/auth/ForgotPassword/ForgotPassword.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useMethod } from '/imports/hooks/useMethod';
-import { useNotification } from '/imports/hooks/useNotification';
+import { useMethod } from '../../../hooks/useMethod';
+import { useNotification } from '../../../hooks/useNotification';
 import feather from 'feather-icons';
 import './ForgotPassword.scss';
 

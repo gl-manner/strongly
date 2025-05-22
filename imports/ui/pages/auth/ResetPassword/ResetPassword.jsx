@@ -1,8 +1,8 @@
 // /imports/ui/pages/auth/ResetPassword/ResetPassword.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useMethod } from '/imports/hooks/useMethod';
-import { useNotification } from '/imports/hooks/useNotification';
+import { useMethod } from '/imports/ui/hooks/useMethod';
+import { useNotification } from '/imports/ui/hooks/useNotification';
 import feather from 'feather-icons';
 import './ResetPassword.scss';
 

@@ -5,6 +5,69 @@ import { Roles } from 'meteor/alanning:roles';
 
 Meteor.methods({
   /**
+   * List users with pagination and search
+   * @param {Object} options - Query options
+   */
+  'users.list': async function(options = {}) {
+    check(options, {
+      page: Match.Maybe(Number),
+      limit: Match.Maybe(Number),
+      search: Match.Maybe(String)
+    });
+
+    // Check if user is logged in
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to list users');
+    }
+
+    const page = Math.max(1, options.page || 1);
+    const limit = Math.min(50, Math.max(1, options.limit || 10)); // Max 50 users per page
+    const skip = (page - 1) * limit;
+    const search = options.search || '';
+
+    // Build search query
+    const query = {};
+    if (search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      query.$or = [
+        { 'profile.name': searchRegex },
+        { 'username': searchRegex },
+        { 'emails.address': searchRegex }
+      ];
+    }
+
+    // Get total count for pagination using async method
+    const totalUsers = await Meteor.users.find(query).countAsync();
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    // Get users with limited fields for security
+    const users = await Meteor.users.find(query, {
+      skip,
+      limit,
+      sort: { 'profile.name': 1, 'username': 1 },
+      fields: {
+        _id: 1,
+        username: 1,
+        emails: 1,
+        profile: 1,
+        roles: 1,
+        status: 1,
+        createdAt: 1
+      }
+    }).fetchAsync();
+
+    return {
+      users,
+      currentPage: page,
+      totalPages,
+      totalUsers,
+      usersPerPage: limit,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
+    };
+  },
+
+  /**
    * Update the current user's profile
    * @param {Object} profileData - User profile data to update
    */
@@ -161,5 +224,44 @@ Meteor.methods({
     }
 
     return true;
+  },
+
+  /**
+   * Get user details by ID (for admins or own profile)
+   * @param {String} userId - ID of the user to get
+   */
+  'users.getById': async function(userId) {
+    check(userId, String);
+
+    // Check if user is logged in
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in');
+    }
+
+    // Users can get their own data, or admins can get any user's data
+    const isOwnProfile = this.userId === userId;
+    const isAdmin = Roles.userIsInRole(this.userId, 'admin');
+
+    if (!isOwnProfile && !isAdmin) {
+      throw new Meteor.Error('not-authorized', 'You can only access your own profile or must be an admin');
+    }
+
+    const user = await Meteor.users.findOneAsync(userId, {
+      fields: {
+        _id: 1,
+        username: 1,
+        emails: 1,
+        profile: 1,
+        roles: 1,
+        status: 1,
+        createdAt: 1
+      }
+    });
+
+    if (!user) {
+      throw new Meteor.Error('not-found', 'User not found');
+    }
+
+    return user;
   }
 });

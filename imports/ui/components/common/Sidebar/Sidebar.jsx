@@ -1,8 +1,10 @@
+// imports/ui/components/common/Sidebar/Sidebar.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import { useApp } from '/imports/hooks/useApp';
+import { Roles } from 'meteor/alanning:roles'; // ✅ Added missing import
+import { useApp } from '/imports/ui/hooks/useApp';
 import feather from 'feather-icons';
 import './Sidebar.scss';
 
@@ -14,12 +16,24 @@ const Sidebar = ({ onKubernetesNavigate }) => {
   const location = useLocation();
   const { sidebarCollapsed, toggleSidebar } = useApp();
 
-  // Get current user
-  const { currentUser, isAdmin } = useTracker(() => {
+  // Get current user with better error handling
+  const { currentUser, isAdmin, loading } = useTracker(() => {
     const user = Meteor.user();
+
+    // Handle case where Roles package might not be available
+    let adminStatus = false;
+    try {
+      adminStatus = user && Roles.userIsInRole(user._id, 'admin');
+    } catch (error) {
+      console.warn('Roles package not available or error checking admin status:', error);
+      // Fallback: check if user has admin role in profile
+      adminStatus = user && user.profile && user.profile.roles && user.profile.roles.includes('admin');
+    }
+
     return {
       currentUser: user,
-      isAdmin: user && Roles.userIsInRole(user._id, 'admin')
+      isAdmin: adminStatus,
+      loading: !Meteor.userId() && Meteor.loggingIn()
     };
   }, []);
 
@@ -55,7 +69,7 @@ const Sidebar = ({ onKubernetesNavigate }) => {
     return location.pathname.startsWith(basePath);
   };
 
-  // Check if specific user permissions
+  // Check if user has specific permissions
   const hasAccess = (requiredRoles) => {
     if (!currentUser) return false;
 
@@ -114,13 +128,44 @@ const Sidebar = ({ onKubernetesNavigate }) => {
     }
   };
 
+  // Show loading state if needed
+  if (loading) {
+    return (
+      <nav className="sidebar">
+        <div className="sidebar-header">
+          <Link to="/" className="sidebar-brand">
+            Strongly<span>AI</span>
+          </Link>
+        </div>
+        <div className="sidebar-body">
+          <div className="d-flex justify-content-center p-4">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className="sidebar">
       <div className="sidebar-header">
         <Link to="/" className="sidebar-brand">
           Strongly<span>AI</span>
         </Link>
-        <div className={`sidebar-toggler ${sidebarCollapsed ? 'active' : ''}`} onClick={toggleSidebar}>
+        <div
+          className={`sidebar-toggler ${sidebarCollapsed ? 'active' : ''}`}
+          onClick={toggleSidebar}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleSidebar();
+            }
+          }}
+        >
           <span></span>
           <span></span>
           <span></span>
@@ -154,7 +199,18 @@ const Sidebar = ({ onKubernetesNavigate }) => {
 
           {/* Kubernetes - Single menu item that activates the Kubernetes sidebar */}
           <li className={`nav-item ${isActiveSection('/kubernetes') ? 'active' : ''}`}>
-            <a className="nav-link" href="#" onClick={handleKubernetesClick}>
+            <a
+              className="nav-link"
+              href="#"
+              onClick={handleKubernetesClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleKubernetesClick(e);
+                }
+              }}
+            >
               <i className="link-icon" data-feather="server"></i>
               <span className="link-title">Kubernetes</span>
             </a>
@@ -166,6 +222,13 @@ const Sidebar = ({ onKubernetesNavigate }) => {
               className="nav-link"
               href="#"
               onClick={toggleSubmenu}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  toggleSubmenu(e);
+                }
+              }}
             >
               <i className="link-icon" data-feather="git-branch"></i>
               <span className="link-title">Workflows</span>
@@ -193,7 +256,7 @@ const Sidebar = ({ onKubernetesNavigate }) => {
             </div>
           </li>
 
-          {/* Marketplace - Added after Workflows */}
+          {/* Marketplace */}
           <li className={`nav-item ${isActive('/marketplace') ? 'active' : ''}`}>
             <Link to="/marketplace" className="nav-link">
               <i className="link-icon" data-feather="shopping-bag"></i>
@@ -281,7 +344,7 @@ const Sidebar = ({ onKubernetesNavigate }) => {
           {/* SUPPORT category */}
           <li className="nav-item nav-category">SUPPORT</li>
 
-          {/* FAQ - using support/faq path */}
+          {/* FAQ */}
           <li className={`nav-item ${isActive('/support/faq') ? 'active' : ''}`}>
             <Link to="/support/faq" className="nav-link">
               <i className="link-icon" data-feather="help-circle"></i>

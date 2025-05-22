@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Link } from 'react-router-dom';
 import feather from 'feather-icons';
-import PodsOverviewTable from '/imports/ui/components/kubernetes/PodsOverviewTable/PodsOverviewTable';
+import PodsOverviewTable from '/imports/ui/pages/kubernetes/components/PodsOverviewTable/PodsOverviewTable';
 import './KubernetesDashboard.scss';
 
 /**

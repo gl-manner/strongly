@@ -1,6 +1,5 @@
-// /imports/hooks/useApp.js
-import { useState, useEffect, createContext, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+// /imports/ui/hooks/useApp.js
+import React, { useState, useEffect, createContext, useContext } from 'react';
 
 // Create App context
 const AppContext = createContext(null);
@@ -10,18 +9,11 @@ export const AppProvider = ({ children }) => {
   // Sidebar collapsed state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [kubernetesSidebarActive, setKubernetesSidebarActive] = useState(false);
-  const location = useLocation();
 
   // Toggle sidebar function
   const toggleSidebar = () => {
     setSidebarCollapsed(prev => !prev);
   };
-
-  // Check if we're in the Kubernetes section
-  useEffect(() => {
-    const isKubernetesPath = location.pathname.startsWith('/kubernetes');
-    setKubernetesSidebarActive(isKubernetesPath);
-  }, [location.pathname]);
 
   // Check if device is mobile
   const [isMobile, setIsMobile] = useState(false);
@@ -127,6 +119,7 @@ export const AppProvider = ({ children }) => {
     toggleSidebar,
     isMobile,
     kubernetesSidebarActive,
+    setKubernetesSidebarActive, // ✅ ADDED: Allow components to set this directly
     activateKubernetesSidebar,
     deactivateKubernetesSidebar,
     theme,
@@ -141,13 +134,13 @@ export const AppProvider = ({ children }) => {
 // Hook to use the App context
 export const useApp = () => {
   const context = useContext(AppContext);
-  
+
   // If no context is available, provide a dummy implementation
   if (!context) {
     console.warn(
       'useApp hook was called outside of AppProvider context. Using dummy implementation.'
     );
-    
+
     // Return a dummy implementation that won't cause rendering errors
     return {
       sidebarCollapsed: false,
@@ -162,12 +155,16 @@ export const useApp = () => {
         }
       },
       isMobile: window.matchMedia('(max-width: 991px)').matches,
+      kubernetesSidebarActive: false,
+      setKubernetesSidebarActive: () => {},
+      activateKubernetesSidebar: () => {},
+      deactivateKubernetesSidebar: () => {},
       theme: 'light',
       toggleTheme: () => console.warn('toggleTheme called outside AppProvider context'),
       loading: false,
       setLoading: () => console.warn('setLoading called outside AppProvider context')
     };
   }
-  
+
   return context;
 };

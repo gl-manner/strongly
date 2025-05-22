@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import { useApp } from '/imports/hooks/useApp';
+import { useApp } from '/imports/ui/hooks/useApp';
 import feather from 'feather-icons';
 import './KubernetesSidebar.scss';
 
