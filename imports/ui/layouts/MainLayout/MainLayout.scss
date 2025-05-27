@@ -1,5 +1,6 @@
 // /imports/ui/layouts/MainLayout/MainLayout.scss
-// Main layout styling
+// Main layout styling - now simplified and consistent
+
 .main-wrapper {
   display: flex;
   width: 100%;
@@ -12,15 +13,17 @@
   &.sidebar-folded {
     .sidebar {
       width: 70px;
-
+      
       .sidebar-header {
         width: 70px;
-
+        
         .sidebar-brand {
-          display: none;
+          span {
+            display: none;
+          }
         }
       }
-
+      
       .sidebar-body {
         .nav {
           .nav-item {
@@ -29,18 +32,18 @@
               height: 0;
               padding: 0;
             }
-
+            
             .nav-link {
               .link-title,
               .link-arrow {
                 display: none;
               }
-
+              
               .link-icon {
                 margin-right: 0;
               }
             }
-
+            
             &.nav-item-open {
               .collapse.show {
                 display: none;
@@ -50,7 +53,7 @@
         }
       }
     }
-
+    
     .page-wrapper {
       width: calc(100% - 70px);
       margin-left: 70px;
@@ -61,15 +64,17 @@
   &.open-sidebar-folded {
     .sidebar {
       width: 260px;
-
+      
       .sidebar-header {
         width: 260px;
-
+        
         .sidebar-brand {
-          display: flex;
+          span {
+            display: inline;
+          }
         }
       }
-
+      
       .sidebar-body {
         .nav {
           .nav-item {
@@ -78,18 +83,18 @@
               height: auto;
               padding: 1rem 1.5rem 0.375rem;
             }
-
+            
             .nav-link {
               .link-title,
               .link-arrow {
                 display: block;
               }
-
+              
               .link-icon {
                 margin-right: 10px;
               }
             }
-
+            
             &.nav-item-open {
               .collapse.show {
                 display: block;
@@ -107,17 +112,9 @@
       left: 0;
       z-index: 999;
     }
-
+    
     .sidebar-overlay {
       display: block;
-    }
-  }
-
-  // Kubernetes sidebar active state
-  &.kubernetes-active {
-    .page-wrapper {
-      margin-left: 260px;
-      width: calc(100% - 260px);
     }
   }
 }
@@ -160,23 +157,15 @@
       left: -260px;
       z-index: 999;
     }
-
+    
     .page-wrapper {
       margin-left: 0;
       width: 100%;
     }
-
+    
     &.sidebar-open {
       .page-wrapper {
         margin-left: 0;
-      }
-    }
-
-    // Kubernetes active state on mobile
-    &.kubernetes-active {
-      .page-wrapper {
-        margin-left: 0;
-        width: 100%;
       }
     }
   }

@@ -2,6 +2,7 @@
 import React from 'react';
 import { ProtectedRouteElement, MainLayoutWrapper } from './routeWrappers';
 import { FaqPage } from '/imports/ui/pages/faq/FaqPage/FaqPage';
+import { ContactPage } from '/imports/ui/pages/contact/ContactPage/ContactPage';
 
 export const supportRoutes = [
   {
@@ -16,7 +17,7 @@ export const supportRoutes = [
           },
           {
             path: "support/contact",
-            element: <div className="page-content">Contact Support</div>
+            element: <ContactPage />
           }
         ]
       }

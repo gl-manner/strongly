@@ -1,61 +1,234 @@
-// /imports/ui/components/common/Breadcrumb/Breadcrumb.scss
+// Breadcrumb Component Styles - NobleUI Theme
 .page-breadcrumb {
   margin-bottom: 1.5rem;
 
   .breadcrumb {
-    padding: 0;
-    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0.5rem 0;
+    margin-bottom: 0;
+    list-style: none;
     background-color: transparent;
-    border-radius: 0;
+    font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    line-height: var(--bs-body-line-height);
+  }
 
-    .breadcrumb-item {
-      font-size: 0.875rem;
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+    color: var(--bs-secondary-color);
 
-      a {
-        color: var(--bs-primary, #727cf5);
+    // Separator
+    & + .breadcrumb-item {
+      padding-left: 0.5rem;
+
+      &::before {
+        float: left;
+        padding-right: 0.5rem;
+        color: var(--bs-gray-500);
+        content: "/";
+        font-weight: 400;
+      }
+    }
+
+    // Link styling
+    a {
+      color: var(--bs-secondary);
+      text-decoration: none;
+      transition: color 0.15s ease-in-out;
+
+      &:hover {
+        color: var(--bs-primary);
         text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
       }
 
-      &.active {
-        color: #495057;
+      &:focus {
+        outline: none;
+        color: var(--bs-primary);
+        text-decoration: underline;
+        text-decoration-color: var(--bs-primary);
+        text-underline-offset: 3px;
       }
+    }
 
-      + .breadcrumb-item {
-        padding-left: 0.5rem;
+    // Active item (current page)
+    &.active {
+      color: var(--bs-body-color);
+      font-weight: 500;
+    }
+  }
+}
 
-        &::before {
-          content: "/";
-          padding-right: 0.5rem;
-          color: #6c757d;
-        }
+// Alternative separator styles
+.page-breadcrumb {
+  &.breadcrumb-chevron {
+    .breadcrumb-item + .breadcrumb-item::before {
+      content: "›";
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+  }
+
+  &.breadcrumb-arrow {
+    .breadcrumb-item + .breadcrumb-item::before {
+      content: "→";
+      font-size: 0.9em;
+    }
+  }
+
+  &.breadcrumb-dot {
+    .breadcrumb-item + .breadcrumb-item::before {
+      content: "•";
+      font-size: 0.8em;
+    }
+  }
+}
+
+// Size variants
+.page-breadcrumb {
+  &.breadcrumb-sm {
+    .breadcrumb {
+      font-size: 0.8125rem;
+      padding: 0.375rem 0;
+    }
+  }
+
+  &.breadcrumb-lg {
+    .breadcrumb {
+      font-size: 0.9375rem;
+      padding: 0.625rem 0;
+    }
+
+    .breadcrumb-item + .breadcrumb-item {
+      padding-left: 0.75rem;
+
+      &::before {
+        padding-right: 0.75rem;
       }
     }
   }
 }
 
 // Dark theme support
-body.dark-mode {
+[data-bs-theme="dark"] {
+  .page-breadcrumb {
+    .breadcrumb-item {
+      color: var(--bs-secondary-color);
+
+      & + .breadcrumb-item::before {
+        color: var(--bs-gray-600);
+      }
+
+      a {
+        color: var(--bs-gray-400);
+
+        &:hover {
+          color: var(--bs-primary);
+        }
+
+        &:focus {
+          color: var(--bs-primary);
+          text-decoration-color: var(--bs-primary);
+        }
+      }
+
+      &.active {
+        color: var(--bs-body-color);
+      }
+    }
+  }
+}
+
+// With background variant
+.page-breadcrumb {
+  &.breadcrumb-filled {
+    .breadcrumb {
+      background-color: var(--bs-gray-100);
+      padding: 0.75rem 1rem;
+      border-radius: var(--bs-border-radius);
+    }
+  }
+}
+
+[data-bs-theme="dark"] {
+  .page-breadcrumb.breadcrumb-filled {
+    .breadcrumb {
+      background-color: var(--bs-gray-800);
+    }
+  }
+}
+
+// With icons support
+.page-breadcrumb {
+  .breadcrumb-item {
+    .breadcrumb-icon {
+      margin-right: 0.375rem;
+      width: 1rem;
+      height: 1rem;
+      vertical-align: text-bottom;
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 576px) {
   .page-breadcrumb {
     .breadcrumb {
-      .breadcrumb-item {
-        color: #adb5bd;
+      font-size: 0.8125rem;
+    }
 
-        a {
-          color: var(--bs-primary, #727cf5);
+    .breadcrumb-item {
+      & + .breadcrumb-item {
+        padding-left: 0.375rem;
+
+        &::before {
+          padding-right: 0.375rem;
         }
+      }
+    }
+  }
+}
 
-        &.active {
-          color: #e9ecef;
+// Truncate long breadcrumbs on mobile
+@media (max-width: 768px) {
+  .page-breadcrumb.breadcrumb-auto-hide {
+    .breadcrumb-item {
+      &:not(:first-child):not(:last-child):not(:nth-last-child(2)) {
+        display: none;
+      }
+
+      &:nth-child(2) {
+        &::before {
+          content: "...";
+          font-weight: 600;
         }
+      }
+    }
+  }
+}
 
-        + .breadcrumb-item {
-          &::before {
-            color: #6c757d;
-          }
+// Animation for breadcrumb items
+@keyframes breadcrumbFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.page-breadcrumb {
+  &.breadcrumb-animated {
+    .breadcrumb-item {
+      animation: breadcrumbFadeIn 0.3s ease-out;
+      animation-fill-mode: both;
+
+      @for $i from 1 through 10 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{$i * 0.05}s;
         }
       }
     }

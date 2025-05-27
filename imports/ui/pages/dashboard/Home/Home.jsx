@@ -5,6 +5,9 @@ import { useTracker } from 'meteor/react-meteor-data';
 import feather from 'feather-icons';
 import './Home.scss';
 
+import Breadcrumb from '/imports/ui/components/common/Breadcrumb/Breadcrumb';
+
+
 export const Home = () => {
   const { user, loading } = useTracker(() => {
     const subscription = Meteor.subscribe('userData');
@@ -19,21 +22,30 @@ export const Home = () => {
     feather.replace();
   }, []);
 
+  const breadcrumbItems = [
+    { label: 'Main', link: '/' },
+    { label: 'Dashboard', active: true }
+  ];
+
   if (loading) {
     return (
-      <div className="loading-container d-flex justify-content-center align-items-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+      <div className="page-inner-container">
+        <Breadcrumb items={breadcrumbItems} />
+        <div className="loading-container d-flex justify-content-center align-items-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-home">
+    <div className="page-inner-container dashboard-home">
+      <Breadcrumb items={breadcrumbItems} />
       <div className="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-          <h4 className="mb-3 mb-md-0">Welcome to Your Dashboard</h4>
+          <h4 className="mb-3 mb-md-0">Welcome back</h4>
         </div>
       </div>
 

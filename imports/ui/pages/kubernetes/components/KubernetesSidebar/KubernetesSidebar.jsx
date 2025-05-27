@@ -2,26 +2,59 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
+import { Roles } from 'meteor/alanning:roles';
 import { useApp } from '/imports/ui/hooks/useApp';
 import feather from 'feather-icons';
 import './KubernetesSidebar.scss';
 
 /**
  * Kubernetes specific sidebar that appears when Kubernetes section is active
- * Follows the requirements specification for sections 1-4
+ * Now follows the same patterns as the main sidebar for consistency
  */
 const KubernetesSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAdmin } = useTracker(() => {
+  const { sidebarCollapsed, toggleSidebar } = useApp();
+
+  // Get current user with better error handling (same pattern as main sidebar)
+  const { currentUser, isAdmin, loading } = useTracker(() => {
     const user = Meteor.user();
+
+    // Handle case where Roles package might not be available
+    let adminStatus = false;
+    try {
+      adminStatus = user && Roles.userIsInRole(user._id, 'admin');
+    } catch (error) {
+      console.warn('Roles package not available or error checking admin status:', error);
+      // Fallback: check if user has admin role in profile
+      adminStatus = user && user.profile && user.profile.roles && user.profile.roles.includes('admin');
+    }
+
     return {
-      user,
-      isAdmin: user && Roles.userIsInRole(user._id, 'admin')
+      currentUser: user,
+      isAdmin: adminStatus,
+      loading: !Meteor.userId() && Meteor.loggingIn()
     };
   }, []);
 
-  const { sidebarCollapsed, toggleSidebar } = useApp();
+  // Handle sidebar mouse enter and leave (same as main sidebar)
+  const [sidebarHovered, setSidebarHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    if (sidebarCollapsed) {
+      document.body.classList.add('open-sidebar-folded');
+      setSidebarHovered(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (sidebarCollapsed) {
+      document.body.classList.remove('open-sidebar-folded');
+      setSidebarHovered(false);
+    }
+  };
+
+  // Cluster selector state
   const [clusterSelectorOpen, setClusterSelectorOpen] = useState(false);
   const [selectedCluster, setSelectedCluster] = useState('production');
 
@@ -38,6 +71,29 @@ const KubernetesSidebar = () => {
     feather.replace();
   }, []);
 
+  // Close dropdown when clicking outside or pressing ESC
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (clusterSelectorOpen && !event.target.closest('.cluster-selector')) {
+        setClusterSelectorOpen(false);
+      }
+    };
+
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && clusterSelectorOpen) {
+        setClusterSelectorOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    document.addEventListener('keydown', handleEscKey);
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [clusterSelectorOpen]);
+
   // Determine active menu item
   const isActive = (path) => {
     return location.pathname === path;
@@ -48,7 +104,7 @@ const KubernetesSidebar = () => {
     return location.pathname.startsWith(basePath);
   };
 
-  // Handle submenu toggling
+  // Handle submenu toggling (same pattern as main sidebar)
   const toggleSubmenu = (e) => {
     e.preventDefault();
     const parent = e.currentTarget.parentNode;
@@ -90,57 +146,99 @@ const KubernetesSidebar = () => {
   const handleClusterSelect = (clusterId) => {
     setSelectedCluster(clusterId);
     setClusterSelectorOpen(false);
-    // Re-initialize feather icons
-    setTimeout(() => feather.replace(), 100);
   };
 
   const selectedClusterData = clusters.find(c => c.id === selectedCluster);
 
+  // Show loading state if needed (same as main sidebar)
+  if (loading) {
+    return (
+      <nav className="sidebar">
+        <div className="sidebar-header">
+          <Link to="/kubernetes/dashboard" className="sidebar-brand">
+            <svg className="kubernetes-logo" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2M12 1L10.73 8.5L2 9.27L10.73 10.04L12 17.54L13.27 10.04L22 9.27L13.27 8.5L12 1M12 6.5L11.5 10.5L7.5 11L11.5 11.5L12 15.5L12.5 11.5L16.5 11L12.5 10.5L12 6.5Z"/>
+            </svg>
+            <span>Kubernetes</span>
+          </Link>
+        </div>
+        <div className="sidebar-body">
+          <div className="d-flex justify-content-center p-4">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
-    <nav className="sidebar kubernetes-sidebar">
+    <nav className="sidebar">
       <div className="sidebar-header">
         <Link to="/kubernetes/dashboard" className="sidebar-brand">
-          <i data-feather="server" className="me-2"></i>
-          Kubernetes
+          <svg className="kubernetes-logo" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L14.5 6.5L20 7L16 11L17 17L12 14.5L7 17L8 11L4 7L9.5 6.5L12 2Z"/>
+            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+            <path d="M12 6L13 9.5L16.5 9L14.5 12L15.5 15.5L12 14L8.5 15.5L9.5 12L7.5 9L11 9.5L12 6Z" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+          </svg>
+          <span>Kubernetes</span>
         </Link>
-        <div className="back-button" onClick={handleBackToMain}>
-          <i data-feather="arrow-left"></i>
+        <div
+          className={`sidebar-toggler ${!sidebarCollapsed ? 'active' : ''}`}
+          onClick={toggleSidebar}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleSidebar();
+            }
+          }}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
 
-      <div className="sidebar-body">
-        {/* Cluster Selector */}
+      <div
+        className="sidebar-body"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Enhanced Cluster Selector */}
         <div className="cluster-selector mb-3 px-3">
-          <div className="dropdown">
+          <div className="cluster-dropdown">
             <button
-              className={`btn btn-outline-secondary btn-sm w-100 d-flex align-items-center justify-content-between ${clusterSelectorOpen ? 'show' : ''}`}
+              className={`cluster-selector-btn ${clusterSelectorOpen ? 'active' : ''}`}
               type="button"
               onClick={() => setClusterSelectorOpen(!clusterSelectorOpen)}
+              title={selectedClusterData?.name}
             >
-              <div className="d-flex align-items-center">
-                <div className={`cluster-status-dot me-2 ${selectedClusterData?.status}`}></div>
-                <span>{selectedClusterData?.name}</span>
+              <div className="cluster-info">
+                <div className={`cluster-status-dot ${selectedClusterData?.status}`}></div>
+                <span className="cluster-name">{selectedClusterData?.name}</span>
               </div>
-              <i data-feather="chevron-down" style={{ width: '16px', height: '16px' }}></i>
+              <i data-feather="chevron-down" className="dropdown-arrow"></i>
             </button>
+            
             {clusterSelectorOpen && (
-              <ul className="dropdown-menu show w-100">
+              <div className="cluster-dropdown-menu">
                 {clusters.map(cluster => (
-                  <li key={cluster.id}>
-                    <a 
-                      className="dropdown-item d-flex align-items-center" 
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleClusterSelect(cluster.id);
-                      }}
-                    >
-                      <div className={`cluster-status-dot me-2 ${cluster.status}`}></div>
-                      {cluster.name}
-                    </a>
-                  </li>
+                  <button
+                    key={cluster.id}
+                    className={`cluster-dropdown-item ${cluster.id === selectedCluster ? 'active' : ''}`}
+                    onClick={() => handleClusterSelect(cluster.id)}
+                  >
+                    <div className={`cluster-status-dot ${cluster.status}`}></div>
+                    <span className="cluster-name">{cluster.name}</span>
+                    {cluster.id === selectedCluster && (
+                      <i data-feather="check" className="check-icon"></i>
+                    )}
+                  </button>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         </div>
@@ -166,6 +264,13 @@ const KubernetesSidebar = () => {
               className="nav-link"
               href="#"
               onClick={toggleSubmenu}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  toggleSubmenu(e);
+                }
+              }}
             >
               <i className="link-icon" data-feather="package"></i>
               <span className="link-title">Deployments</span>
@@ -357,7 +462,7 @@ const KubernetesSidebar = () => {
           {/* Custom Resource Definitions */}
           <li className={`nav-item ${isActive('/kubernetes/custom-resource-definitions') ? 'active' : ''}`}>
             <Link to="/kubernetes/custom-resource-definitions" className="nav-link">
-              <i className="link-icon" data-feather="puzzle"></i>
+              <i className="link-icon" data-feather="settings"></i>
               <span className="link-title">Custom Resource Definitions</span>
             </Link>
           </li>

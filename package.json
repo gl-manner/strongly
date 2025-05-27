@@ -9,11 +9,25 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.23.2",
+    "arangojs": "^10.1.1",
+    "archiver": "^7.0.1",
+    "aws-sdk": "^2.1692.0",
+    "aws4": "^1.13.2",
+    "basic-ftp": "^5.0.5",
     "clipboard": "^2.0.11",
+    "csv-stringify": "^6.5.2",
     "feather-icons": "^4.29.1",
+    "gremlin": "^3.7.3",
     "jquery": "^3.7.1",
-    "meteor-node-stubs": "^1.2.5",
+    "kerberos": "^2.2.2",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.511.0",
+    "mailgun-js": "^0.22.0",
+    "meteor-node-stubs": "^1.2.19",
+    "moment": "^2.30.1",
+    "mongodb-client-encryption": "^6.4.0",
     "node-fetch": "^3.3.2",
+    "papaparse": "^5.5.3",
     "perfect-scrollbar": "^1.5.5",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
@@ -23,7 +37,8 @@
     "react-router-dom": "^6.18.0",
     "react-toastify": "^11.0.5",
     "sass": "^1.69.5",
-    "simpl-schema": "^3.4.6"
+    "simpl-schema": "^3.4.6",
+    "xmlbuilder2": "^3.1.1"
   },
   "meteor": {
     "mainModule": {

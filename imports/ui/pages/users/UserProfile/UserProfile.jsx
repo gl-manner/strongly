@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import feather from 'feather-icons';
+import { Alert } from '/imports/ui/components/common/Alert/Alert.jsx';
 import './UserProfile.scss';
 
 /**
@@ -25,12 +26,22 @@ export const UserProfile = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [bio, setBio] = useState('');
+  const [organization, setOrganization] = useState('');
+  const [role, setRole] = useState('');
   const [location, setLocation] = useState('');
-  const [website, setWebsite] = useState('');
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  // Alert state
+  const [alert, setAlert] = useState(null);
+
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+  };
+
+  const hideAlert = () => {
+    setAlert(null);
+  };
 
   // Initialize form with user data when loaded
   useEffect(() => {
@@ -38,9 +49,9 @@ export const UserProfile = () => {
       setName(currentUser.profile.name || '');
       setEmail(currentUser.emails?.[0]?.address || '');
       setPhone(currentUser.profile.phone || '');
-      setBio(currentUser.profile.bio || '');
+      setOrganization(currentUser.profile.organization || '');
+      setRole(currentUser.profile.role || '');
       setLocation(currentUser.profile.location || '');
-      setWebsite(currentUser.profile.website || '');
     }
   }, [currentUser]);
 
@@ -49,33 +60,64 @@ export const UserProfile = () => {
     feather.replace();
   }, []);
 
+  // Handle avatar image upload
+  const handleAvatarUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showAlert('error', 'Please select a valid image file.');
+      return;
+    }
+
+    // Validate file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showAlert('error', 'Image size must be less than 5MB.');
+      return;
+    }
+
+    setAvatarUploading(true);
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const base64Image = event.target.result;
+
+      // Call Meteor method to save avatar
+      Meteor.call('users.updateAvatar', base64Image, (err) => {
+        setAvatarUploading(false);
+
+        if (err) {
+          showAlert('error', err.reason || 'Could not upload avatar. Please try again.');
+        } else {
+          showAlert('success', 'Avatar updated successfully!');
+        }
+      });
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   // Save profile changes
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    setSaveSuccess(false);
     setLoading(true);
 
     const profile = {
       name,
       phone,
-      bio,
-      location,
-      website
+      organization,
+      role,
+      location
     };
 
     Meteor.call('users.updateProfile', profile, (err) => {
       setLoading(false);
 
       if (err) {
-        setError(err.reason || 'Could not update profile. Please try again.');
+        showAlert('error', err.reason || 'Could not update profile. Please try again.');
       } else {
-        setSaveSuccess(true);
-
-        // Reset success message after 5 seconds
-        setTimeout(() => {
-          setSaveSuccess(false);
-        }, 5000);
+        showAlert('success', 'Profile updated successfully!');
       }
     });
   };
@@ -106,28 +148,34 @@ export const UserProfile = () => {
 
   return (
     <div className="profile-wrapper">
+      {/* Alert Component */}
+      {alert && (
+        <div className="position-fixed" style={{ top: '20px', right: '20px', zIndex: 9999 }}>
+          <Alert
+            type={alert.type}
+            message={alert.message}
+            onClose={hideAlert}
+            timeout={5000}
+          />
+        </div>
+      )}
+
       <div className="row">
         <div className="col-md-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body">
               <h6 className="card-title">Profile Information</h6>
 
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
-                </div>
-              )}
-
-              {saveSuccess && (
-                <div className="alert alert-success" role="alert">
-                  Profile updated successfully!
-                </div>
-              )}
-
               <form className="forms-sample" onSubmit={handleSubmit}>
                 <div className="text-center mb-4">
                   <div className="profile-image-wrapper">
-                    {currentUser?.profile?.avatar ? (
+                    {avatarUploading ? (
+                      <div className="profile-image profile-initials">
+                        <div className="spinner-border spinner-border-sm text-white" role="status">
+                          <span className="visually-hidden">Uploading...</span>
+                        </div>
+                      </div>
+                    ) : currentUser?.profile?.avatar ? (
                       <img src={currentUser.profile.avatar} alt="profile" className="profile-image" />
                     ) : (
                       <div className="profile-image profile-initials">
@@ -138,11 +186,23 @@ export const UserProfile = () => {
                       <label htmlFor="profileImage" className="mb-0">
                         <i data-feather="edit-2"></i>
                       </label>
-                      <input type="file" id="profileImage" className="visually-hidden" />
+                      <input
+                        type="file"
+                        id="profileImage"
+                        className="visually-hidden"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        disabled={avatarUploading}
+                      />
                     </div>
                   </div>
                   <h5 className="mt-3">{name}</h5>
                   <p className="text-muted">{email}</p>
+                  {(organization || role) && (
+                    <p className="text-muted small">
+                      {role}{organization && role ? ' at ' : ''}{organization}
+                    </p>
+                  )}
                 </div>
 
                 <div className="row mb-3">
@@ -198,31 +258,29 @@ export const UserProfile = () => {
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <label htmlFor="website" className="form-label">Website</label>
-                  <div className="input-group">
-                    <span className="input-group-text">https://</span>
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label htmlFor="organization" className="form-label">Organization</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="website"
-                      placeholder="yourdomain.com"
-                      value={website}
-                      onChange={(e) => setWebsite(e.target.value)}
+                      id="organization"
+                      placeholder="Enter your organization"
+                      value={organization}
+                      onChange={(e) => setOrganization(e.target.value)}
                     />
                   </div>
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="bio" className="form-label">Bio</label>
-                  <textarea
-                    className="form-control"
-                    id="bio"
-                    rows="5"
-                    placeholder="Write something about yourself..."
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                  ></textarea>
+                  <div className="col-md-6">
+                    <label htmlFor="role" className="form-label">Role</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="role"
+                      placeholder="Enter your role/position"
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                    />
+                  </div>
                 </div>
 
                 <div className="d-flex justify-content-end">

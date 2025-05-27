@@ -14,6 +14,7 @@ import './FaqPage.scss';
 export const FaqPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTimer, setSearchTimer] = useState(null);
+  const [openItems, setOpenItems] = useState(new Set());
   const searchInputRef = useRef(null);
 
   // Load FAQ data from collection with search capability
@@ -54,7 +55,7 @@ export const FaqPage = () => {
   // Initialize feather icons when component mounts or updates
   useEffect(() => {
     feather.replace();
-  }, [faqs, faqsLoading]);
+  }, [faqs, faqsLoading, openItems]);
 
   // Handle search input with debounce
   const handleSearchChange = (e) => {
@@ -68,6 +69,8 @@ export const FaqPage = () => {
     // Set a new timer (300ms debounce)
     const timer = setTimeout(() => {
       setSearchQuery(query);
+      // Clear open items when searching
+      setOpenItems(new Set());
     }, 300);
 
     setSearchTimer(timer);
@@ -75,24 +78,23 @@ export const FaqPage = () => {
 
   // Toggle FAQ answer visibility
   const toggleFaq = (id) => {
-    const faqItem = document.getElementById(`faqItem-${id}`);
-    if (faqItem) {
-      // Close any other open items in the same category
-      const category = faqItem.closest('.faq-category');
-      if (category) {
-        const openItems = category.querySelectorAll('.faq-item.open');
-        openItems.forEach(item => {
-          if (item.id !== `faqItem-${id}`) {
-            item.classList.remove('open');
-          }
-        });
+    setOpenItems(prev => {
+      const newOpenItems = new Set(prev);
+      if (newOpenItems.has(id)) {
+        newOpenItems.delete(id);
+      } else {
+        newOpenItems.add(id);
       }
+      return newOpenItems;
+    });
+  };
 
-      // Toggle the clicked item
-      faqItem.classList.toggle('open');
-
-      // Refresh feather icons
-      feather.replace();
+  // Clear search
+  const clearSearch = () => {
+    setSearchQuery('');
+    setOpenItems(new Set());
+    if (searchInputRef.current) {
+      searchInputRef.current.value = '';
     }
   };
 
@@ -131,128 +133,194 @@ export const FaqPage = () => {
   }
 
   return (
-    <div className="page-content">
-      <Breadcrumb items={breadcrumbItems} />
+    <div className="faq-page-container">
+      <div className="container-fluid px-4">
+        <Breadcrumb items={breadcrumbItems} />
 
-      <div className="faq-wrapper">
-        <div className="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-          <div>
-            <h4 className="mb-3 mb-md-0">Frequently Asked Questions</h4>
+        <div className="faq-wrapper">
+        {/* Page Header */}
+        <div className="row mb-3">
+          <div className="col-12">
+            <div className="text-center mb-3">
+              <h2 className="mb-2">Frequently Asked Questions</h2>
+              <p className="text-muted fs-5">
+                Find answers to the most commonly asked questions about our platform
+              </p>
+            </div>
           </div>
         </div>
 
+        {/* Search Section */}
+        <div className="row mb-4">
+          <div className="col-12">
+            <div className="faq-search">
+              <div className="input-group">
+                <span className="input-group-text bg-transparent">
+                  <i data-feather="search"></i>
+                </span>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  className="form-control"
+                  placeholder="Search FAQs..."
+                  onChange={handleSearchChange}
+                />
+                {searchQuery && (
+                  <button
+                    className="btn btn-outline-secondary"
+                    type="button"
+                    onClick={clearSearch}
+                  >
+                    <i data-feather="x"></i>
+                  </button>
+                )}
+              </div>
+              {searchQuery && (
+                <div className="search-info mt-2 text-center">
+                  <small className="text-muted">
+                    {faqs.length > 0
+                      ? `Found ${faqs.length} result${faqs.length !== 1 ? 's' : ''} for "${searchQuery}"`
+                      : `No results found for "${searchQuery}"`
+                    }
+                  </small>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ Content */}
         <div className="row">
-          <div className="col-md-12 grid-margin stretch-card">
+          <div className="col-12">
             <div className="card">
               <div className="card-body">
-                <div className="faq-search mb-4">
-                  <div className="input-group">
-                    <span className="input-group-text bg-transparent">
-                      <i data-feather="search"></i>
-                    </span>
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      className="form-control"
-                      placeholder="Search FAQs..."
-                      onChange={handleSearchChange}
-                    />
-                    {searchQuery && (
-                      <button
-                        className="btn btn-outline-secondary"
-                        type="button"
-                        onClick={() => {
-                          setSearchQuery('');
-                          if (searchInputRef.current) {
-                            searchInputRef.current.value = '';
-                          }
-                        }}
-                      >
-                        <i data-feather="x"></i>
-                      </button>
-                    )}
-                  </div>
-                </div>
-
                 {/* Show message when no results found */}
-                {faqs.length === 0 && (
+                {faqs.length === 0 ? (
                   <div className="text-center py-5">
-                    <i data-feather="info" className="mb-3" style={{ width: '48px', height: '48px', color: '#c0c0c0' }}></i>
-                    <h5>No FAQs Found</h5>
-                    <p className="text-muted">
+                    <div className="mb-4">
+                      <i
+                        data-feather="help-circle"
+                        className="text-muted"
+                        style={{ width: '64px', height: '64px' }}
+                      ></i>
+                    </div>
+                    <h4 className="mb-3">No FAQs Found</h4>
+                    <p className="text-muted mb-4">
                       {searchQuery
-                        ? `No results found for "${searchQuery}". Try a different search term.`
-                        : "There are no FAQs available at the moment."}
+                        ? `No results found for "${searchQuery}". Try a different search term or browse all FAQs.`
+                        : "There are no FAQs available at the moment. Please check back later."}
                     </p>
                     {searchQuery && (
                       <button
-                        className="btn btn-outline-primary mt-2"
-                        onClick={() => {
-                          setSearchQuery('');
-                          if (searchInputRef.current) {
-                            searchInputRef.current.value = '';
-                          }
-                        }}
+                        className="btn btn-primary"
+                        onClick={clearSearch}
                       >
-                        Clear Search
+                        <i data-feather="refresh-cw" className="me-2"></i>
+                        Show All FAQs
                       </button>
                     )}
                   </div>
-                )}
+                ) : (
+                  /* FAQ categories and items */
+                  Object.entries(groupedFaqs).map(([category, categoryFaqs]) => (
+                    <div key={category} className="faq-category mb-5">
+                      <div className="faq-category-header mb-4">
+                        <h3 className="faq-category-title d-flex align-items-center">
+                          <i data-feather="folder" className="me-2 text-primary"></i>
+                          {category}
+                          <span className="badge bg-primary ms-2">{categoryFaqs.length}</span>
+                        </h3>
+                      </div>
 
-                {/* FAQ categories and items */}
-                {Object.entries(groupedFaqs).map(([category, categoryFaqs]) => (
-                  <div key={category} className="faq-category mb-4">
-                    <h5 className="faq-category-title mb-3">
-                      {category}
-                      <span className="badge bg-primary ms-2">{categoryFaqs.length}</span>
-                    </h5>
-                    <div className="accordion faq-accordion">
-                      {categoryFaqs.map(faq => (
-                        <div key={faq._id} id={`faqItem-${faq._id}`} className="accordion-item faq-item">
+                      <div className="faq-accordion">
+                        {categoryFaqs.map((faq, index) => (
                           <div
-                            className="accordion-header faq-header"
-                            onClick={() => toggleFaq(faq._id)}
+                            key={faq._id}
+                            className={`faq-item ${openItems.has(faq._id) ? 'open' : ''}`}
+                            style={{ animationDelay: `${index * 0.1}s` }}
                           >
-                            <h6 className="accordion-title faq-question mb-0">
-                              {faq.question}
-                            </h6>
-                            <div className="faq-icon">
-                              <i data-feather="chevron-down"></i>
+                            <div
+                              className="faq-header"
+                              onClick={() => toggleFaq(faq._id)}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  toggleFaq(faq._id);
+                                }
+                              }}
+                            >
+                              <div className="faq-question-wrapper">
+                                <div className="faq-number">
+                                  {String(index + 1).padStart(2, '0')}
+                                </div>
+                                <h5 className="faq-question mb-0">
+                                  {faq.question}
+                                </h5>
+                              </div>
+                              <div className="faq-icon">
+                                <i data-feather={openItems.has(faq._id) ? "minus" : "plus"}></i>
+                              </div>
+                            </div>
+
+                            <div className="faq-answer">
+                              <div className="faq-answer-content">
+                                <div
+                                  className="faq-answer-text"
+                                  dangerouslySetInnerHTML={{ __html: faq.answer }}
+                                />
+                                {faq.tags && faq.tags.length > 0 && (
+                                  <div className="faq-tags mt-3">
+                                    {faq.tags.map(tag => (
+                                      <span key={tag} className="badge bg-light text-dark me-1 mb-1">
+                                        {tag}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
-                          <div className="accordion-body faq-answer">
-                            <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-md-12 grid-margin stretch-card">
-            <div className="card">
-              <div className="card-body">
-                <h6 className="card-title">Still Have Questions?</h6>
-                <p className="mb-4">If you couldn't find the answer to your question, please contact our support team.</p>
-                <div className="text-center">
+        {/* Support Section */}
+        <div className="row mt-5">
+          <div className="col-12">
+            <div className="card bg-light">
+              <div className="card-body text-center py-5">
+                <div className="mb-4">
+                  <i
+                    data-feather="headphones"
+                    className="text-primary"
+                    style={{ width: '48px', height: '48px' }}
+                  ></i>
+                </div>
+                <h4 className="mb-3">Still Have Questions?</h4>
+                <p className="text-muted mb-4 fs-5">
+                  Can't find what you're looking for? Our support team is here to help you.
+                </p>
+                <div className="d-flex justify-content-center gap-3 flex-wrap">
                   <button
-                    className="btn btn-primary me-2"
+                    className="btn btn-primary btn-lg px-4"
                     onClick={handleContactSupport}
                   >
                     <i data-feather="mail" className="me-2"></i>
                     Contact Support
                   </button>
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn-outline-primary btn-lg px-4"
                     onClick={handleLiveChat}
                   >
-                    <i data-feather="message-square" className="me-2"></i>
+                    <i data-feather="message-circle" className="me-2"></i>
                     Live Chat
                   </button>
                 </div>
@@ -260,6 +328,7 @@ export const FaqPage = () => {
             </div>
           </div>
         </div>
+              </div>
       </div>
     </div>
   );

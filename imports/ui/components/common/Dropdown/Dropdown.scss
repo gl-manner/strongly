@@ -1,4 +1,4 @@
-// /imports/ui/components/common/Dropdown/Dropdown.scss
+// Dropdown Component Styles - NobleUI Theme
 .dropdown {
   position: relative;
   display: inline-block;
@@ -16,16 +16,18 @@
     z-index: 1000;
     min-width: 10rem;
     margin: 0;
-    font-size: 0.875rem;
-    color: #1F1F1F;
+    font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    color: var(--bs-body-color);
     text-align: left;
     list-style: none;
-    background-color: #fff;
+    background-color: var(--bs-body-bg);
     background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 0.25rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--bs-box-shadow);
     padding: 0;
+    animation: dropdownFadeIn 0.2s ease-out;
 
     &.dropdown-menu-end {
       right: 0;
@@ -44,27 +46,39 @@
           display: flex;
           align-items: center;
           padding: 0.5rem 1rem;
-          color: #212529;
+          color: var(--bs-body-color);
           text-decoration: none;
           background-color: transparent;
-          transition: background-color 0.2s;
+          transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 
           &:hover {
-            background-color: #f8f9fa;
+            background-color: var(--bs-gray-100);
+            color: var(--bs-emphasis-color);
+          }
+
+          &:focus {
+            outline: none;
+            background-color: var(--bs-gray-100);
+          }
+
+          &:active {
+            background-color: var(--bs-gray-200);
           }
 
           i, svg {
             margin-right: 0.75rem;
-            color: #6c757d;
+            color: var(--bs-secondary);
+            width: 1rem;
+            height: 1rem;
           }
         }
       }
 
       .dropdown-divider {
-        height: 1px;
+        height: 0;
         margin: 0.5rem 0;
         overflow: hidden;
-        background-color: #e9ecef;
+        border-top: var(--bs-border-width) solid var(--bs-border-color);
       }
     }
 
@@ -75,14 +89,28 @@
       justify-content: space-between;
       padding: 0.75rem 1rem;
       margin-bottom: 0;
-      font-size: 0.875rem;
-      color: #6c757d;
+      font-size: var(--bs-body-font-size);
+      color: var(--bs-secondary-color);
       white-space: nowrap;
-      border-bottom: 1px solid #e9ecef;
+      border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+      background-color: var(--bs-tertiary-bg);
 
       p {
         margin-bottom: 0;
-        font-weight: 500;
+        font-weight: 600;
+        color: var(--bs-heading-color);
+      }
+
+      a {
+        color: var(--bs-link-color);
+        text-decoration: none;
+        font-size: 0.8125rem;
+        transition: color 0.15s ease-in-out;
+
+        &:hover {
+          color: var(--bs-link-hover-color);
+          text-decoration: underline;
+        }
       }
     }
 
@@ -90,30 +118,48 @@
       max-height: 250px;
       overflow-y: auto;
 
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: var(--bs-gray-100);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--bs-gray-400);
+        border-radius: 3px;
+
+        &:hover {
+          background: var(--bs-gray-500);
+        }
+      }
+
       .dropdown-item {
         display: flex;
         align-items: center;
         width: 100%;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1rem;
         clear: both;
         font-weight: 400;
-        color: #212529;
+        color: var(--bs-body-color);
         text-align: inherit;
         text-decoration: none;
         white-space: nowrap;
         background-color: transparent;
         border: 0;
+        transition: background-color 0.15s ease-in-out;
 
         &:hover, &:focus {
-          color: #16181b;
+          color: var(--bs-emphasis-color);
           text-decoration: none;
-          background-color: #f8f9fa;
+          background-color: var(--bs-gray-100);
         }
 
         &.active, &:active {
-          color: #16181b;
+          color: var(--bs-white);
           text-decoration: none;
-          background-color: #e9ecef;
+          background-color: var(--bs-primary);
         }
 
         // For notification style dropdown items
@@ -121,28 +167,34 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 36px;
-          height: 36px;
+          width: 2.25rem;
+          height: 2.25rem;
           border-radius: 50%;
-          background-color: rgba(108, 117, 125, 0.1);
-          margin-right: 10px;
+          background-color: var(--bs-primary-bg-subtle);
+          margin-right: 0.75rem;
+          flex-shrink: 0;
 
-          i {
+          i, svg {
             font-size: 1rem;
-            color: #6c757d;
+            color: var(--bs-primary);
+            width: 1rem;
+            height: 1rem;
           }
         }
 
         .content {
           flex: 1;
+          min-width: 0;
 
           p {
             margin-bottom: 0;
-            font-size: 0.875rem;
+            font-size: var(--bs-body-font-size);
+            line-height: 1.4;
 
             &.sub-text {
-              font-size: 0.75rem;
-              color: #6c757d;
+              font-size: 0.8125rem;
+              color: var(--bs-secondary-color);
+              margin-top: 0.125rem;
             }
           }
         }
@@ -153,18 +205,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.5rem 1rem;
+      padding: 0.75rem 1rem;
       margin-top: 0;
-      font-size: 0.875rem;
-      background-color: #f8f9fa;
-      border-top: 1px solid #e9ecef;
+      font-size: var(--bs-body-font-size);
+      background-color: var(--bs-tertiary-bg);
+      border-top: var(--bs-border-width) solid var(--bs-border-color);
 
       a {
-        color: #0d6efd;
+        color: var(--bs-link-color);
         text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s ease-in-out;
 
         &:hover {
+          color: var(--bs-link-hover-color);
           text-decoration: underline;
+        }
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+          border-radius: var(--bs-border-radius-sm);
         }
       }
     }
@@ -173,7 +234,52 @@
       height: 0;
       margin: 0;
       overflow: hidden;
-      border-top: 1px solid #e9ecef;
+      border-top: var(--bs-border-width) solid var(--bs-border-color);
+    }
+  }
+}
+
+// Dark theme adjustments
+[data-bs-theme="dark"] {
+  .dropdown {
+    .dropdown-menu {
+      box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.5);
+
+      .list-unstyled {
+        .dropdown-item {
+          &:hover {
+            background-color: var(--bs-gray-800);
+          }
+
+          &:active {
+            background-color: var(--bs-gray-700);
+          }
+        }
+      }
+
+      .dropdown-body {
+        &::-webkit-scrollbar-track {
+          background: var(--bs-gray-800);
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: var(--bs-gray-600);
+
+          &:hover {
+            background: var(--bs-gray-500);
+          }
+        }
+
+        .dropdown-item {
+          &:hover, &:focus {
+            background-color: var(--bs-gray-800);
+          }
+
+          &.active, &:active {
+            background-color: var(--bs-primary);
+          }
+        }
+      }
     }
   }
 }
@@ -182,16 +288,145 @@
 .nav-item.dropdown {
   .dropdown {
     .dropdown-menu {
-      width: 200px;  // Adjusted to match your screenshot
-      border-radius: 0.375rem;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      width: 200px;
+      border-radius: var(--bs-border-radius);
+      box-shadow: var(--bs-box-shadow);
       overflow: hidden;
 
       .dropdown-item {
-        color: #333;
+        color: var(--bs-body-color);
 
         i, svg {
-          color: #6c757d;
+          color: var(--bs-secondary);
+        }
+      }
+    }
+  }
+}
+
+// Dropdown animations
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Dropdown positioning variants
+.dropdown {
+  &.dropup {
+    .dropdown-menu {
+      top: auto;
+      bottom: calc(100% + 5px);
+      animation: dropupFadeIn 0.2s ease-out;
+    }
+  }
+
+  &.dropstart {
+    .dropdown-menu {
+      top: 0;
+      right: calc(100% + 5px);
+      left: auto;
+      animation: dropstartFadeIn 0.2s ease-out;
+    }
+  }
+
+  &.dropend {
+    .dropdown-menu {
+      top: 0;
+      right: auto;
+      left: calc(100% + 5px);
+      animation: dropendFadeIn 0.2s ease-out;
+    }
+  }
+}
+
+@keyframes dropupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropstartFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dropendFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Notification badge in dropdown trigger
+.dropdown-trigger {
+  .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    padding: 0.25rem 0.375rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--bs-white);
+    background-color: var(--bs-danger);
+    border-radius: var(--bs-border-radius-pill);
+  }
+}
+
+// Icon color variants for notification items
+.dropdown-body {
+  .dropdown-item {
+    .icon {
+      &.icon-success {
+        background-color: var(--bs-success-bg-subtle);
+
+        i, svg {
+          color: var(--bs-success);
+        }
+      }
+
+      &.icon-warning {
+        background-color: var(--bs-warning-bg-subtle);
+
+        i, svg {
+          color: var(--bs-warning);
+        }
+      }
+
+      &.icon-danger {
+        background-color: var(--bs-danger-bg-subtle);
+
+        i, svg {
+          color: var(--bs-danger);
+        }
+      }
+
+      &.icon-info {
+        background-color: var(--bs-info-bg-subtle);
+
+        i, svg {
+          color: var(--bs-info);
         }
       }
     }

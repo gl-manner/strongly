@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AppsCollection } from '/imports/api/apps/AppsCollection';
 import { Alert } from '/imports/ui/components/common/Alert/Alert';
+import Breadcrumb from '/imports/ui/components/common/Breadcrumb/Breadcrumb';
 import './Apps.scss';
 
 // Simple SVG icon components
@@ -197,8 +198,14 @@ export const Apps = () => {
   const startIndex = (currentPage - 1) * appsPerPage;
   const paginatedApps = apps.slice(startIndex, startIndex + appsPerPage);
 
+  const breadcrumbItems = [
+    { label: 'Main', link: '/' },
+    { label: 'Apps', active: true }
+  ];
+
   return (
     <div className="apps-page">
+      <Breadcrumb items={breadcrumbItems} />
       {/* Alert notifications */}
       <div className="alerts-container" style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1050 }}>
         {alerts.map((alert) => (

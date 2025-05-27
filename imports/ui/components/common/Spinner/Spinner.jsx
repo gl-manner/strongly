@@ -23,7 +23,6 @@ export const Spinner = ({
   return (
     <div className={containerClass}>
       <div className={`spinner ${sizeClass} ${colorClass}`}>
-        <div className="spinner-border"></div>
       </div>
       {text && <span className="spinner-text">{text}</span>}
     </div>

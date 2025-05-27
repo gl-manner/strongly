@@ -1,0 +1,411 @@
+// Divider Component Styles - NobleUI Theme
+.divider {
+  display: flex;
+  align-items: center;
+  position: relative;
+  font-family: var(--bs-body-font-family);
+
+  // Orientations
+  &--horizontal {
+    width: 100%;
+    height: 1px;
+
+    &.divider--with-text {
+      height: auto;
+    }
+  }
+
+  &--vertical {
+    width: 1px;
+    height: 100%;
+    display: inline-flex;
+    align-self: stretch;
+    vertical-align: middle;
+
+    &.divider--with-text {
+      width: auto;
+      height: auto;
+      flex-direction: column;
+    }
+  }
+
+  // Spacing variants
+  &--spacing-small {
+    &.divider--horizontal {
+      margin: 0.5rem 0;
+    }
+    &.divider--vertical {
+      margin: 0 0.5rem;
+    }
+  }
+
+  &--spacing-medium {
+    &.divider--horizontal {
+      margin: 1rem 0;
+    }
+    &.divider--vertical {
+      margin: 0 1rem;
+    }
+  }
+
+  &--spacing-large {
+    &.divider--horizontal {
+      margin: 1.5rem 0;
+    }
+    &.divider--vertical {
+      margin: 0 1.5rem;
+    }
+  }
+
+  // Color variants using NobleUI variables
+  &--default {
+    background-color: var(--bs-border-color);
+
+    .divider__line {
+      background-color: var(--bs-border-color);
+    }
+
+    .divider__text {
+      color: var(--bs-secondary-color);
+    }
+  }
+
+  &--primary {
+    background-color: var(--bs-primary);
+
+    .divider__line {
+      background-color: var(--bs-primary);
+    }
+
+    .divider__text {
+      color: var(--bs-primary);
+    }
+  }
+
+  &--secondary {
+    background-color: var(--bs-secondary);
+
+    .divider__line {
+      background-color: var(--bs-secondary);
+    }
+
+    .divider__text {
+      color: var(--bs-secondary);
+    }
+  }
+
+  &--success {
+    background-color: var(--bs-success);
+
+    .divider__line {
+      background-color: var(--bs-success);
+    }
+
+    .divider__text {
+      color: var(--bs-success);
+    }
+  }
+
+  &--warning {
+    background-color: var(--bs-warning);
+
+    .divider__line {
+      background-color: var(--bs-warning);
+    }
+
+    .divider__text {
+      color: var(--bs-warning);
+    }
+  }
+
+  &--danger {
+    background-color: var(--bs-danger);
+
+    .divider__line {
+      background-color: var(--bs-danger);
+    }
+
+    .divider__text {
+      color: var(--bs-danger);
+    }
+  }
+
+  &--info {
+    background-color: var(--bs-info);
+
+    .divider__line {
+      background-color: var(--bs-info);
+    }
+
+    .divider__text {
+      color: var(--bs-info);
+    }
+  }
+
+  &--light {
+    background-color: var(--bs-gray-300);
+
+    .divider__line {
+      background-color: var(--bs-gray-300);
+    }
+
+    .divider__text {
+      color: var(--bs-gray-600);
+    }
+  }
+
+  &--dark {
+    background-color: var(--bs-gray-700);
+
+    .divider__line {
+      background-color: var(--bs-gray-700);
+    }
+
+    .divider__text {
+      color: var(--bs-gray-700);
+    }
+  }
+
+  // Style variants
+  &--solid {
+    // Default solid style - no additional styles needed
+  }
+
+  &--dashed {
+    background: none;
+    border-top: 1px dashed;
+    border-color: currentColor;
+
+    &.divider--vertical {
+      border-top: none;
+      border-left: 1px dashed;
+    }
+
+    .divider__line {
+      border-top: 1px dashed;
+      border-color: inherit;
+      background: none;
+
+      .divider--vertical & {
+        border-top: none;
+        border-left: 1px dashed;
+      }
+    }
+  }
+
+  &--dotted {
+    background: none;
+    border-top: 1px dotted;
+    border-color: currentColor;
+
+    &.divider--vertical {
+      border-top: none;
+      border-left: 1px dotted;
+    }
+
+    .divider__line {
+      border-top: 1px dotted;
+      border-color: inherit;
+      background: none;
+
+      .divider--vertical & {
+        border-top: none;
+        border-left: 1px dotted;
+      }
+    }
+  }
+
+  // With text content
+  &--with-text {
+    background: none;
+
+    .divider__text {
+      padding: 0 1rem;
+      font-size: var(--bs-body-font-size);
+      line-height: var(--bs-body-line-height);
+      white-space: nowrap;
+      background-color: var(--bs-body-bg);
+      position: relative;
+      z-index: 1;
+
+      .divider--vertical & {
+        padding: 0.5rem 0;
+      }
+    }
+
+    .divider__line {
+      flex: 1;
+      height: 1px;
+
+      .divider--vertical & {
+        width: 1px;
+        height: auto;
+        min-height: 1rem;
+      }
+    }
+  }
+
+  // Text alignment
+  &--text-left {
+    .divider__line--before {
+      flex: 0 0 2rem;
+    }
+  }
+
+  &--text-right {
+    .divider__line--after {
+      flex: 0 0 2rem;
+    }
+  }
+
+  &--text-center {
+    .divider__line {
+      flex: 1;
+    }
+  }
+}
+
+// Dark theme adjustments
+[data-bs-theme="dark"] {
+  .divider {
+    &--light {
+      background-color: var(--bs-gray-700);
+
+      .divider__line {
+        background-color: var(--bs-gray-700);
+      }
+
+      .divider__text {
+        color: var(--bs-gray-400);
+      }
+    }
+
+    &--dark {
+      background-color: var(--bs-gray-300);
+
+      .divider__line {
+        background-color: var(--bs-gray-300);
+      }
+
+      .divider__text {
+        color: var(--bs-gray-300);
+      }
+    }
+  }
+}
+
+// Additional decorative variants
+.divider {
+  // Gradient divider
+  &--gradient {
+    background: linear-gradient(90deg,
+      transparent,
+      var(--bs-primary) 20%,
+      var(--bs-primary) 80%,
+      transparent
+    );
+
+    .divider__line {
+      background: inherit;
+    }
+  }
+
+  // Double line
+  &--double {
+    height: 3px;
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    border-color: inherit;
+    background: none;
+
+    &.divider--vertical {
+      width: 3px;
+      height: 100%;
+      border-top: none;
+      border-bottom: none;
+      border-left: 1px solid;
+      border-right: 1px solid;
+    }
+
+    .divider__line {
+      height: 3px;
+      border-top: 1px solid;
+      border-bottom: 1px solid;
+      border-color: inherit;
+      background: none;
+
+      .divider--vertical & {
+        width: 3px;
+        height: auto;
+        border-top: none;
+        border-bottom: none;
+        border-left: 1px solid;
+        border-right: 1px solid;
+      }
+    }
+  }
+
+  // Thick divider
+  &--thick {
+    height: 2px;
+
+    &.divider--vertical {
+      width: 2px;
+      height: 100%;
+    }
+
+    .divider__line {
+      height: 2px;
+
+      .divider--vertical & {
+        width: 2px;
+        height: auto;
+      }
+    }
+  }
+}
+
+// Icon support within text
+.divider__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .divider__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+// Responsive behavior
+@media (max-width: 576px) {
+  .divider {
+    &--text-left,
+    &--text-right {
+      .divider__line--before,
+      .divider__line--after {
+        flex: 0 0 1rem;
+      }
+    }
+
+    &--with-text {
+      .divider__text {
+        padding: 0 0.5rem;
+        font-size: 0.8125rem;
+      }
+    }
+  }
+}
+
+// Utility classes for common use cases
+.divider-section {
+  margin: 2rem 0;
+}
+
+.divider-card {
+  margin: 0 -1.5rem;
+  width: calc(100% + 3rem);
+}

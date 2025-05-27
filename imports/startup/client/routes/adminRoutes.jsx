@@ -1,7 +1,7 @@
 // /imports/startup/client/routes/adminRoutes.jsx
 import React from 'react';
 import { ProtectedRouteElement, MainLayoutWrapper } from './routeWrappers';
-import { UserManagement } from '/imports/ui/pages/users/UserManagement/UserManagement';
+import { UsersPage } from '/imports/ui/pages/admin/UsersPage/UsersPage';
 
 export const adminRoutes = [
   {
@@ -12,19 +12,46 @@ export const adminRoutes = [
         children: [
           {
             path: "admin/users",
-            element: <UserManagement />
+            element: <UsersPage />
           },
           {
             path: "admin/governance",
-            element: <div className="page-content">Governance</div>
+            element: <div className="page-content">
+              <div className="container-fluid px-4">
+                <div className="row">
+                  <div className="col-12">
+                    <h2>Governance</h2>
+                    <p className="text-muted">Governance management tools coming soon...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           },
           {
             path: "admin/finops",
-            element: <div className="page-content">FinOps</div>
+            element: <div className="page-content">
+              <div className="container-fluid px-4">
+                <div className="row">
+                  <div className="col-12">
+                    <h2>FinOps</h2>
+                    <p className="text-muted">Financial operations dashboard coming soon...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           },
           {
             path: "admin/faq",
-            element: <div className="page-content">FAQ Management</div>
+            element: <div className="page-content">
+              <div className="container-fluid px-4">
+                <div className="row">
+                  <div className="col-12">
+                    <h2>FAQ Management</h2>
+                    <p className="text-muted">FAQ content management system coming soon...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           }
         ]
       }

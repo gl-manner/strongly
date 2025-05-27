@@ -1,0 +1,316 @@
+// EmptyState Component Styles - NobleUI Theme
+.empty-state-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 2rem;
+  font-family: var(--bs-body-font-family);
+
+  .empty-state-content {
+    text-align: center;
+    max-width: 400px;
+
+    .empty-state-icon {
+      margin-bottom: 1.5rem;
+      color: var(--bs-secondary);
+
+      svg {
+        width: 3rem;
+        height: 3rem;
+      }
+
+      // Icon wrapper with background
+      &.empty-state-icon--bg {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 5rem;
+        height: 5rem;
+        background-color: var(--bs-gray-100);
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+
+        svg {
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+      }
+    }
+
+    .empty-state-title {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: var(--bs-body-line-height);
+      color: var(--bs-heading-color);
+    }
+
+    .empty-state-description {
+      margin: 0 0 1.5rem 0;
+      color: var(--bs-secondary-color);
+      font-size: var(--bs-body-font-size);
+      line-height: 1.6;
+    }
+
+    .empty-state-action {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+// Dark theme adjustments
+[data-bs-theme="dark"] {
+  .empty-state-container {
+    .empty-state-content {
+      .empty-state-icon {
+        color: var(--bs-secondary);
+
+        &.empty-state-icon--bg {
+          background-color: var(--bs-gray-800);
+        }
+      }
+    }
+  }
+}
+
+// Size variants
+.empty-state-container {
+  &--sm {
+    min-height: 250px;
+    padding: 1.5rem;
+
+    .empty-state-content {
+      max-width: 300px;
+
+      .empty-state-icon {
+        margin-bottom: 1rem;
+
+        svg {
+          width: 2rem;
+          height: 2rem;
+        }
+
+        &.empty-state-icon--bg {
+          width: 3.5rem;
+          height: 3.5rem;
+
+          svg {
+            width: 1.75rem;
+            height: 1.75rem;
+          }
+        }
+      }
+
+      .empty-state-title {
+        font-size: 1.125rem;
+        margin-bottom: 0.375rem;
+      }
+
+      .empty-state-description {
+        font-size: 0.8125rem;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  &--lg {
+    min-height: 500px;
+    padding: 3rem;
+
+    .empty-state-content {
+      max-width: 500px;
+
+      .empty-state-icon {
+        margin-bottom: 2rem;
+
+        svg {
+          width: 4rem;
+          height: 4rem;
+        }
+
+        &.empty-state-icon--bg {
+          width: 6rem;
+          height: 6rem;
+
+          svg {
+            width: 3rem;
+            height: 3rem;
+          }
+        }
+      }
+
+      .empty-state-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .empty-state-description {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+    }
+  }
+}
+
+// Color variants for icons
+.empty-state-icon {
+  &--primary {
+    color: var(--bs-primary);
+
+    &.empty-state-icon--bg {
+      background-color: var(--bs-primary-bg-subtle);
+      color: var(--bs-primary);
+    }
+  }
+
+  &--success {
+    color: var(--bs-success);
+
+    &.empty-state-icon--bg {
+      background-color: var(--bs-success-bg-subtle);
+      color: var(--bs-success);
+    }
+  }
+
+  &--warning {
+    color: var(--bs-warning);
+
+    &.empty-state-icon--bg {
+      background-color: var(--bs-warning-bg-subtle);
+      color: var(--bs-warning);
+    }
+  }
+
+  &--danger {
+    color: var(--bs-danger);
+
+    &.empty-state-icon--bg {
+      background-color: var(--bs-danger-bg-subtle);
+      color: var(--bs-danger);
+    }
+  }
+
+  &--info {
+    color: var(--bs-info);
+
+    &.empty-state-icon--bg {
+      background-color: var(--bs-info-bg-subtle);
+      color: var(--bs-info);
+    }
+  }
+}
+
+// Dark theme color adjustments
+[data-bs-theme="dark"] {
+  .empty-state-icon {
+    &--primary.empty-state-icon--bg {
+      background-color: var(--bs-primary-bg-subtle);
+      color: #a3aaff; // NobleUI's primary-text-emphasis in dark
+    }
+
+    &--success.empty-state-icon--bg {
+      background-color: var(--bs-success-bg-subtle);
+      color: #75b798; // NobleUI's form-valid-color in dark
+    }
+
+    &--warning.empty-state-icon--bg {
+      background-color: var(--bs-warning-bg-subtle);
+      color: #fdd76a; // NobleUI's warning-text-emphasis in dark
+    }
+
+    &--danger.empty-state-icon--bg {
+      background-color: var(--bs-danger-bg-subtle);
+      color: #ea868f; // NobleUI's form-invalid-color in dark
+    }
+
+    &--info.empty-state-icon--bg {
+      background-color: var(--bs-info-bg-subtle);
+      color: #a3e3e3; // NobleUI's info-text-emphasis in dark
+    }
+  }
+}
+
+// Layout variants
+.empty-state-container {
+  &--full {
+    min-height: calc(100vh - 200px); // Adjust based on header/footer height
+  }
+
+  &--inline {
+    min-height: auto;
+    padding: 1rem;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 576px) {
+  .empty-state-container {
+    padding: 1.5rem;
+    min-height: 300px;
+
+    .empty-state-content {
+      max-width: 100%;
+
+      .empty-state-title {
+        font-size: 1.125rem;
+      }
+
+      .empty-state-description {
+        font-size: 0.8125rem;
+      }
+
+      .empty-state-action {
+        flex-direction: column;
+        width: 100%;
+
+        > * {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Animation for empty state appearance
+@keyframes emptyStateFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-state-container {
+  &--animated {
+    .empty-state-content {
+      animation: emptyStateFadeIn 0.5s ease-out;
+    }
+  }
+}
+
+// With illustration support
+.empty-state-content {
+  .empty-state-illustration {
+    margin-bottom: 2rem;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      max-height: 200px;
+    }
+
+    svg {
+      max-width: 100%;
+      height: auto;
+      max-height: 200px;
+    }
+  }
+}

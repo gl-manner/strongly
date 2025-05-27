@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import { Roles } from 'meteor/alanning:roles'; // ✅ Added missing import
+import { Roles } from 'meteor/alanning:roles';
 import { useApp } from '/imports/ui/hooks/useApp';
 import feather from 'feather-icons';
 import './Sidebar.scss';
@@ -16,16 +16,37 @@ const Sidebar = ({ onKubernetesNavigate }) => {
   const location = useLocation();
   const { sidebarCollapsed, toggleSidebar } = useApp();
 
-  // Get current user with better error handling
-  const { currentUser, isAdmin, loading } = useTracker(() => {
+  // Get current user with better error handling and debugging
+  const { currentUser, isAdmin, loading, userRoles } = useTracker(() => {
     const user = Meteor.user();
 
-    // Handle case where Roles package might not be available
+    if (!user) {
+      return {
+        currentUser: null,
+        isAdmin: false,
+        loading: Meteor.loggingIn(),
+        userRoles: []
+      };
+    }
+
+    // Get user roles
+    let roles = [];
     let adminStatus = false;
+
     try {
-      adminStatus = user && Roles.userIsInRole(user._id, 'admin');
+      roles = Roles.getRolesForUser(user._id);
+      adminStatus = Roles.userIsInRole(user._id, 'admin');
+
+      // Debug logging (only in development)
+      if (Meteor.isDevelopment) {
+        console.log('Current user:', user.emails?.[0]?.address);
+        console.log('User ID:', user._id);
+        console.log('User roles:', roles);
+        console.log('Is admin:', adminStatus);
+        console.log('User profile:', user.profile);
+      }
     } catch (error) {
-      console.warn('Roles package not available or error checking admin status:', error);
+      console.error('Error checking user roles:', error);
       // Fallback: check if user has admin role in profile
       adminStatus = user && user.profile && user.profile.roles && user.profile.roles.includes('admin');
     }
@@ -33,7 +54,8 @@ const Sidebar = ({ onKubernetesNavigate }) => {
     return {
       currentUser: user,
       isAdmin: adminStatus,
-      loading: !Meteor.userId() && Meteor.loggingIn()
+      loading: false,
+      userRoles: roles
     };
   }, []);
 
@@ -58,6 +80,18 @@ const Sidebar = ({ onKubernetesNavigate }) => {
   useEffect(() => {
     feather.replace();
   }, []);
+
+  // Debug effect to log role changes
+  useEffect(() => {
+    if (Meteor.isDevelopment && currentUser) {
+      console.log('Sidebar - Current user changed:', {
+        email: currentUser.emails?.[0]?.address,
+        isAdmin,
+        userRoles,
+        userId: currentUser._id
+      });
+    }
+  }, [currentUser, isAdmin, userRoles]);
 
   // Determine active menu item
   const isActive = (path) => {
@@ -155,7 +189,7 @@ const Sidebar = ({ onKubernetesNavigate }) => {
           Strongly<span>AI</span>
         </Link>
         <div
-          className={`sidebar-toggler ${sidebarCollapsed ? 'active' : ''}`}
+          className={`sidebar-toggler ${!sidebarCollapsed ? 'active' : ''}`}
           onClick={toggleSidebar}
           role="button"
           tabIndex={0}
@@ -197,25 +231,6 @@ const Sidebar = ({ onKubernetesNavigate }) => {
             </Link>
           </li>
 
-          {/* Kubernetes - Single menu item that activates the Kubernetes sidebar */}
-          <li className={`nav-item ${isActiveSection('/kubernetes') ? 'active' : ''}`}>
-            <a
-              className="nav-link"
-              href="#"
-              onClick={handleKubernetesClick}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleKubernetesClick(e);
-                }
-              }}
-            >
-              <i className="link-icon" data-feather="server"></i>
-              <span className="link-title">Kubernetes</span>
-            </a>
-          </li>
-
           {/* Workflows dropdown */}
           <li className={`nav-item ${isActiveSection('/workflows') ? 'open' : ''}`}>
             <a
@@ -238,7 +253,7 @@ const Sidebar = ({ onKubernetesNavigate }) => {
               <ul className="nav sub-menu">
                 <li className="nav-item">
                   <Link
-                    to="/workflows/builder"
+                    to="/agent-workflow"
                     className={`nav-link ${isActive('/workflows/builder') ? 'active' : ''}`}
                   >
                     Builder
@@ -294,12 +309,23 @@ const Sidebar = ({ onKubernetesNavigate }) => {
           {/* OPERATIONS category */}
           <li className="nav-item nav-category">OPERATIONS</li>
 
-          {/* Platform */}
-          <li className={`nav-item ${isActive('/operations/platform') ? 'active' : ''}`}>
-            <Link to="/operations/platform" className="nav-link">
+          {/* Platform(Kubernetes) - Single menu item that activates the Kubernetes sidebar */}
+          <li className={`nav-item ${isActiveSection('/kubernetes') ? 'active' : ''}`}>
+            <a
+              className="nav-link"
+              href="#"
+              onClick={handleKubernetesClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleKubernetesClick(e);
+                }
+              }}
+            >
               <i className="link-icon" data-feather="server"></i>
               <span className="link-title">Platform</span>
-            </Link>
+            </a>
           </li>
 
           {/* AI Gateway */}

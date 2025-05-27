@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useTracker } from 'meteor/react-meteor-data';
+import { MarketplaceCollection } from '/imports/api/marketplace/MarketplaceCollection';
 import './MarketplaceDetail.scss';
 
-// Simple SVG icon components
+// Simple SVG icon components (same as before)
 const Icons = {
   ArrowLeft: ({ className = "" }) => (
     <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,95 +50,14 @@ const Icons = {
   )
 };
 
-// Mock detailed data for a marketplace item
-const mockDetailData = {
-  1: {
-    id: 1,
-    name: 'AI Financial Advisor Agent',
-    vendor: 'FinTech Solutions Inc.',
-    type: 'agent',
-    vertical: 'finance',
-    rating: 4.8,
-    reviews: 124,
-    price: '$2,500/month',
-    description: 'Intelligent financial advisory agent that provides personalized investment recommendations and portfolio management using advanced machine learning algorithms.',
-    longDescription: `Our AI Financial Advisor Agent revolutionizes personal and institutional investment management by leveraging cutting-edge machine learning algorithms and real-time market data analysis.
-
-The agent continuously monitors market conditions, analyzes portfolio performance, and provides personalized investment recommendations based on individual risk tolerance, financial goals, and market opportunities.
-
-Key capabilities include automated portfolio rebalancing, risk assessment, regulatory compliance monitoring, and integration with major financial data providers and trading platforms.`,
-    tags: ['AI/ML', 'Financial Planning', 'Investment', 'Portfolio Management', 'Risk Assessment'],
-    images: [
-      '/api/placeholder/600/400',
-      '/api/placeholder/600/400',
-      '/api/placeholder/600/400'
-    ],
-    features: [
-      'Real-time market analysis and alerts',
-      'Automated portfolio rebalancing',
-      'Personalized investment recommendations',
-      'Risk assessment and management',
-      'Regulatory compliance monitoring',
-      'Integration with 50+ financial data sources',
-      'Multi-asset class support',
-      'White-label customization options'
-    ],
-    specifications: {
-      'Deployment': 'Cloud-based SaaS',
-      'API Integration': 'RESTful APIs, WebSocket',
-      'Data Sources': '50+ financial data providers',
-      'Compliance': 'SOC 2, ISO 27001, GDPR',
-      'Support': '24/7 enterprise support',
-      'SLA': '99.9% uptime guarantee'
-    },
-    vendor_info: {
-      name: 'FinTech Solutions Inc.',
-      founded: '2018',
-      headquarters: 'New York, NY',
-      employees: '150-200',
-      description: 'Leading provider of AI-powered financial technology solutions for banks, investment firms, and fintech companies.',
-      certifications: ['SOC 2 Type II', 'ISO 27001', 'PCI DSS'],
-      website: 'https://fintechsolutions.com'
-    },
-    pricing_tiers: [
-      {
-        name: 'Starter',
-        price: '$1,500/month',
-        features: ['Up to 1,000 clients', 'Basic portfolio analysis', 'Email support'],
-        popular: false
-      },
-      {
-        name: 'Professional',
-        price: '$2,500/month',
-        features: ['Up to 5,000 clients', 'Advanced AI recommendations', 'Priority support', 'API access'],
-        popular: true
-      },
-      {
-        name: 'Enterprise',
-        price: 'Custom',
-        features: ['Unlimited clients', 'White-label options', 'Dedicated support', 'Custom integrations'],
-        popular: false
-      }
-    ],
-    reviews_sample: [
-      {
-        author: 'Sarah M.',
-        company: 'Metro Investment Group',
-        rating: 5,
-        date: '2024-01-15',
-        title: 'Excellent AI-powered insights',
-        content: 'The AI recommendations have significantly improved our portfolio performance. The integration was seamless and the support team is fantastic.'
-      },
-      {
-        author: 'David L.',
-        company: 'Capital Advisors LLC',
-        rating: 4,
-        date: '2024-01-10',
-        title: 'Great tool for portfolio management',
-        content: 'Very intuitive interface and powerful analytics. Would like to see more customization options for reporting.'
-      }
-    ]
-  }
+const verticalInfo = {
+  finance: { name: 'Financial Services', color: '#10B981' },
+  healthcare: { name: 'Healthcare & Life Sciences', color: '#3B82F6' },
+  automotive: { name: 'Automotive', color: '#EF4444' },
+  insurance: { name: 'Insurance', color: '#8B5CF6' },
+  'public-sector': { name: 'Public Sector', color: '#F59E0B' },
+  retail: { name: 'Retail & E-commerce', color: '#EC4899' },
+  technology: { name: 'Technology & Software', color: '#6366F1' }
 };
 
 export const MarketplaceDetail = () => {
@@ -144,18 +65,49 @@ export const MarketplaceDetail = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedImage, setSelectedImage] = useState(0);
-  const [item, setItem] = useState(null);
 
-  useEffect(() => {
-    // In a real app, this would fetch from an API
-    const itemData = mockDetailData[id];
-    setItem(itemData);
+  // Debug logging
+  console.log('MarketplaceDetail - Route ID:', id);
+  console.log('MarketplaceDetail - Component mounting');
+
+  // Get item data from MongoDB
+  const { item, isLoading } = useTracker(() => {
+    console.log('Subscribing to marketplace item:', id);
+    const handle = Meteor.subscribe('marketplace.item', id);
+    const item = MarketplaceCollection.findOne(id);
+
+    console.log('Subscription ready:', handle.ready());
+    console.log('Found item:', item ? item.name : 'No item found');
+
+    return {
+      item,
+      isLoading: !handle.ready()
+    };
   }, [id]);
+
+  // Add some debug info at the top of the component during development
+  if (Meteor.isDevelopment) {
+    console.log('MarketplaceDetail render - ID:', id, 'Loading:', isLoading, 'Item:', item?.name);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   if (!item) {
     return (
       <div className="container py-5 text-center">
-        <h4>Loading...</h4>
+        <h4>Solution not found</h4>
+        <p className="text-muted mb-4">The solution you're looking for doesn't exist or has been removed.</p>
+        <Link to="/marketplace" className="btn btn-primary">
+          Back to Marketplace
+        </Link>
       </div>
     );
   }
@@ -185,23 +137,23 @@ export const MarketplaceDetail = () => {
     <div className="marketplace-detail">
       {/* Header */}
       <div className="container py-4">
-        <div className="d-flex align-items-center mb-4">
-          <Link to="/marketplace" className="btn btn-outline-secondary me-3">
-            <Icons.ArrowLeft className="me-2" /> Back to Marketplace
-          </Link>
+        <div className="d-flex justify-content-between align-items-center mb-4">
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-0">
               <li className="breadcrumb-item">
                 <Link to="/marketplace">Marketplace</Link>
               </li>
               <li className="breadcrumb-item">
-                <Link to={`/marketplace?vertical=${item.vertical}`}>
-                  {item.vertical.charAt(0).toUpperCase() + item.vertical.slice(1)}
+                <Link to={`/marketplace/all?vertical=${item.vertical}`}>
+                  {verticalInfo[item.vertical]?.name || item.vertical}
                 </Link>
               </li>
               <li className="breadcrumb-item active">{item.name}</li>
             </ol>
           </nav>
+          <Link to="/marketplace" className="btn btn-outline-secondary">
+            <Icons.ArrowLeft className="me-2" /> Back to Marketplace
+          </Link>
         </div>
 
         {/* Product Header */}
@@ -210,27 +162,29 @@ export const MarketplaceDetail = () => {
             <div className="product-images">
               <div className="main-image mb-3">
                 <img
-                  src={item.images[selectedImage]}
+                  src={item.images?.[selectedImage] || item.image}
                   alt={item.name}
                   className="img-fluid rounded"
                   style={{ width: '100%', height: '400px', objectFit: 'cover' }}
                 />
               </div>
-              <div className="thumbnail-images">
-                <div className="row g-2">
-                  {item.images.map((image, index) => (
-                    <div key={index} className="col-4">
-                      <img
-                        src={image}
-                        alt={`${item.name} ${index + 1}`}
-                        className={`img-fluid rounded cursor-pointer ${selectedImage === index ? 'border border-primary' : ''}`}
-                        style={{ height: '80px', objectFit: 'cover', width: '100%' }}
-                        onClick={() => setSelectedImage(index)}
-                      />
-                    </div>
-                  ))}
+              {item.images && item.images.length > 1 && (
+                <div className="thumbnail-images">
+                  <div className="row g-2">
+                    {item.images.map((image, index) => (
+                      <div key={index} className="col-4">
+                        <img
+                          src={image}
+                          alt={`${item.name} ${index + 1}`}
+                          className={`img-fluid rounded cursor-pointer ${selectedImage === index ? 'border border-primary' : ''}`}
+                          style={{ height: '80px', objectFit: 'cover', width: '100%' }}
+                          onClick={() => setSelectedImage(index)}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -239,6 +193,9 @@ export const MarketplaceDetail = () => {
               <div className="mb-3">
                 <span className={`badge ${item.type === 'agent' ? 'bg-success' : 'bg-info'} mb-2`}>
                   {item.type === 'agent' ? 'AI Agent' : 'Application'}
+                </span>
+                <span className="badge bg-light text-dark ms-2">
+                  {verticalInfo[item.vertical]?.name || item.vertical}
                 </span>
               </div>
 
@@ -257,7 +214,7 @@ export const MarketplaceDetail = () => {
 
               <div className="pricing mb-4">
                 <div className="h4 text-primary mb-2">{item.price}</div>
-                <p className="text-muted small">Starting price for Professional tier</p>
+                <p className="text-muted small">Starting price</p>
               </div>
 
               <div className="tags mb-4">
@@ -312,10 +269,10 @@ export const MarketplaceDetail = () => {
             </li>
             <li className="nav-item">
               <button
-                className={`nav-link ${activeTab === 'pricing' ? 'active' : ''}`}
-                onClick={() => setActiveTab('pricing')}
+                className={`nav-link ${activeTab === 'specifications' ? 'active' : ''}`}
+                onClick={() => setActiveTab('specifications')}
               >
-                Pricing
+                Specifications
               </button>
             </li>
             <li className="nav-item">
@@ -343,38 +300,48 @@ export const MarketplaceDetail = () => {
                 <div className="col-lg-8">
                   <h3 className="mb-3">Product Description</h3>
                   <div className="mb-4">
-                    {item.longDescription.split('\n\n').map((paragraph, index) => (
-                      <p key={index} className="mb-3">{paragraph}</p>
-                    ))}
+                    {item.longDescription ? (
+                      item.longDescription.split('\n\n').map((paragraph, index) => (
+                        <p key={index} className="mb-3">{paragraph}</p>
+                      ))
+                    ) : (
+                      <p className="mb-3">{item.description}</p>
+                    )}
                   </div>
 
-                  <h4 className="mb-3">Key Features</h4>
-                  <div className="row">
-                    {item.features.slice(0, 6).map((feature, index) => (
-                      <div key={index} className="col-md-6 mb-2">
-                        <div className="d-flex align-items-start">
-                          <Icons.Check className="text-success me-2 mt-1 flex-shrink-0" />
-                          <span>{feature}</span>
-                        </div>
+                  {item.features && (
+                    <>
+                      <h4 className="mb-3">Key Features</h4>
+                      <div className="row">
+                        {item.features.slice(0, 6).map((feature, index) => (
+                          <div key={index} className="col-md-6 mb-2">
+                            <div className="d-flex align-items-start">
+                              <Icons.Check className="text-success me-2 mt-1 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="col-lg-4">
-                  <div className="card">
-                    <div className="card-header">
-                      <h5 className="mb-0">Specifications</h5>
+                  {item.specifications && (
+                    <div className="card">
+                      <div className="card-header">
+                        <h5 className="mb-0">Specifications</h5>
+                      </div>
+                      <div className="card-body">
+                        {Object.entries(item.specifications).map(([key, value]) => (
+                          <div key={key} className="mb-3">
+                            <div className="fw-semibold small text-muted">{key}</div>
+                            <div>{value}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="card-body">
-                      {Object.entries(item.specifications).map(([key, value]) => (
-                        <div key={key} className="mb-3">
-                          <div className="fw-semibold small text-muted">{key}</div>
-                          <div>{value}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             )}
@@ -382,56 +349,46 @@ export const MarketplaceDetail = () => {
             {activeTab === 'features' && (
               <div>
                 <h3 className="mb-4">Complete Features List</h3>
-                <div className="row">
-                  {item.features.map((feature, index) => (
-                    <div key={index} className="col-lg-6 mb-3">
-                      <div className="d-flex align-items-start">
-                        <Icons.Check className="text-success me-3 mt-1 flex-shrink-0" />
-                        <div>
-                          <strong>{feature}</strong>
+                {item.features ? (
+                  <div className="row">
+                    {item.features.map((feature, index) => (
+                      <div key={index} className="col-lg-6 mb-3">
+                        <div className="d-flex align-items-start">
+                          <Icons.Check className="text-success me-3 mt-1 flex-shrink-0" />
+                          <div>
+                            <strong>{feature}</strong>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted">Feature list not available for this solution.</p>
+                )}
               </div>
             )}
 
-            {activeTab === 'pricing' && (
+            {activeTab === 'specifications' && (
               <div>
-                <h3 className="mb-4">Pricing Plans</h3>
-                <div className="row">
-                  {item.pricing_tiers.map((tier, index) => (
-                    <div key={index} className="col-lg-4 mb-4">
-                      <div className={`card h-100 ${tier.popular ? 'border-primary' : ''}`}>
-                        {tier.popular && (
-                          <div className="card-header bg-primary text-white text-center">
-                            <strong>Most Popular</strong>
-                          </div>
-                        )}
-                        <div className="card-body text-center">
-                          <h4 className="card-title">{tier.name}</h4>
-                          <div className="h3 text-primary mb-3">{tier.price}</div>
-                          <ul className="list-unstyled">
-                            {tier.features.map((feature, idx) => (
-                              <li key={idx} className="mb-2">
-                                <Icons.Check className="text-success me-2" />
-                                {feature}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div className="card-footer">
-                          <div className="d-grid">
-                            <button className={`btn ${tier.popular ? 'btn-primary' : 'btn-outline-primary'}`}>
-                              {tier.price === 'Custom' ? 'Contact Sales' : 'Start Trial'}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                <h3 className="mb-4">Technical Specifications</h3>
+                {item.specifications ? (
+                  <div className="row">
+                    <div className="col-lg-8">
+                      <table className="table table-striped">
+                        <tbody>
+                          {Object.entries(item.specifications).map(([key, value]) => (
+                            <tr key={key}>
+                              <td className="fw-semibold">{key}</td>
+                              <td>{value}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <p className="text-muted">Technical specifications not available for this solution.</p>
+                )}
               </div>
             )}
 
@@ -452,28 +409,9 @@ export const MarketplaceDetail = () => {
                       <div className="text-muted">{item.reviews} reviews</div>
                     </div>
                     <div className="col-md-9">
-                      {/* Rating breakdown would go here */}
+                      <p className="text-muted">Review details would be loaded from the database here.</p>
                     </div>
                   </div>
-                </div>
-
-                <div className="reviews-list">
-                  {item.reviews_sample.map((review, index) => (
-                    <div key={index} className="review-item border-bottom pb-4 mb-4">
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                          <strong>{review.author}</strong>
-                          <span className="text-muted ms-2">{review.company}</span>
-                        </div>
-                        <small className="text-muted">{review.date}</small>
-                      </div>
-                      <div className="d-flex mb-2">
-                        {renderStars(review.rating)}
-                      </div>
-                      <h6>{review.title}</h6>
-                      <p className="text-muted">{review.content}</p>
-                    </div>
-                  ))}
                 </div>
               </div>
             )}
@@ -481,33 +419,18 @@ export const MarketplaceDetail = () => {
             {activeTab === 'vendor' && (
               <div className="row">
                 <div className="col-lg-8">
-                  <h3 className="mb-3">About {item.vendor_info.name}</h3>
-                  <p className="mb-4">{item.vendor_info.description}</p>
+                  <h3 className="mb-3">About {item.vendor}</h3>
+                  <p className="mb-4">
+                    Learn more about the vendor and their other solutions in the marketplace.
+                  </p>
 
                   <div className="row mb-4">
                     <div className="col-md-6">
                       <h5>Company Details</h5>
                       <ul className="list-unstyled">
-                        <li><strong>Founded:</strong> {item.vendor_info.founded}</li>
-                        <li><strong>Headquarters:</strong> {item.vendor_info.headquarters}</li>
-                        <li><strong>Company Size:</strong> {item.vendor_info.employees} employees</li>
-                        <li>
-                          <strong>Website:</strong>
-                          <a href={item.vendor_info.website} target="_blank" rel="noopener noreferrer" className="ms-2">
-                            {item.vendor_info.website} <Icons.ExternalLink />
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="col-md-6">
-                      <h5>Certifications</h5>
-                      <ul className="list-unstyled">
-                        {item.vendor_info.certifications.map((cert, index) => (
-                          <li key={index}>
-                            <Icons.Shield className="text-success me-2" />
-                            {cert}
-                          </li>
-                        ))}
+                        <li><strong>Vendor:</strong> {item.vendor}</li>
+                        <li><strong>Type:</strong> {item.type === 'agent' ? 'AI Agent Provider' : 'Application Provider'}</li>
+                        <li><strong>Industry Focus:</strong> {verticalInfo[item.vertical]?.name || item.vertical}</li>
                       </ul>
                     </div>
                   </div>

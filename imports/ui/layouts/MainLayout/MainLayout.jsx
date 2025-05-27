@@ -11,12 +11,12 @@ import './MainLayout.scss';
 /**
  * MainLayout component that incorporates NobleUI layout structure
  * This layout includes the sidebar, navbar, footer, and content area
- * It also handles the conditional rendering of the Kubernetes sidebar
+ * It handles the conditional rendering of the main vs Kubernetes sidebar
+ * Now both sidebars follow the same NobleUI patterns for consistency
  */
 export const MainLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { toggleSidebar } = useApp();
 
   // State to manage which sidebar is active
   const [showKubernetesSidebar, setShowKubernetesSidebar] = useState(false);
@@ -31,7 +31,7 @@ export const MainLayout = () => {
   useEffect(() => {
     // Initialize feather icons
     feather.replace();
-
+    
     // Add a MutationObserver to watch for DOM changes and reinitialize feather icons
     const observer = new MutationObserver(() => {
       feather.replace();
@@ -52,11 +52,7 @@ export const MainLayout = () => {
   // Initialize perfect scrollbar for sidebar
   useEffect(() => {
     if (typeof PerfectScrollbar !== 'undefined') {
-      const sidebarSelector = showKubernetesSidebar
-        ? '.kubernetes-sidebar .sidebar-body'
-        : '.sidebar .sidebar-body';
-
-      const sidebarBodyEl = document.querySelector(sidebarSelector);
+      const sidebarBodyEl = document.querySelector('.sidebar .sidebar-body');
       if (sidebarBodyEl) {
         const ps = new PerfectScrollbar(sidebarBodyEl);
         // Cleanup on unmount
@@ -71,33 +67,14 @@ export const MainLayout = () => {
   const handleKubernetesNavigate = () => {
     setShowKubernetesSidebar(true);
     navigate('/kubernetes/dashboard');
-
-    // On mobile, we want to collapse the main sidebar
-    toggleSidebar();
   };
-
-  // Update body class based on active sidebar
-  useEffect(() => {
-    if (showKubernetesSidebar) {
-      document.body.classList.add('kubernetes-active');
-    } else {
-      document.body.classList.remove('kubernetes-active');
-    }
-
-    return () => {
-      document.body.classList.remove('kubernetes-active');
-    };
-  }, [showKubernetesSidebar]);
 
   return (
     <div className="main-wrapper">
-      {/* Main sidebar - hidden when Kubernetes sidebar is active */}
-      {!showKubernetesSidebar && (
+      {/* Conditionally render either main sidebar or Kubernetes sidebar */}
+      {!showKubernetesSidebar ? (
         <Sidebar onKubernetesNavigate={handleKubernetesNavigate} />
-      )}
-
-      {/* Kubernetes sidebar - shown only when we're in the Kubernetes section */}
-      {showKubernetesSidebar && (
+      ) : (
         <KubernetesSidebar />
       )}
 
@@ -108,17 +85,6 @@ export const MainLayout = () => {
         </div>
         <Footer />
       </div>
-
-      {/* Mobile backdrop for Kubernetes sidebar */}
-      {showKubernetesSidebar && (
-        <div
-          className="kubernetes-sidebar-backdrop show"
-          onClick={() => {
-            setShowKubernetesSidebar(false);
-            navigate('/');
-          }}
-        ></div>
-      )}
     </div>
   );
 };

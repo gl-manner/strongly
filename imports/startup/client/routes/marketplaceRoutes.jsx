@@ -17,28 +17,69 @@ export const marketplaceRoutes = [
             path: "marketplace",
             element: <Marketplace />
           },
-          // View all industries page
+
+          // View all apps and agents
           {
             path: "marketplace/all",
             element: <MarketplaceViewAll />
           },
-          // Marketplace item detail page
+
+          // IMPORTANT: Specific routes must come BEFORE generic patterns
+          // Individual marketplace item detail page - NEW PATTERN
           {
-            path: "marketplace/:id",
+            path: "marketplace/item/:id",
             element: <MarketplaceDetail />
           },
+
           // Browse by vertical
           {
             path: "marketplace/vertical/:vertical",
-            element: <Marketplace />
+            element: <MarketplaceViewAll />
           },
-          // Browse by type (apps/agents)
+
+          // Browse by type
           {
             path: "marketplace/type/:type",
-            element: <Marketplace />
+            element: <MarketplaceViewAll />
+          },
+
+          // Combined filtering
+          {
+            path: "marketplace/vertical/:vertical/type/:type",
+            element: <MarketplaceViewAll />
+          },
+
+          // Legacy support - THIS MUST BE LAST to avoid conflicts
+          {
+            path: "marketplace/:id",
+            element: <MarketplaceDetail />
           }
         ]
       }
     ]
   }
 ];
+
+// Debug component to test route matching
+export const RouteDebugger = () => {
+  const location = useLocation();
+  const params = useParams();
+
+  console.log('Current route:', location.pathname);
+  console.log('Route params:', params);
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      right: 0,
+      background: 'yellow',
+      padding: '10px',
+      fontSize: '12px',
+      zIndex: 9999
+    }}>
+      <div>Path: {location.pathname}</div>
+      <div>Params: {JSON.stringify(params)}</div>
+    </div>
+  );
+};

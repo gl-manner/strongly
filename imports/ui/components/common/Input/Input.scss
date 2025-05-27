@@ -1,0 +1,97 @@
+// Input.scss
+.input {
+  display: inline-block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #111827;
+  background-color: #ffffff;
+  background-clip: padding-box;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  // Sizes
+  &--small {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  &--medium {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  &--large {
+    padding: 0.625rem 1rem;
+    font-size: 1rem;
+  }
+
+  // States
+  &--error {
+    border-color: #ef4444;
+
+    &:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+  }
+
+  &--disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+
+  // With icons
+  &--with-icon {
+    padding-left: 2.5rem;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  .input--with-icon {
+    &:has(~ .input-icon--end) {
+      padding-right: 2.5rem;
+      padding-left: 0.75rem;
+    }
+  }
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  pointer-events: none;
+
+  &--start {
+    left: 0.75rem;
+  }
+
+  &--end {
+    right: 0.75rem;
+  }
+}

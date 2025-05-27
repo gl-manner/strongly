@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTracker } from 'meteor/react-meteor-data';
+import { MarketplaceCollection } from '/imports/api/marketplace/MarketplaceCollection';
 import './Marketplace.scss';
 
-// Simple SVG icon components
 const Icons = {
   Search: ({ className = "" }) => (
     <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -34,177 +35,315 @@ const Icons = {
       <polyline points="15,3 21,3 21,9"></polyline>
       <line x1="10" y1="14" x2="21" y2="3"></line>
     </svg>
+  ),
+  // Vertical Industry Icons
+  Finance: ({ className = "", color = "#10B981" }) => (
+    <svg className={className} width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="financeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
+          <stop offset="100%" stopColor={color} stopOpacity="1"/>
+        </linearGradient>
+      </defs>
+      {/* Bank building base */}
+      <rect x="8" y="20" width="48" height="36" fill="url(#financeGrad)" rx="2"/>
+      {/* Columns */}
+      <rect x="12" y="16" width="4" height="24" fill={color} opacity="0.9"/>
+      <rect x="20" y="16" width="4" height="24" fill={color} opacity="0.9"/>
+      <rect x="28" y="16" width="4" height="24" fill={color} opacity="0.9"/>
+      <rect x="36" y="16" width="4" height="24" fill={color} opacity="0.9"/>
+      <rect x="44" y="16" width="4" height="24" fill={color} opacity="0.9"/>
+      {/* Roof/Top */}
+      <polygon points="32,8 56,16 8,16" fill={color}/>
+      {/* Door */}
+      <rect x="28" y="40" width="8" height="16" fill="white" opacity="0.9"/>
+      {/* Dollar sign overlay */}
+      <circle cx="48" cy="16" r="8" fill="white" opacity="0.95"/>
+      <text x="48" y="21" textAnchor="middle" fontSize="10" fontWeight="bold" fill={color}>$</text>
+    </svg>
+  ),
+  Healthcare: ({ className = "", color = "#3B82F6" }) => (
+    <svg className={className} width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="healthGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.9"/>
+          <stop offset="100%" stopColor={color} stopOpacity="1"/>
+        </linearGradient>
+        <linearGradient id="healthAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.6"/>
+          <stop offset="100%" stopColor={color} stopOpacity="0.8"/>
+        </linearGradient>
+      </defs>
+
+      {/* Hospital building base */}
+      <rect x="12" y="20" width="40" height="36" fill="url(#healthGrad)" rx="4"/>
+
+      {/* Hospital cross - centered and prominent */}
+      <rect x="28" y="12" width="8" height="24" fill="white" rx="2"/>
+      <rect x="20" y="20" width="24" height="8" fill="white" rx="2"/>
+
+      {/* Windows pattern */}
+      <rect x="16" y="40" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+      <rect x="24" y="40" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+      <rect x="36" y="40" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+      <rect x="44" y="40" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+
+      <rect x="16" y="48" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+      <rect x="24" y="48" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+      <rect x="36" y="48" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+      <rect x="44" y="48" width="4" height="4" fill="white" opacity="0.8" rx="1"/>
+
+      {/* Medical symbol accent - stethoscope */}
+      <circle cx="48" cy="12" r="6" fill="url(#healthAccent)"/>
+      <circle cx="48" cy="12" r="3" fill="white" opacity="0.9"/>
+      <path d="M45 15 Q48 18 51 15" stroke={color} strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+      {/* Heartbeat line - simplified and cleaner */}
+      <path d="M8 58 L12 58 L14 54 L16 62 L18 50 L20 58 L56 58"
+            stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    </svg>
+  ),
+  Automotive: ({ className = "", color = "#EF4444" }) => (
+    <svg className={className} width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="autoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
+          <stop offset="100%" stopColor={color} stopOpacity="1"/>
+        </linearGradient>
+      </defs>
+      {/* Car body */}
+      <ellipse cx="32" cy="36" rx="26" ry="12" fill="url(#autoGrad)"/>
+      <rect x="10" y="30" width="44" height="12" fill="url(#autoGrad)" rx="6"/>
+      {/* Car roof */}
+      <path d="M18 30 Q32 16 46 30" fill={color} opacity="0.9"/>
+      {/* Windows */}
+      <ellipse cx="28" cy="26" rx="8" ry="4" fill="white" opacity="0.8"/>
+      <ellipse cx="36" cy="26" rx="8" ry="4" fill="white" opacity="0.8"/>
+      {/* Wheels */}
+      <circle cx="20" cy="44" r="6" fill="#333"/>
+      <circle cx="44" cy="44" r="6" fill="#333"/>
+      <circle cx="20" cy="44" r="3" fill="#666"/>
+      <circle cx="44" cy="44" r="3" fill="#666"/>
+      {/* Technology indicators */}
+      <circle cx="48" cy="20" r="2" fill={color} opacity="0.7"/>
+      <circle cx="52" cy="16" r="1.5" fill={color} opacity="0.5"/>
+      <circle cx="44" cy="16" r="1.5" fill={color} opacity="0.5"/>
+      <path d="M44 16 L48 20 L52 16" stroke={color} strokeWidth="1" opacity="0.6"/>
+    </svg>
+  ),
+  Insurance: ({ className = "", color = "#8B5CF6" }) => (
+    <svg className={className} width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="insuranceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
+          <stop offset="100%" stopColor={color} stopOpacity="1"/>
+        </linearGradient>
+      </defs>
+      {/* Shield main body */}
+      <path d="M32 8 L48 16 L48 36 Q48 48 32 56 Q16 48 16 36 L16 16 Z" fill="url(#insuranceGrad)"/>
+      {/* Shield inner highlight */}
+      <path d="M32 12 L44 18 L44 34 Q44 44 32 50 Q20 44 20 34 L20 18 Z" fill="white" opacity="0.1"/>
+      {/* Checkmark */}
+      <path d="M26 32 L31 37 L40 26" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* Protective circles */}
+      <circle cx="48" cy="48" r="6" fill={color} opacity="0.3"/>
+      <circle cx="16" cy="48" r="4" fill={color} opacity="0.3"/>
+      <circle cx="56" cy="32" r="3" fill={color} opacity="0.4"/>
+      <circle cx="8" cy="28" r="3" fill={color} opacity="0.4"/>
+    </svg>
+  ),
+  PublicSector: ({ className = "", color = "#F59E0B" }) => (
+    <svg className={className} width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="govGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
+          <stop offset="100%" stopColor={color} stopOpacity="1"/>
+        </linearGradient>
+      </defs>
+      {/* Government building base */}
+      <rect x="8" y="24" width="48" height="32" fill="url(#govGrad)" rx="2"/>
+      {/* Columns */}
+      <rect x="12" y="20" width="4" height="28" fill="white" opacity="0.9"/>
+      <rect x="18" y="20" width="4" height="28" fill="white" opacity="0.9"/>
+      <rect x="24" y="20" width="4" height="28" fill="white" opacity="0.9"/>
+      <rect x="36" y="20" width="4" height="28" fill="white" opacity="0.9"/>
+      <rect x="42" y="20" width="4" height="28" fill="white" opacity="0.9"/>
+      <rect x="48" y="20" width="4" height="28" fill="white" opacity="0.9"/>
+      {/* Dome/Capitol roof */}
+      <ellipse cx="32" cy="20" rx="16" ry="8" fill={color}/>
+      <ellipse cx="32" cy="16" rx="12" ry="6" fill={color} opacity="0.9"/>
+      <rect x="30" y="8" width="4" height="12" fill={color}/>
+      <circle cx="32" cy="8" r="3" fill={color}/>
+      {/* Flag */}
+      <rect x="48" y="12" width="8" height="6" fill="#DC2626"/>
+      <rect x="48" y="12" width="2" height="16" fill="#374151"/>
+      {/* Steps */}
+      <rect x="4" y="52" width="56" height="4" fill={color} opacity="0.7"/>
+      <rect x="6" y="48" width="52" height="4" fill={color} opacity="0.5"/>
+    </svg>
+  ),
+  Retail: ({ className = "", color = "#EC4899" }) => (
+    <svg className={className} width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="retailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
+          <stop offset="100%" stopColor={color} stopOpacity="1"/>
+        </linearGradient>
+      </defs>
+      {/* Shopping bag main body */}
+      <path d="M16 24 L48 24 L46 52 L18 52 Z" fill="url(#retailGrad)" rx="2"/>
+      {/* Bag handles */}
+      <path d="M24 24 L24 18 Q24 12 32 12 Q40 12 40 18 L40 24"
+            stroke={color} strokeWidth="3" fill="none" strokeLinecap="round"/>
+      {/* Store front accent */}
+      <rect x="12" y="16" width="40" height="8" fill="white" opacity="0.2" rx="4"/>
+      {/* Shopping cart icon overlay */}
+      <circle cx="48" cy="16" r="8" fill="white" opacity="0.95"/>
+      {/* Cart body */}
+      <rect x="44" y="14" width="6" height="4" fill={color} rx="1"/>
+      <path d="M44 14 L42 12 L41 12" stroke={color} strokeWidth="1" fill="none"/>
+      {/* Cart wheels */}
+      <circle cx="45" cy="19" r="1" fill={color}/>
+      <circle cx="49" cy="19" r="1" fill={color}/>
+      {/* Digital elements */}
+      <circle cx="12" cy="36" r="2" fill="white" opacity="0.6"/>
+      <circle cx="52" cy="40" r="2" fill="white" opacity="0.6"/>
+      <circle cx="8" cy="44" r="1.5" fill="white" opacity="0.4"/>
+      <path d="M8 44 L12 36 L52 40" stroke="white" strokeWidth="1" opacity="0.3"/>
+    </svg>
+  ),
+  Technology: ({ className = "", color = "#6366F1" }) => (
+   <svg className={className} width="64" height="64" viewBox="0 0 64 64" fill="none">
+     <defs>
+       <linearGradient id="techGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+         <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
+         <stop offset="100%" stopColor={color} stopOpacity="1"/>
+       </linearGradient>
+     </defs>
+     {/* Main monitor/screen */}
+     <rect x="12" y="16" width="40" height="28" fill="url(#techGrad)" rx="3"/>
+     {/* Screen content/code lines */}
+     <rect x="16" y="20" width="32" height="2" fill="white" opacity="0.8" rx="1"/>
+     <rect x="16" y="24" width="24" height="2" fill="white" opacity="0.6" rx="1"/>
+     <rect x="16" y="28" width="28" height="2" fill="white" opacity="0.8" rx="1"/>
+     <rect x="16" y="32" width="20" height="2" fill="white" opacity="0.6" rx="1"/>
+     <rect x="16" y="36" width="30" height="2" fill="white" opacity="0.8" rx="1"/>
+     {/* Monitor stand */}
+     <rect x="28" y="44" width="8" height="8" fill={color} opacity="0.9"/>
+     <rect x="20" y="52" width="24" height="4" fill={color} opacity="0.8" rx="2"/>
+     {/* Code brackets accent */}
+     <circle cx="48" cy="12" r="8" fill="white" opacity="0.95"/>
+     <text x="48" y="17" textAnchor="middle" fontSize="10" fontWeight="bold" fill={color}>{"<>"}</text>
+     {/* Network nodes */}
+     <circle cx="8" cy="32" r="3" fill={color} opacity="0.7"/>
+     <circle cx="56" cy="28" r="3" fill={color} opacity="0.7"/>
+     <circle cx="6" cy="48" r="2" fill={color} opacity="0.5"/>
+     <circle cx="58" cy="44" r="2" fill={color} opacity="0.5"/>
+     {/* Connection lines */}
+     <path d="M8 32 L12 28 M56 28 L52 32 M6 48 L12 44"
+           stroke={color} strokeWidth="1.5" opacity="0.4"/>
+   </svg>
   )
 };
 
-// Mock data for marketplace items
-const mockMarketplaceData = {
-  verticals: [
-    {
-      id: 'finance',
-      name: 'Financial Services',
-      description: 'Banking, payments, trading, and fintech solutions',
-      icon: '💰',
-      itemCount: 234
-    },
-    {
-      id: 'healthcare',
-      name: 'Healthcare & Life Sciences',
-      description: 'Medical devices, pharmaceuticals, and health tech',
-      icon: '🏥',
-      itemCount: 189
-    },
-    {
-      id: 'automotive',
-      name: 'Automotive',
-      description: 'Connected vehicles, manufacturing, and mobility',
-      icon: '🚗',
-      itemCount: 156
-    },
-    {
-      id: 'insurance',
-      name: 'Insurance',
-      description: 'Risk management, claims processing, and insurtech',
-      icon: '🛡️',
-      itemCount: 143
-    },
-    {
-      id: 'public-sector',
-      name: 'Public Sector',
-      description: 'Government services, civic tech, and compliance',
-      icon: '🏛️',
-      itemCount: 127
-    },
-    {
-      id: 'retail',
-      name: 'Retail & E-commerce',
-      description: 'Point of sale, inventory, and customer experience',
-      icon: '🛒',
-      itemCount: 198
-    }
-  ],
-  featuredItems: [
-    {
-      id: 1,
-      name: 'AI Financial Advisor Agent',
-      vendor: 'FinTech Solutions Inc.',
-      type: 'agent',
-      vertical: 'finance',
-      rating: 4.8,
-      reviews: 124,
-      price: '$2,500/month',
-      description: 'Intelligent financial advisory agent that provides personalized investment recommendations and portfolio management.',
-      tags: ['AI/ML', 'Financial Planning', 'Investment'],
-      image: '/api/placeholder/280/160'
-    },
-    {
-      id: 2,
-      name: 'Healthcare Data Analytics Platform',
-      vendor: 'MedTech Analytics',
-      type: 'app',
-      vertical: 'healthcare',
-      rating: 4.6,
-      reviews: 89,
-      price: '$5,000/month',
-      description: 'Comprehensive analytics platform for healthcare providers to track patient outcomes and optimize operations.',
-      tags: ['Analytics', 'Healthcare', 'Data Science'],
-      image: '/api/placeholder/280/160'
-    },
-    {
-      id: 3,
-      name: 'Smart Vehicle Fleet Manager',
-      vendor: 'AutoTech Systems',
-      type: 'app',
-      vertical: 'automotive',
-      rating: 4.7,
-      reviews: 156,
-      price: '$1,800/month',
-      description: 'IoT-enabled fleet management solution for tracking, maintenance, and optimization of vehicle fleets.',
-      tags: ['IoT', 'Fleet Management', 'Automotive'],
-      image: '/api/placeholder/280/160'
-    },
-    {
-      id: 4,
-      name: 'Insurance Claims Processing Agent',
-      vendor: 'InsureTech AI',
-      type: 'agent',
-      vertical: 'insurance',
-      rating: 4.9,
-      reviews: 203,
-      price: '$3,200/month',
-      description: 'AI-powered agent that automates insurance claims processing and fraud detection.',
-      tags: ['AI/ML', 'Claims Processing', 'Fraud Detection'],
-      image: '/api/placeholder/280/160'
-    },
-    {
-      id: 5,
-      name: 'Citizen Services Portal',
-      vendor: 'GovTech Solutions',
-      type: 'app',
-      vertical: 'public-sector',
-      rating: 4.5,
-      reviews: 67,
-      price: '$4,500/month',
-      description: 'Digital platform for citizens to access government services and submit applications online.',
-      tags: ['Government', 'Digital Services', 'Citizen Engagement'],
-      image: '/api/placeholder/280/160'
-    },
-    {
-      id: 6,
-      name: 'E-commerce Personalization Engine',
-      vendor: 'Retail AI Corp',
-      type: 'agent',
-      vertical: 'retail',
-      rating: 4.8,
-      reviews: 312,
-      price: '$2,800/month',
-      description: 'AI agent that personalizes shopping experiences and product recommendations for e-commerce platforms.',
-      tags: ['AI/ML', 'Personalization', 'E-commerce'],
-      image: '/api/placeholder/280/160'
-    }
-  ]
+const verticalInfo = {
+  finance: {
+    id: 'finance',
+    name: 'Financial Services',
+    description: 'Banking, payments, trading, and fintech solutions',
+    icon: 'Finance',
+    color: '#10B981'
+  },
+  healthcare: {
+    id: 'healthcare',
+    name: 'Healthcare & Life Sciences',
+    description: 'Medical devices, pharmaceuticals, and health tech',
+    icon: 'Healthcare',
+    color: '#3B82F6'
+  },
+  insurance: {
+    id: 'insurance',
+    name: 'Insurance',
+    description: 'Risk management, claims processing, and insurtech',
+    icon: 'Insurance',
+    color: '#8B5CF6'
+  },
+  'public-sector': {
+    id: 'public-sector',
+    name: 'Public Sector',
+    description: 'Government services, civic tech, and compliance',
+    icon: 'PublicSector',
+    color: '#F59E0B'
+  },
+  retail: {
+    id: 'retail',
+    name: 'Retail & E-commerce',
+    description: 'Point of sale, inventory, and customer experience',
+    icon: 'Retail',
+    color: '#EC4899'
+  },
+  technology: {
+    id: 'technology',
+    name: 'Technology & Software',
+    description: 'Developer tools, APIs, cloud services, and enterprise software',
+    icon: 'Technology',
+    color: '#6366F1'
+  }
 };
 
 export const Marketplace = () => {
   const navigate = useNavigate();
-  const { vertical, type } = useParams(); // Get URL parameters
+  const { vertical, type } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVertical, setSelectedVertical] = useState(vertical || '');
   const [selectedType, setSelectedType] = useState(type || '');
-  const [filteredItems, setFilteredItems] = useState(mockMarketplaceData.featuredItems);
 
-  // Update filters when URL parameters change
-  useEffect(() => {
-    setSelectedVertical(vertical || '');
-    setSelectedType(type || '');
-  }, [vertical, type]);
+  // Get data from MongoDB
+  const { featuredItems, verticals, isLoading } = useTracker(() => {
+    const featuredHandle = Meteor.subscribe('marketplace.items', { featured: true, limit: 6 });
 
-  // Filter items based on search and filters
-  useEffect(() => {
-    let filtered = mockMarketplaceData.featuredItems;
-
+    const query = {};
     if (searchQuery) {
-      filtered = filtered.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.vendor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+      query.$or = [
+        { name: { $regex: searchQuery, $options: 'i' } },
+        { description: { $regex: searchQuery, $options: 'i' } },
+        { vendor: { $regex: searchQuery, $options: 'i' } },
+        { tags: { $in: [new RegExp(searchQuery, 'i')] } }
+      ];
     }
-
     if (selectedVertical) {
-      filtered = filtered.filter(item => item.vertical === selectedVertical);
+      query.vertical = selectedVertical;
     }
-
     if (selectedType) {
-      filtered = filtered.filter(item => item.type === selectedType);
+      query.type = selectedType;
     }
 
-    setFilteredItems(filtered);
+    const featuredItems = MarketplaceCollection.find(
+      { ...query, featured: true },
+      { sort: { rating: -1, reviews: -1 }, limit: 6 }
+    ).fetch();
+
+    // Get vertical counts
+    const allItems = MarketplaceCollection.find().fetch();
+    const verticalCounts = {};
+    allItems.forEach(item => {
+      verticalCounts[item.vertical] = (verticalCounts[item.vertical] || 0) + 1;
+    });
+
+    const verticals = Object.keys(verticalInfo).map(verticalId => ({
+      ...verticalInfo[verticalId],
+      itemCount: verticalCounts[verticalId] || 0
+    }));
+
+    return {
+      featuredItems,
+      verticals,
+      isLoading: !featuredHandle.ready()
+    };
   }, [searchQuery, selectedVertical, selectedType]);
 
   const handleVerticalClick = (verticalId) => {
-    setSelectedVertical(verticalId);
+    navigate(`/marketplace/all?vertical=${verticalId}`);
   };
 
   const renderStars = (rating) => {
@@ -226,6 +365,11 @@ export const Marketplace = () => {
     }
 
     return stars;
+  };
+
+  const renderVerticalIcon = (vertical) => {
+    const IconComponent = Icons[vertical.icon];
+    return IconComponent ? <IconComponent color={vertical.color} /> : null;
   };
 
   return (
@@ -295,7 +439,7 @@ export const Marketplace = () => {
                     onChange={(e) => setSelectedVertical(e.target.value)}
                   >
                     <option value="">All Industries</option>
-                    {mockMarketplaceData.verticals.map(vertical => (
+                    {verticals.map(vertical => (
                       <option key={vertical.id} value={vertical.id}>
                         {vertical.name}
                       </option>
@@ -323,12 +467,12 @@ export const Marketplace = () => {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2 className="section-title">Browse by Industry</h2>
             <Link to="/marketplace/all" className="btn btn-outline-primary">
-              View All <Icons.ArrowRight className="ms-1" />
+              View All Apps & Agents <Icons.ArrowRight className="ms-1" />
             </Link>
           </div>
 
           <div className="row g-4">
-            {mockMarketplaceData.verticals.map(vertical => (
+            {verticals.map(vertical => (
               <div key={vertical.id} className="col-lg-4 col-md-6">
                 <div
                   className={`vertical-card card h-100 ${selectedVertical === vertical.id ? 'border-primary' : ''}`}
@@ -336,8 +480,8 @@ export const Marketplace = () => {
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="card-body text-center">
-                    <div className="vertical-icon mb-3" style={{ fontSize: '3rem' }}>
-                      {vertical.icon}
+                    <div className="vertical-icon mb-3">
+                      {renderVerticalIcon(vertical)}
                     </div>
                     <h5 className="card-title">{vertical.name}</h5>
                     <p className="text-muted mb-3">{vertical.description}</p>
@@ -356,11 +500,17 @@ export const Marketplace = () => {
               {selectedVertical || selectedType || searchQuery ? 'Filtered Results' : 'Featured Solutions'}
             </h2>
             <div className="text-muted">
-              {filteredItems.length} solution{filteredItems.length !== 1 ? 's' : ''} found
+              {isLoading ? 'Loading...' : `${featuredItems.length} solution${featuredItems.length !== 1 ? 's' : ''} found`}
             </div>
           </div>
 
-          {filteredItems.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : featuredItems.length === 0 ? (
             <div className="text-center py-5">
               <h4 className="text-muted">No solutions found</h4>
               <p className="text-muted">Try adjusting your search criteria or browse different categories.</p>
@@ -377,8 +527,8 @@ export const Marketplace = () => {
             </div>
           ) : (
             <div className="row g-4">
-              {filteredItems.map(item => (
-                <div key={item.id} className="col-lg-4 col-md-6">
+              {featuredItems.map(item => (
+                <div key={item._id} className="col-lg-4 col-md-6">
                   <div className="solution-card card h-100">
                     <img
                       src={item.image}
@@ -425,7 +575,7 @@ export const Marketplace = () => {
                             <strong className="text-primary">{item.price}</strong>
                           </div>
                           <Link
-                            to={`/marketplace/${item.id}`}
+                            to={`/marketplace/item/${item._id}`}
                             className="btn btn-primary btn-sm"
                           >
                             View Details

@@ -18,4 +18,11 @@ body {
   .btn-group .dropdown-toggle:after, .dropdown .dropdown-toggle:after {
     content: None;
   }
+
+  .page-inner-container {
+    padding: 1.5rem;
+    font-family: var(--bs-body-font-family);
+    background-color: var(--bs-gray-100);
+    min-height: 100vh;
+  }
 }

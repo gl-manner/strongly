@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
+import { useApp } from '/imports/ui/hooks/useApp';
 import { Dropdown } from '../Dropdown/Dropdown';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import './Navbar.scss';
@@ -15,6 +16,9 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
 
+  // Use the app context for sidebar toggling
+  const { toggleSidebar } = useApp();
+
   // Get current user
   const { currentUser } = useTracker(() => {
     return {
@@ -22,10 +26,12 @@ const Navbar = () => {
     };
   }, []);
 
-  // Toggle sidebar on mobile
-  const toggleSidebar = () => {
-    document.body.classList.toggle('sidebar-open');
-  };
+  // Initialize feather icons when component mounts or updates
+  useEffect(() => {
+    if (window.feather) {
+      window.feather.replace();
+    }
+  });
 
   // Calculate user initials for avatar if no profile image
   const getUserInitials = () => {
@@ -65,11 +71,6 @@ const Navbar = () => {
       icon: 'user',
       label: 'Profile',
       to: '/profile'
-    },
-    {
-      icon: 'edit',
-      label: 'Edit Profile',
-      to: '/profile/edit'
     },
     {
       type: 'divider'
@@ -132,7 +133,7 @@ const Navbar = () => {
   // Notification trigger element
   const notificationTrigger = (
     <>
-      <i data-feather="bell"></i>
+      <i data-feather="bell" className="icon-md"></i>
       <div className="indicator">
         <div className="circle"></div>
       </div>
@@ -141,17 +142,22 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <a href="#" className="sidebar-toggler" onClick={(e) => {
-        e.preventDefault();
-        toggleSidebar();
-      }}>
+      <a
+        href="#"
+        className="sidebar-toggler"
+        onClick={(e) => {
+          e.preventDefault();
+          toggleSidebar();
+        }}
+        aria-label="Toggle sidebar"
+      >
         <i data-feather="menu"></i>
       </a>
 
       <div className="navbar-content">
         <ul className="navbar-nav">
           {/* Notifications Dropdown */}
-          <li className="nav-item dropdown">
+          <li className="nav-item dropdown icon-header">
             <div className="position-relative">
               <Dropdown
                 open={notificationDropdownOpen}

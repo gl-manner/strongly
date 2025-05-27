@@ -4,19 +4,17 @@ import { check } from 'meteor/check';
 import { MarketplaceCollection } from './MarketplaceCollection';
 
 Meteor.methods({
-  'marketplace.getItems'(filters = {}) {
+  async 'marketplace.getItems'(filters = {}) {
     check(filters, Object);
+    console.log('Method marketplace.getItems called with filters:', filters);
 
     const query = {};
-
     if (filters.vertical) {
       query.vertical = filters.vertical;
     }
-
     if (filters.type) {
       query.type = filters.type;
     }
-
     if (filters.search) {
       query.$or = [
         { name: { $regex: filters.search, $options: 'i' } },
@@ -26,17 +24,27 @@ Meteor.methods({
       ];
     }
 
-    return MarketplaceCollection.find(query, {
+    const items = await MarketplaceCollection.find(query, {
       sort: { featured: -1, rating: -1, createdAt: -1 }
-    }).fetch();
+    }).fetchAsync();
+
+    console.log('Method returning items count:', items.length);
+    return items;
   },
 
-  'marketplace.getItem'(itemId) {
+  async 'marketplace.getItem'(itemId) {
     check(itemId, String);
-    return MarketplaceCollection.findOne(itemId);
+    console.log('Method marketplace.getItem called for:', itemId);
+
+    const item = await MarketplaceCollection.findOneAsync(itemId);
+    console.log('Method found item:', item ? item.name : 'Not found');
+
+    return item;
   },
 
-  'marketplace.getVerticals'() {
+  async 'marketplace.getVerticals'() {
+    console.log('Method marketplace.getVerticals called');
+
     // Return aggregated data for verticals with counts
     const pipeline = [
       {
@@ -49,6 +57,9 @@ Meteor.methods({
       { $sort: { count: -1 } }
     ];
 
-    return MarketplaceCollection.aggregate(pipeline);
+    const verticals = await MarketplaceCollection.aggregateAsync(pipeline);
+    console.log('Method returning verticals:', verticals);
+
+    return verticals;
   }
 });

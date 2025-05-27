@@ -71,13 +71,13 @@ Meteor.methods({
    * Update the current user's profile
    * @param {Object} profileData - User profile data to update
    */
-  'users.updateProfile': function(profileData) {
+  'users.updateProfile': async function(profileData) {
     check(profileData, {
       name: String,
       phone: Match.Maybe(String),
-      bio: Match.Maybe(String),
-      location: Match.Maybe(String),
-      website: Match.Maybe(String)
+      organization: Match.Maybe(String),
+      role: Match.Maybe(String),
+      location: Match.Maybe(String)
     });
 
     // Check if user is logged in
@@ -86,23 +86,106 @@ Meteor.methods({
     }
 
     // Get the current user's profile
-    const user = Meteor.users.findOne(this.userId);
+    const user = await Meteor.users.findOneAsync(this.userId);
     if (!user) {
       throw new Meteor.Error('not-found', 'User not found');
     }
 
     // Update the user's profile
-    return Meteor.users.update(
+    return Meteor.users.updateAsync(
       { _id: this.userId },
       {
         $set: {
           profile: {
             ...user.profile,
-            ...profileData
+            ...profileData,
+            updatedAt: new Date()
           }
         }
       }
     );
+  },
+
+  /**
+   * Update user avatar image
+   * @param {String} base64Image - Base64 encoded image data
+   */
+  'users.updateAvatar': async function(base64Image) {
+    check(base64Image, String);
+
+    // Make sure the user is logged in
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to update your avatar.');
+    }
+
+    // Validate base64 image format
+    if (!base64Image.startsWith('data:image/')) {
+      throw new Meteor.Error('invalid-image', 'Invalid image format.');
+    }
+
+    // Check image size (base64 is about 33% larger than original)
+    // Limiting to ~3.75MB base64 (which is ~2.8MB original)
+    if (base64Image.length > 3750000) {
+      throw new Meteor.Error('image-too-large', 'Image size is too large. Please choose a smaller image.');
+    }
+
+    // Get the current user's profile
+    const user = await Meteor.users.findOneAsync(this.userId);
+    if (!user) {
+      throw new Meteor.Error('not-found', 'User not found');
+    }
+
+    try {
+      // Update the user's avatar
+      return Meteor.users.updateAsync(
+        { _id: this.userId },
+        {
+          $set: {
+            profile: {
+              ...user.profile,
+              avatar: base64Image,
+              avatarUpdatedAt: new Date()
+            }
+          }
+        }
+      );
+    } catch (error) {
+      throw new Meteor.Error('avatar-update-failed', 'Failed to update avatar. Please try again.');
+    }
+  },
+
+  /**
+   * Remove user avatar
+   */
+  'users.removeAvatar': async function() {
+    // Make sure the user is logged in
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to remove your avatar.');
+    }
+
+    // Get the current user's profile
+    const user = await Meteor.users.findOneAsync(this.userId);
+    if (!user) {
+      throw new Meteor.Error('not-found', 'User not found');
+    }
+
+    try {
+      // Remove the user's avatar by creating a new profile object without avatar fields
+      const updatedProfile = { ...user.profile };
+      delete updatedProfile.avatar;
+      delete updatedProfile.avatarUpdatedAt;
+
+      return Meteor.users.updateAsync(
+        { _id: this.userId },
+        {
+          $set: {
+            profile: updatedProfile
+          }
+        }
+      );
+    } catch (error) {
+      throw new Meteor.Error('avatar-removal-failed', 'Failed to remove avatar. Please try again.');
+    }
   },
 
   /**

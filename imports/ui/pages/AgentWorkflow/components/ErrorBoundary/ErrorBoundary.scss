@@ -1,0 +1,372 @@
+// ErrorBoundary Component Styles - NobleUI Theme
+.error-boundary-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--bs-gray-100);
+  font-family: var(--bs-body-font-family);
+
+  .error-content {
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    padding: 3rem 2rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--bs-box-shadow-lg);
+
+    .error-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: var(--bs-danger);
+
+      svg {
+        width: 64px;
+        height: 64px;
+      }
+
+      // Icon with background circle
+      &.error-icon--bg {
+        position: relative;
+
+        &::before {
+          content: "";
+          position: absolute;
+          width: 96px;
+          height: 96px;
+          background-color: var(--bs-danger-bg-subtle);
+          border-radius: 50%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: -1;
+        }
+      }
+    }
+
+    h2 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--bs-heading-color);
+    }
+
+    p {
+      margin: 0 0 2rem 0;
+      color: var(--bs-secondary-color);
+      font-size: 1rem;
+      line-height: var(--bs-body-line-height);
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+
+      .btn {
+        padding: 0.625rem 1.25rem;
+        font-size: var(--bs-body-font-size);
+        font-weight: 500;
+        border-radius: var(--bs-border-radius);
+        border: var(--bs-border-width) solid transparent;
+        cursor: pointer;
+        transition: color 0.15s ease-in-out,
+                    background-color 0.15s ease-in-out,
+                    border-color 0.15s ease-in-out,
+                    box-shadow 0.15s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+
+        &.btn-primary {
+          background-color: var(--bs-primary);
+          border-color: var(--bs-primary);
+          color: var(--bs-white);
+
+          &:hover {
+            background-color: var(--bs-link-hover-color);
+            border-color: var(--bs-link-hover-color);
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-primary-rgb), 0.5);
+          }
+        }
+
+        &.btn-secondary {
+          background-color: var(--bs-secondary);
+          border-color: var(--bs-secondary);
+          color: var(--bs-white);
+
+          &:hover {
+            background-color: var(--bs-gray-700);
+            border-color: var(--bs-gray-700);
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-secondary-rgb), 0.5);
+          }
+        }
+
+        &.btn-outline-secondary {
+          background-color: transparent;
+          border-color: var(--bs-gray-400);
+          color: var(--bs-body-color);
+
+          &:hover {
+            background-color: var(--bs-gray-100);
+            border-color: var(--bs-gray-500);
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-secondary-rgb), 0.25);
+          }
+        }
+      }
+    }
+
+    .error-details {
+      margin-top: 2rem;
+      text-align: left;
+      background-color: var(--bs-tertiary-bg);
+      border: var(--bs-border-width) solid var(--bs-border-color);
+      border-radius: var(--bs-border-radius);
+      padding: 1rem;
+
+      summary {
+        cursor: pointer;
+        font-size: var(--bs-body-font-size);
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+        margin-bottom: 1rem;
+        user-select: none;
+        transition: color 0.15s ease-in-out;
+
+        &:hover {
+          color: var(--bs-body-color);
+        }
+
+        &::-webkit-details-marker {
+          color: var(--bs-secondary-color);
+        }
+
+        &::marker {
+          color: var(--bs-secondary-color);
+        }
+      }
+
+      &[open] summary {
+        color: var(--bs-body-color);
+        margin-bottom: 1rem;
+      }
+
+      .error-stack {
+        h4 {
+          margin: 1rem 0 0.5rem 0;
+          font-size: var(--bs-body-font-size);
+          font-weight: 600;
+          color: var(--bs-heading-color);
+
+          &:first-child {
+            margin-top: 0;
+          }
+        }
+
+        pre {
+          background-color: var(--bs-dark);
+          color: var(--bs-gray-100);
+          padding: 1rem;
+          border-radius: var(--bs-border-radius);
+          font-size: 0.8125rem;
+          line-height: 1.5;
+          overflow-x: auto;
+          white-space: pre-wrap;
+          word-break: break-word;
+          margin: 0;
+          font-family: var(--bs-font-monospace);
+          border: var(--bs-border-width) solid var(--bs-gray-800);
+
+          // Custom scrollbar for code blocks
+          &::-webkit-scrollbar {
+            height: 6px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: var(--bs-gray-800);
+            border-radius: 3px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: var(--bs-gray-600);
+            border-radius: 3px;
+
+            &:hover {
+              background: var(--bs-gray-500);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark theme adjustments
+[data-bs-theme="dark"] {
+  .error-boundary-container {
+    background-color: var(--bs-gray-900);
+
+    .error-content {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+
+      .error-icon {
+        &.error-icon--bg::before {
+          background-color: var(--bs-danger-bg-subtle);
+          opacity: 0.5;
+        }
+      }
+
+      .error-actions {
+        .btn-outline-secondary {
+          border-color: var(--bs-gray-600);
+          color: var(--bs-gray-300);
+
+          &:hover {
+            background-color: var(--bs-gray-800);
+            border-color: var(--bs-gray-500);
+            color: var(--bs-white);
+          }
+        }
+      }
+
+      .error-details {
+        background-color: var(--bs-gray-800);
+
+        pre {
+          background-color: var(--bs-gray-900);
+          border-color: var(--bs-gray-700);
+          color: var(--bs-gray-300);
+
+          &::-webkit-scrollbar-track {
+            background: var(--bs-gray-900);
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: var(--bs-gray-700);
+
+            &:hover {
+              background: var(--bs-gray-600);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animation for error display
+@keyframes errorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+.error-boundary-container {
+  &.error-animate {
+    .error-content {
+      animation: errorShake 0.6s ease-in-out;
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 640px) {
+  .error-boundary-container {
+    padding: 1rem;
+
+    .error-content {
+      padding: 2rem 1.5rem;
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      p {
+        font-size: var(--bs-body-font-size);
+      }
+
+      .error-actions {
+        flex-direction: column;
+        width: 100%;
+
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      .error-details {
+        padding: 0.75rem;
+
+        pre {
+          padding: 0.75rem;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .error-boundary-container {
+    &.error-animate {
+      .error-content {
+        animation: none;
+      }
+    }
+  }
+}
+
+// Alternative error styles
+.error-boundary-container {
+  &.error-minimal {
+    .error-content {
+      max-width: 400px;
+      padding: 2rem;
+
+      .error-icon svg {
+        width: 48px;
+        height: 48px;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      .error-details {
+        display: none;
+      }
+    }
+  }
+
+  &.error-full {
+    .error-content {
+      max-width: 800px;
+    }
+  }
+}

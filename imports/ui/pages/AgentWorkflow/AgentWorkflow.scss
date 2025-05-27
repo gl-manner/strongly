@@ -1,0 +1,401 @@
+// AgentWorkflow Component Styles - NobleUI Theme
+.agent-workflow-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bs-gray-100);
+  font-family: var(--bs-body-font-family);
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+// Common button styles - NobleUI aligned
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: var(--bs-border-width) solid transparent;
+  border-radius: var(--bs-border-radius);
+  font-size: var(--bs-body-font-size);
+  font-family: var(--bs-body-font-family);
+  font-weight: 500;
+  line-height: var(--bs-body-line-height);
+  cursor: pointer;
+  transition: color 0.15s ease-in-out,
+              background-color 0.15s ease-in-out,
+              border-color 0.15s ease-in-out,
+              box-shadow 0.15s ease-in-out;
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+  }
+
+  &-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: var(--bs-white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--bs-link-hover-color);
+      border-color: var(--bs-link-hover-color);
+    }
+
+    &:focus:not(:disabled) {
+      box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-primary-rgb), 0.5);
+    }
+  }
+
+  &-secondary {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+    color: var(--bs-white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--bs-gray-700);
+      border-color: var(--bs-gray-700);
+    }
+
+    &:focus:not(:disabled) {
+      box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-secondary-rgb), 0.5);
+    }
+  }
+
+  &-success {
+    background-color: var(--bs-success);
+    border-color: var(--bs-success);
+    color: var(--bs-white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--bs-form-valid-color);
+      border-color: var(--bs-form-valid-color);
+    }
+
+    &:focus:not(:disabled) {
+      box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-success-rgb), 0.5);
+    }
+  }
+
+  &-danger {
+    background-color: var(--bs-danger);
+    border-color: var(--bs-danger);
+    color: var(--bs-white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--bs-form-invalid-color);
+      border-color: var(--bs-form-invalid-color);
+    }
+
+    &:focus:not(:disabled) {
+      box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-danger-rgb), 0.5);
+    }
+  }
+
+  &-ghost {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--bs-secondary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--bs-gray-100);
+      color: var(--bs-body-color);
+    }
+
+    &:focus:not(:disabled) {
+      box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba(var(--bs-secondary-rgb), 0.25);
+    }
+  }
+
+  &-outline-primary {
+    background-color: transparent;
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--bs-primary);
+      color: var(--bs-white);
+    }
+  }
+
+  &-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    border-radius: var(--bs-border-radius-sm);
+  }
+
+  &-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: var(--bs-border-radius-lg);
+  }
+
+  &-icon {
+    padding: 0.5rem;
+
+    &.btn-sm {
+      padding: 0.375rem;
+    }
+
+    &.btn-lg {
+      padding: 0.75rem;
+    }
+  }
+}
+
+// Badge styles - NobleUI aligned
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--bs-border-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--bs-body-font-family);
+
+  &-success {
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+  }
+
+  &-warning {
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+  }
+
+  &-danger {
+    background-color: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+  }
+
+  &-info {
+    background-color: var(--bs-info-bg-subtle);
+    color: var(--bs-info-text-emphasis);
+  }
+
+  &-secondary {
+    background-color: var(--bs-secondary-bg-subtle);
+    color: var(--bs-secondary-text-emphasis);
+  }
+
+  &-primary {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+  }
+
+  &-light {
+    background-color: var(--bs-gray-200);
+    color: var(--bs-gray-700);
+  }
+
+  &-dark {
+    background-color: var(--bs-dark);
+    color: var(--bs-white);
+  }
+}
+
+// Dark theme adjustments
+[data-bs-theme="dark"] {
+  .agent-workflow-container {
+    background-color: var(--bs-gray-900);
+  }
+
+  .btn {
+    &-ghost {
+      &:hover:not(:disabled) {
+        background-color: var(--bs-gray-800);
+      }
+    }
+
+    &-outline-primary {
+      &:hover:not(:disabled) {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+      }
+    }
+  }
+
+  .badge {
+    &-light {
+      background-color: var(--bs-gray-700);
+      color: var(--bs-gray-200);
+    }
+  }
+}
+
+// Loading animation
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+// Loading spinner component
+.spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid var(--bs-gray-200);
+  border-top-color: var(--bs-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+
+  &.spinner-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+  }
+
+  &.spinner-lg {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-width: 4px;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .spinner {
+    border-color: var(--bs-gray-700);
+    border-top-color: var(--bs-primary);
+  }
+}
+
+// Transitions
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in-out;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+// Additional transitions
+.slide-up-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.slide-up-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.slide-up-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-up-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms ease-in, transform 300ms ease-in;
+}
+
+// Scale transition
+.scale-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.scale-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.scale-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.scale-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 200ms ease-in, transform 200ms ease-in;
+}
+
+// Utility classes
+.text-muted {
+  color: var(--bs-secondary-color) !important;
+}
+
+.text-primary {
+  color: var(--bs-primary) !important;
+}
+
+.text-success {
+  color: var(--bs-success) !important;
+}
+
+.text-danger {
+  color: var(--bs-danger) !important;
+}
+
+.text-warning {
+  color: var(--bs-warning) !important;
+}
+
+.text-info {
+  color: var(--bs-info) !important;
+}
+
+// Responsive utilities
+@media (max-width: 768px) {
+  .agent-workflow-container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .btn {
+    &-group-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+// Accessibility
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation: none;
+  }
+
+  .fade-enter-active,
+  .fade-exit-active,
+  .slide-up-enter-active,
+  .slide-up-exit-active,
+  .scale-enter-active,
+  .scale-exit-active {
+    transition: none;
+  }
+}

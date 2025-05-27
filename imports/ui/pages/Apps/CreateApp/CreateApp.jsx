@@ -357,7 +357,6 @@ export const CreateApp = () => {
               <div className="mb-4">
                 <h6 className="text-info">📋 Requirements</h6>
                 <ul className="list-unstyled text-muted small">
-                  <li>• Public Git repository</li>
                   <li>• Valid package.json/requirements.txt</li>
                   <li>• Procfile (optional)</li>
                   <li>• Environment variables setup</li>

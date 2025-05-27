@@ -15,21 +15,25 @@ const Breadcrumb = ({ items }) => {
   }
 
   return (
-    <nav className="page-breadcrumb">
+    <nav aria-label="breadcrumb" className="mb-3">
       <ol className="breadcrumb">
-        {items.map((item, index) => (
-          <li
-            key={index}
-            className={`breadcrumb-item ${item.active ? 'active' : ''}`}
-            {...(item.active ? { 'aria-current': 'page' } : {})}
-          >
-            {item.active ? (
-              item.label
-            ) : (
-              <Link to={item.link}>{item.label}</Link>
-            )}
-          </li>
-        ))}
+        {items.map((item, index) => {
+          const isLast = index === items.length - 1;
+
+          return (
+            <li
+              key={index}
+              className={`breadcrumb-item${isLast ? ' active' : ''}`}
+              {...(isLast ? { 'aria-current': 'page' } : {})}
+            >
+              {isLast || !item.link ? (
+                item.label
+              ) : (
+                <Link to={item.link}>{item.label}</Link>
+              )}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
@@ -40,7 +44,7 @@ Breadcrumb.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       link: PropTypes.string,
-      active: PropTypes.bool
+      active: PropTypes.bool // Optional, will be ignored in favor of position-based logic
     })
   ).isRequired
 };

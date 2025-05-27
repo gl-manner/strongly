@@ -1,3 +1,4 @@
+// imports/ui/components/common/Alert/Alert.jsx
 import React, { useEffect, useState } from 'react';
 import './Alert.scss';
 

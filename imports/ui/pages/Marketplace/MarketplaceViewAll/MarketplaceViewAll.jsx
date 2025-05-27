@@ -1,7 +1,9 @@
 // /imports/ui/pages/Marketplace/MarketplaceViewAll/MarketplaceViewAll.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTracker } from 'meteor/react-meteor-data';
+import { MarketplaceCollection } from '/imports/api/marketplace/MarketplaceCollection';
 import './MarketplaceViewAll.scss';
 
 // Simple SVG icon components
@@ -41,235 +43,215 @@ const Icons = {
       <line x1="3" y1="18" x2="3.01" y2="18"></line>
     </svg>
   ),
+  Star: ({ className = "" }) => (
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"></polygon>
+    </svg>
+  ),
   ArrowRight: ({ className = "" }) => (
     <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="5" y1="12" x2="19" y2="12"></line>
       <polyline points="12,5 19,12 12,19"></polyline>
     </svg>
-  ),
-  TrendingUp: ({ className = "" }) => (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"></polyline>
-      <polyline points="17,6 23,6 23,12"></polyline>
-    </svg>
   )
 };
 
-// Extended mock data for all verticals
-const mockVerticalData = {
-  finance: {
-    id: 'finance',
-    name: 'Financial Services',
-    description: 'Banking, payments, trading, and fintech solutions',
-    icon: '💰',
-    color: '#10B981',
-    totalSolutions: 234,
-    popularSolutions: [
-      { id: 1, name: 'AI Financial Advisor Agent', vendor: 'FinTech Solutions Inc.', type: 'agent', rating: 4.8, price: '$2,500/month' },
-      { id: 7, name: 'Banking Core System', vendor: 'CoreBank Systems', type: 'app', rating: 4.6, price: '$15,000/month' },
-      { id: 8, name: 'Payment Gateway API', vendor: 'PayFlow Technologies', type: 'app', rating: 4.7, price: '$500/month' },
-      { id: 9, name: 'Risk Assessment AI', vendor: 'RiskTech Analytics', type: 'agent', rating: 4.9, price: '$3,800/month' }
-    ],
-    subcategories: ['Banking', 'Investment Management', 'Payment Processing', 'Risk Management', 'Fraud Detection', 'Regulatory Compliance']
-  },
-  healthcare: {
-    id: 'healthcare',
-    name: 'Healthcare & Life Sciences',
-    description: 'Medical devices, pharmaceuticals, and health tech',
-    icon: '🏥',
-    color: '#3B82F6',
-    totalSolutions: 189,
-    popularSolutions: [
-      { id: 2, name: 'Healthcare Data Analytics Platform', vendor: 'MedTech Analytics', type: 'app', rating: 4.6, price: '$5,000/month' },
-      { id: 10, name: 'Patient Management System', vendor: 'HealthCare Solutions', type: 'app', rating: 4.5, price: '$2,200/month' },
-      { id: 11, name: 'Drug Discovery AI', vendor: 'PharmaAI Research', type: 'agent', rating: 4.8, price: '$12,000/month' },
-      { id: 12, name: 'Telemedicine Platform', vendor: 'TeleMed Connect', type: 'app', rating: 4.4, price: '$1,800/month' }
-    ],
-    subcategories: ['Electronic Health Records', 'Medical Imaging', 'Drug Discovery', 'Telemedicine', 'Patient Monitoring', 'Clinical Trials']
-  },
-  automotive: {
-    id: 'automotive',
-    name: 'Automotive',
-    description: 'Connected vehicles, manufacturing, and mobility',
-    icon: '🚗',
-    color: '#EF4444',
-    totalSolutions: 156,
-    popularSolutions: [
-      { id: 3, name: 'Smart Vehicle Fleet Manager', vendor: 'AutoTech Systems', type: 'app', rating: 4.7, price: '$1,800/month' },
-      { id: 13, name: 'Autonomous Driving AI', vendor: 'DriveAI Technologies', type: 'agent', rating: 4.9, price: '$25,000/month' },
-      { id: 14, name: 'Vehicle Diagnostics Platform', vendor: 'AutoDiag Solutions', type: 'app', rating: 4.3, price: '$800/month' },
-      { id: 15, name: 'Supply Chain Optimizer', vendor: 'AutoSupply Systems', type: 'agent', rating: 4.6, price: '$4,500/month' }
-    ],
-    subcategories: ['Fleet Management', 'Autonomous Vehicles', 'Connected Cars', 'Manufacturing', 'Supply Chain', 'Predictive Maintenance']
-  },
-  insurance: {
-    id: 'insurance',
-    name: 'Insurance',
-    description: 'Risk management, claims processing, and insurtech',
-    icon: '🛡️',
-    color: '#8B5CF6',
-    totalSolutions: 143,
-    popularSolutions: [
-      { id: 4, name: 'Insurance Claims Processing Agent', vendor: 'InsureTech AI', type: 'agent', rating: 4.9, price: '$3,200/month' },
-      { id: 16, name: 'Policy Management System', vendor: 'InsureCore Solutions', type: 'app', rating: 4.4, price: '$2,800/month' },
-      { id: 17, name: 'Fraud Detection Engine', vendor: 'FraudWatch Systems', type: 'agent', rating: 4.7, price: '$5,500/month' },
-      { id: 18, name: 'Risk Calculator Platform', vendor: 'RiskCalc Technologies', type: 'app', rating: 4.5, price: '$1,200/month' }
-    ],
-    subcategories: ['Claims Processing', 'Underwriting', 'Policy Management', 'Fraud Detection', 'Risk Assessment', 'Customer Service']
-  },
-  'public-sector': {
-    id: 'public-sector',
-    name: 'Public Sector',
-    description: 'Government services, civic tech, and compliance',
-    icon: '🏛️',
-    color: '#F59E0B',
-    totalSolutions: 127,
-    popularSolutions: [
-      { id: 5, name: 'Citizen Services Portal', vendor: 'GovTech Solutions', type: 'app', rating: 4.5, price: '$4,500/month' },
-      { id: 19, name: 'Document Processing AI', vendor: 'GovAI Systems', type: 'agent', rating: 4.6, price: '$6,800/month' },
-      { id: 20, name: 'Emergency Response System', vendor: 'EmergencyTech Solutions', type: 'app', rating: 4.7, price: '$8,200/month' },
-      { id: 21, name: 'Budget Management Platform', vendor: 'PublicFinance Systems', type: 'app', rating: 4.3, price: '$3,500/month' }
-    ],
-    subcategories: ['Citizen Services', 'Emergency Management', 'Document Processing', 'Budget Management', 'Compliance Monitoring', 'Public Safety']
-  },
-  retail: {
-    id: 'retail',
-    name: 'Retail & E-commerce',
-    description: 'Point of sale, inventory, and customer experience',
-    icon: '🛒',
-    color: '#EC4899',
-    totalSolutions: 198,
-    popularSolutions: [
-      { id: 6, name: 'E-commerce Personalization Engine', vendor: 'Retail AI Corp', type: 'agent', rating: 4.8, price: '$2,800/month' },
-      { id: 22, name: 'Inventory Management System', vendor: 'RetailTech Solutions', type: 'app', rating: 4.5, price: '$1,500/month' },
-      { id: 23, name: 'Customer Analytics Platform', vendor: 'ShopperInsights Inc.', type: 'app', rating: 4.6, price: '$2,200/month' },
-      { id: 24, name: 'Price Optimization AI', vendor: 'PriceOptimal Systems', type: 'agent', rating: 4.7, price: '$3,800/month' }
-    ],
-    subcategories: ['E-commerce Platforms', 'Inventory Management', 'Customer Analytics', 'Price Optimization', 'Supply Chain', 'Point of Sale']
-  }
+const verticalInfo = {
+  finance: { name: 'Financial Services', color: '#10B981' },
+  healthcare: { name: 'Healthcare & Life Sciences', color: '#3B82F6' },
+  automotive: { name: 'Automotive', color: '#EF4444' },
+  insurance: { name: 'Insurance', color: '#8B5CF6' },
+  'public-sector': { name: 'Public Sector', color: '#F59E0B' },
+  retail: { name: 'Retail & E-commerce', color: '#EC4899' },
+  technology: { name: 'Technology & Software', color: '#6366F1' }
 };
 
 export const MarketplaceViewAll = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSort, setSelectedSort] = useState('solutions-desc');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-  const [filteredVerticals, setFilteredVerticals] = useState(Object.values(mockVerticalData));
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Filter and sort verticals
-  useEffect(() => {
-    let filtered = Object.values(mockVerticalData);
+  // State management
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [selectedVertical, setSelectedVertical] = useState(searchParams.get('vertical') || '');
+  const [selectedType, setSelectedType] = useState(searchParams.get('type') || '');
+  const [selectedSort, setSelectedSort] = useState(searchParams.get('sort') || 'rating-desc');
+  const [viewMode, setViewMode] = useState('grid');
 
-    // Apply search filter
+  // Reactive data from MongoDB
+  const { items, isLoading, verticals } = useTracker(() => {
+    const handle = Meteor.subscribe('marketplace.items', {
+      search: searchQuery,
+      vertical: selectedVertical,
+      type: selectedType,
+      limit: 100
+    });
+
+    const query = {};
+
+    // Build query based on filters
+    if (selectedVertical) {
+      query.vertical = selectedVertical;
+    }
+    if (selectedType) {
+      query.type = selectedType;
+    }
     if (searchQuery) {
-      filtered = filtered.filter(vertical =>
-        vertical.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        vertical.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        vertical.subcategories.some(cat => cat.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+      query.$or = [
+        { name: { $regex: searchQuery, $options: 'i' } },
+        { description: { $regex: searchQuery, $options: 'i' } },
+        { vendor: { $regex: searchQuery, $options: 'i' } },
+        { tags: { $in: [new RegExp(searchQuery, 'i')] } }
+      ];
     }
 
-    // Apply sorting
+    // Get items with sorting
+    let sortOptions = { rating: -1, reviews: -1 };
     switch (selectedSort) {
-      case 'solutions-desc':
-        filtered.sort((a, b) => b.totalSolutions - a.totalSolutions);
-        break;
-      case 'solutions-asc':
-        filtered.sort((a, b) => a.totalSolutions - b.totalSolutions);
-        break;
       case 'name-asc':
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        sortOptions = { name: 1 };
         break;
       case 'name-desc':
-        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        sortOptions = { name: -1 };
         break;
+      case 'price-asc':
+        sortOptions = { priceNumeric: 1 };
+        break;
+      case 'price-desc':
+        sortOptions = { priceNumeric: -1 };
+        break;
+      case 'rating-desc':
       default:
+        sortOptions = { rating: -1, reviews: -1 };
         break;
     }
 
-    setFilteredVerticals(filtered);
-  }, [searchQuery, selectedSort]);
+    const items = MarketplaceCollection.find(query, { sort: sortOptions }).fetch();
 
-  const handleVerticalClick = (verticalId) => {
-    navigate(`/marketplace/vertical/${verticalId}`);
+    // Get unique verticals with counts
+    const allItems = MarketplaceCollection.find().fetch();
+    const verticalCounts = {};
+    allItems.forEach(item => {
+      verticalCounts[item.vertical] = (verticalCounts[item.vertical] || 0) + 1;
+    });
+
+    const verticals = Object.keys(verticalCounts).map(vertical => ({
+      id: vertical,
+      name: verticalInfo[vertical]?.name || vertical,
+      count: verticalCounts[vertical]
+    }));
+
+    return {
+      items,
+      isLoading: !handle.ready(),
+      verticals
+    };
+  }, [searchQuery, selectedVertical, selectedType, selectedSort]);
+
+  // Update URL parameters when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (selectedVertical) params.set('vertical', selectedVertical);
+    if (selectedType) params.set('type', selectedType);
+    if (selectedSort !== 'rating-desc') params.set('sort', selectedSort);
+
+    setSearchParams(params);
+  }, [searchQuery, selectedVertical, selectedType, selectedSort, setSearchParams]);
+
+  const handleItemClick = (itemId) => {
+    navigate(`/marketplace/item/${itemId}`);
+  };
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedVertical('');
+    setSelectedType('');
+    setSelectedSort('rating-desc');
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<Icons.Star key={i} className="text-warning" />);
+    }
+
+    if (hasHalfStar) {
+      stars.push(<Icons.Star key="half" className="text-warning opacity-50" />);
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Icons.Star key={`empty-${i}`} className="text-muted opacity-25" />);
+    }
+
+    return stars;
   };
 
   const renderGridView = () => (
     <div className="row g-4">
-      {filteredVerticals.map(vertical => (
-        <div key={vertical.id} className="col-lg-6 col-xl-4">
+      {items.map(item => (
+        <div key={item._id} className="col-lg-4 col-md-6">
           <div
-            className="vertical-card-detailed card h-100"
-            onClick={() => handleVerticalClick(vertical.id)}
+            className="solution-card card h-100"
+            onClick={() => handleItemClick(item._id)}
             style={{ cursor: 'pointer' }}
           >
-            <div className="card-body">
-              <div className="d-flex align-items-center mb-3">
-                <div
-                  className="vertical-icon-large me-3"
-                  style={{
-                    fontSize: '2.5rem',
-                    backgroundColor: `${vertical.color}15`,
-                    color: vertical.color,
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {vertical.icon}
-                </div>
-                <div className="flex-grow-1">
-                  <h5 className="card-title mb-1">{vertical.name}</h5>
-                  <div className="d-flex align-items-center">
-                    <span className="badge bg-primary me-2">{vertical.totalSolutions} solutions</span>
-                    <Icons.TrendingUp className="text-success" />
+            <img
+              src={item.image}
+              className="card-img-top"
+              alt={item.name}
+              style={{ height: '160px', objectFit: 'cover' }}
+            />
+            <div className="card-body d-flex flex-column">
+              <div className="mb-2">
+                <span className={`badge ${item.type === 'agent' ? 'bg-success' : 'bg-info'} mb-2`}>
+                  {item.type === 'agent' ? 'AI Agent' : 'Application'}
+                </span>
+                <span className="badge bg-light text-dark ms-2" style={{
+                  color: verticalInfo[item.vertical]?.color || '#666'
+                }}>
+                  {verticalInfo[item.vertical]?.name || item.vertical}
+                </span>
+              </div>
+
+              <h5 className="card-title">{item.name}</h5>
+              <p className="text-muted mb-2">by {item.vendor}</p>
+
+              <div className="rating-section mb-3">
+                <div className="d-flex align-items-center gap-2">
+                  <div className="d-flex">
+                    {renderStars(item.rating)}
                   </div>
+                  <span className="text-muted small">
+                    {item.rating} ({item.reviews} reviews)
+                  </span>
                 </div>
               </div>
 
-              <p className="text-muted mb-3">{vertical.description}</p>
+              <p className="card-text text-muted small mb-3">
+                {item.description}
+              </p>
 
-              <div className="subcategories mb-3">
-                <h6 className="small text-muted mb-2">POPULAR CATEGORIES</h6>
-                <div className="d-flex flex-wrap gap-1">
-                  {vertical.subcategories.slice(0, 4).map((cat, index) => (
-                    <span key={index} className="badge bg-light text-dark small">
-                      {cat}
-                    </span>
-                  ))}
-                  {vertical.subcategories.length > 4 && (
-                    <span className="badge bg-light text-muted small">
-                      +{vertical.subcategories.length - 4} more
-                    </span>
-                  )}
-                </div>
+              <div className="tags mb-3">
+                {item.tags.slice(0, 3).map(tag => (
+                  <span key={tag} className="badge bg-light text-dark me-1 mb-1">
+                    {tag}
+                  </span>
+                ))}
               </div>
 
-              <div className="popular-solutions">
-                <h6 className="small text-muted mb-2">TOP SOLUTIONS</h6>
-                <div className="solution-previews">
-                  {vertical.popularSolutions.slice(0, 3).map((solution, index) => (
-                    <div key={solution.id} className="solution-preview d-flex align-items-center mb-2">
-                      <span className={`badge ${solution.type === 'agent' ? 'bg-success' : 'bg-info'} me-2`} style={{ fontSize: '0.65rem' }}>
-                        {solution.type === 'agent' ? 'AI' : 'APP'}
-                      </span>
-                      <div className="flex-grow-1">
-                        <div className="small fw-medium">{solution.name}</div>
-                        <div className="small text-muted">{solution.vendor}</div>
-                      </div>
-                      <div className="text-primary small fw-medium">{solution.price}</div>
-                    </div>
-                  ))}
+              <div className="mt-auto">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="price">
+                    <strong className="text-primary">{item.price}</strong>
+                  </div>
+                  <button className="btn btn-primary btn-sm">
+                    View Details
+                  </button>
                 </div>
-              </div>
-            </div>
-            <div className="card-footer bg-transparent">
-              <div className="d-flex justify-content-between align-items-center">
-                <span className="small text-muted">Explore {vertical.name}</span>
-                <Icons.ArrowRight className="text-primary" />
               </div>
             </div>
           </div>
@@ -279,59 +261,51 @@ export const MarketplaceViewAll = () => {
   );
 
   const renderListView = () => (
-    <div className="vertical-list">
-      {filteredVerticals.map(vertical => (
+    <div className="solution-list">
+      {items.map(item => (
         <div
-          key={vertical.id}
-          className="vertical-list-item card mb-3"
-          onClick={() => handleVerticalClick(vertical.id)}
+          key={item._id}
+          className="solution-list-item card mb-3"
+          onClick={() => handleItemClick(item._id)}
           style={{ cursor: 'pointer' }}
         >
           <div className="card-body">
             <div className="row align-items-center">
+              <div className="col-md-2">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="img-fluid rounded"
+                  style={{ height: '80px', objectFit: 'cover', width: '100%' }}
+                />
+              </div>
               <div className="col-md-6">
-                <div className="d-flex align-items-center">
-                  <div
-                    className="vertical-icon-medium me-3"
-                    style={{
-                      fontSize: '2rem',
-                      backgroundColor: `${vertical.color}15`,
-                      color: vertical.color,
-                      width: '50px',
-                      height: '50px',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    {vertical.icon}
-                  </div>
-                  <div>
-                    <h5 className="mb-1">{vertical.name}</h5>
-                    <p className="text-muted mb-0">{vertical.description}</p>
-                  </div>
+                <div className="d-flex align-items-center mb-2">
+                  <span className={`badge ${item.type === 'agent' ? 'bg-success' : 'bg-info'} me-2`}>
+                    {item.type === 'agent' ? 'AI Agent' : 'App'}
+                  </span>
+                  <span className="badge bg-light text-dark">
+                    {verticalInfo[item.vertical]?.name || item.vertical}
+                  </span>
                 </div>
+                <h5 className="mb-1">{item.name}</h5>
+                <p className="text-muted mb-1">by {item.vendor}</p>
+                <p className="text-muted small mb-0">{item.description}</p>
               </div>
-              <div className="col-md-3">
-                <div className="text-center">
-                  <div className="h5 mb-1 text-primary">{vertical.totalSolutions}</div>
-                  <small className="text-muted">Solutions Available</small>
+              <div className="col-md-2 text-center">
+                <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                  <div className="d-flex">
+                    {renderStars(item.rating)}
+                  </div>
+                  <span className="small">{item.rating}</span>
                 </div>
+                <small className="text-muted">({item.reviews} reviews)</small>
               </div>
-              <div className="col-md-3">
-                <div className="d-flex flex-wrap gap-1">
-                  {vertical.subcategories.slice(0, 3).map((cat, index) => (
-                    <span key={index} className="badge bg-light text-dark small">
-                      {cat}
-                    </span>
-                  ))}
-                  {vertical.subcategories.length > 3 && (
-                    <span className="badge bg-light text-muted small">
-                      +{vertical.subcategories.length - 3}
-                    </span>
-                  )}
-                </div>
+              <div className="col-md-2 text-end">
+                <div className="h5 text-primary mb-2">{item.price}</div>
+                <button className="btn btn-primary btn-sm">
+                  View Details
+                </button>
               </div>
             </div>
           </div>
@@ -344,19 +318,21 @@ export const MarketplaceViewAll = () => {
     <div className="marketplace-view-all">
       <div className="container py-4">
         {/* Header */}
-        <div className="d-flex align-items-center mb-4">
-          <Link to="/marketplace" className="btn btn-outline-secondary me-3">
+        <div className="d-flex justify-content-between align-items-start mb-4">
+          <div>
+            <h2 className="mb-1">Apps & AI Agents</h2>
+            <p className="text-muted mb-0">
+              Discover and deploy applications and AI agents across all industries
+            </p>
+          </div>
+          <Link to="/marketplace" className="btn btn-outline-secondary">
             <Icons.ArrowLeft className="me-2" /> Back to Marketplace
           </Link>
-          <div>
-            <h2 className="mb-1">All Industry Verticals</h2>
-            <p className="text-muted mb-0">Browse solutions across all industries and use cases</p>
-          </div>
         </div>
 
-        {/* Search and Controls */}
+        {/* Search and Filters */}
         <div className="row mb-4">
-          <div className="col-md-6">
+          <div className="col-md-4">
             <div className="input-group">
               <span className="input-group-text">
                 <Icons.Search />
@@ -364,70 +340,139 @@ export const MarketplaceViewAll = () => {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Search industries, categories, or solutions..."
+                placeholder="Search apps and agents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-2">
+            <select
+              className="form-select"
+              value={selectedVertical}
+              onChange={(e) => setSelectedVertical(e.target.value)}
+            >
+              <option value="">All Industries</option>
+              {verticals.map(vertical => (
+                <option key={vertical.id} value={vertical.id}>
+                  {vertical.name} ({vertical.count})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-2">
+            <select
+              className="form-select"
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+            >
+              <option value="">All Types</option>
+              <option value="app">Applications</option>
+              <option value="agent">AI Agents</option>
+            </select>
+          </div>
+          <div className="col-md-2">
             <select
               className="form-select"
               value={selectedSort}
               onChange={(e) => setSelectedSort(e.target.value)}
             >
-              <option value="solutions-desc">Most Solutions</option>
-              <option value="solutions-asc">Fewest Solutions</option>
+              <option value="rating-desc">Highest Rated</option>
               <option value="name-asc">Name A-Z</option>
               <option value="name-desc">Name Z-A</option>
+              <option value="price-asc">Price Low to High</option>
+              <option value="price-desc">Price High to Low</option>
             </select>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-2">
             <div className="btn-group w-100" role="group">
               <button
                 type="button"
                 className={`btn ${viewMode === 'grid' ? 'btn-primary' : 'btn-outline-primary'}`}
                 onClick={() => setViewMode('grid')}
               >
-                <Icons.Grid className="me-1" /> Grid
+                <Icons.Grid />
               </button>
               <button
                 type="button"
                 className={`btn ${viewMode === 'list' ? 'btn-primary' : 'btn-outline-primary'}`}
                 onClick={() => setViewMode('list')}
               >
-                <Icons.List className="me-1" /> List
+                <Icons.List />
               </button>
             </div>
           </div>
         </div>
+
+        {/* Active Filters */}
+        {(searchQuery || selectedVertical || selectedType) && (
+          <div className="active-filters mb-4">
+            <div className="d-flex align-items-center flex-wrap gap-2">
+              <span className="text-muted me-2">Active filters:</span>
+              {searchQuery && (
+                <span className="badge bg-primary">
+                  Search: "{searchQuery}"
+                  <button
+                    className="btn-close btn-close-white ms-2"
+                    style={{ fontSize: '0.65em' }}
+                    onClick={() => setSearchQuery('')}
+                  ></button>
+                </span>
+              )}
+              {selectedVertical && (
+                <span className="badge bg-primary">
+                  Industry: {verticalInfo[selectedVertical]?.name || selectedVertical}
+                  <button
+                    className="btn-close btn-close-white ms-2"
+                    style={{ fontSize: '0.65em' }}
+                    onClick={() => setSelectedVertical('')}
+                  ></button>
+                </span>
+              )}
+              {selectedType && (
+                <span className="badge bg-primary">
+                  Type: {selectedType === 'agent' ? 'AI Agents' : 'Applications'}
+                  <button
+                    className="btn-close btn-close-white ms-2"
+                    style={{ fontSize: '0.65em' }}
+                    onClick={() => setSelectedType('')}
+                  ></button>
+                </span>
+              )}
+              <button
+                className="btn btn-sm btn-outline-secondary"
+                onClick={clearFilters}
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Results Summary */}
         <div className="results-summary mb-4">
           <div className="d-flex justify-content-between align-items-center">
             <div>
               <span className="text-muted">
-                Showing {filteredVerticals.length} of {Object.keys(mockVerticalData).length} industries
-              </span>
-            </div>
-            <div>
-              <span className="text-muted">
-                Total: {filteredVerticals.reduce((sum, v) => sum + v.totalSolutions, 0)} solutions
+                {isLoading ? 'Loading...' : `Showing ${items.length} solutions`}
               </span>
             </div>
           </div>
         </div>
 
         {/* Results */}
-        {filteredVerticals.length === 0 ? (
+        {isLoading ? (
           <div className="text-center py-5">
-            <h4 className="text-muted">No industries found</h4>
-            <p className="text-muted">Try adjusting your search criteria.</p>
-            <button
-              className="btn btn-primary"
-              onClick={() => setSearchQuery('')}
-            >
-              Clear Search
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        ) : items.length === 0 ? (
+          <div className="text-center py-5">
+            <h4 className="text-muted">No solutions found</h4>
+            <p className="text-muted">Try adjusting your search criteria or browse different categories.</p>
+            <button className="btn btn-primary" onClick={clearFilters}>
+              Clear Filters
             </button>
           </div>
         ) : (
@@ -438,16 +483,16 @@ export const MarketplaceViewAll = () => {
 
         {/* Call to Action */}
         <section className="cta-section bg-light rounded p-4 mt-5 text-center">
-          <h4 className="mb-3">Don't see your industry?</h4>
+          <h4 className="mb-3">Don't see what you need?</h4>
           <p className="text-muted mb-4">
-            We're constantly adding new verticals and solutions. Let us know what you're looking for.
+            We're constantly adding new solutions. Let us know what you're looking for.
           </p>
           <div className="d-flex gap-3 justify-content-center">
             <button className="btn btn-primary">
-              Request New Vertical
+              Request Solution
             </button>
             <button className="btn btn-outline-primary">
-              Suggest Solution
+              Contact Sales
             </button>
           </div>
         </section>

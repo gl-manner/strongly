@@ -1,3 +1,4 @@
+// imports/ui/pages/AIGateway/AIGateway.jsx
 import React, { useEffect, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
