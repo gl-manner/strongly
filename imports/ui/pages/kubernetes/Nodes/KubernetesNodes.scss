@@ -1,0 +1,51 @@
+.kubernetes-nodes {
+  .sortable {
+    cursor: pointer;
+    user-select: none;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+
+  .node-card {
+    transition: all 0.2s ease;
+    border: 1px solid #e5e7eb;
+    
+    &:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    &.ready {
+      border-top: 3px solid #22c55e;
+    }
+
+    &.notready {
+      border-top: 3px solid #ef4444;
+    }
+
+    &.unknown {
+      border-top: 3px solid #f59e0b;
+    }
+
+    .node-info {
+      font-size: 0.875rem;
+    }
+
+    .resource-item {
+      .progress {
+        background-color: #f3f4f6;
+      }
+    }
+  }
+
+  .progress {
+    .progress-bar {
+      transition: width 0.3s ease;
+    }
+  }
+
+  .dropdown-toggle::after {
+    display: none;
+  }
+}

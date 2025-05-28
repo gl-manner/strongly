@@ -87,7 +87,7 @@ const KubernetesSidebar = () => {
 
     document.addEventListener('click', handleClickOutside);
     document.addEventListener('keydown', handleEscKey);
-    
+
     return () => {
       document.removeEventListener('click', handleClickOutside);
       document.removeEventListener('keydown', handleEscKey);
@@ -157,7 +157,7 @@ const KubernetesSidebar = () => {
         <div className="sidebar-header">
           <Link to="/kubernetes/dashboard" className="sidebar-brand">
             <svg className="kubernetes-logo" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2M12 1L10.73 8.5L2 9.27L10.73 10.04L12 17.54L13.27 10.04L22 9.27L13.27 8.5L12 1M12 6.5L11.5 10.5L7.5 11L11.5 11.5L12 15.5L12.5 11.5L16.5 11L12.5 10.5L12 6.5Z"/>
+              <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2M12 1L10.73 8.5L2 9.27L10.73 10.04L12 17.54L13.27 10.04L22 9.27L13.27 8.5L12 1M12 6.5L11.5 10.5L7.5 11L11.5 11.5L12 15.5L12.5 11.5L16.5 11L12.5 10.5L12 6.5Z" />
             </svg>
             <span>Kubernetes</span>
           </Link>
@@ -178,9 +178,9 @@ const KubernetesSidebar = () => {
       <div className="sidebar-header">
         <Link to="/kubernetes/dashboard" className="sidebar-brand">
           <svg className="kubernetes-logo" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L14.5 6.5L20 7L16 11L17 17L12 14.5L7 17L8 11L4 7L9.5 6.5L12 2Z"/>
-            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-            <path d="M12 6L13 9.5L16.5 9L14.5 12L15.5 15.5L12 14L8.5 15.5L9.5 12L7.5 9L11 9.5L12 6Z" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+            <path d="M12 2L14.5 6.5L20 7L16 11L17 17L12 14.5L7 17L8 11L4 7L9.5 6.5L12 2Z" />
+            <circle cx="12" cy="12" r="2" fill="currentColor" />
+            <path d="M12 6L13 9.5L16.5 9L14.5 12L15.5 15.5L12 14L8.5 15.5L9.5 12L7.5 9L11 9.5L12 6Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
           </svg>
           <span>Kubernetes</span>
         </Link>
@@ -222,7 +222,7 @@ const KubernetesSidebar = () => {
               </div>
               <i data-feather="chevron-down" className="dropdown-arrow"></i>
             </button>
-            
+
             {clusterSelectorOpen && (
               <div className="cluster-dropdown-menu">
                 {clusters.map(cluster => (
@@ -436,7 +436,7 @@ const KubernetesSidebar = () => {
           </li>
 
           {/* Nodes */}
-          <li className={`nav-item ${isActive('/kubernetes/nodes') ? 'active' : ''}`}>
+          <li className={`nav-item ${isActiveSection('/kubernetes/nodes') ? 'active' : ''}`}>
             <Link to="/kubernetes/nodes" className="nav-link">
               <i className="link-icon" data-feather="server"></i>
               <span className="link-title">Nodes</span>
@@ -575,10 +575,10 @@ const KubernetesSidebar = () => {
               </li>
             </>
           )}
-          
+
           {/* BACK TO MAIN section */}
           <li className="nav-item nav-category">MAIN APP</li>
-          
+
           <li className="nav-item">
             <a className="nav-link" href="#" onClick={(e) => {
               e.preventDefault();

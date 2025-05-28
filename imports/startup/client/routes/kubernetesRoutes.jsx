@@ -12,6 +12,11 @@ import { KubernetesServices } from '/imports/ui/pages/kubernetes/Services/Kubern
 import { KubernetesStorage } from '/imports/ui/pages/kubernetes/Storage/KubernetesStorage';
 import { KubernetesMonitoring } from '/imports/ui/pages/kubernetes/Monitoring/KubernetesMonitoring';
 
+// Import Node management pages
+import { KubernetesNodes } from '/imports/ui/pages/kubernetes/Nodes/KubernetesNodes';
+import { KubernetesNodeDetail } from '/imports/ui/pages/kubernetes/Nodes/KubernetesNodeDetail';
+import { KubernetesNodeCapacityPlanning } from '/imports/ui/pages/kubernetes/Nodes/KubernetesNodeCapacityPlanning';
+
 // Import admin Kubernetes pages
 import { KubernetesConfig } from '/imports/ui/pages/admin/kubernetes/KubernetesConfig';
 import { KubernetesResources } from '/imports/ui/pages/admin/kubernetes/KubernetesResources';
@@ -57,6 +62,19 @@ export const kubernetesRoutes = [
           {
             path: "kubernetes/monitoring",
             element: <KubernetesMonitoring />
+          },
+          // Node management routes
+          {
+            path: "kubernetes/nodes",
+            element: <KubernetesNodes />
+          },
+          {
+            path: "kubernetes/nodes/capacity-planning",
+            element: <KubernetesNodeCapacityPlanning />
+          },
+          {
+            path: "kubernetes/nodes/:nodeName",
+            element: <KubernetesNodeDetail />
           },
           // Admin Kubernetes routes
           {
